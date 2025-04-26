@@ -1,7 +1,7 @@
 dependencies {
     api(projects.swissknifeDddDomain)
 
-    implementation(projects.acmeSchemataJsonCommon)
+    implementation(projects.acmeSchemaCatalogueJsonCommon)
     implementation(projects.pillarJsonSerializationCorrelationCore)
 
     testImplementation(projects.pillarJsonSerializationTestUtils)

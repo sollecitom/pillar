@@ -1,12 +1,12 @@
 package sollecitom.libs.pillar.web.api.utils.api
 
+import io.micrometer.core.instrument.MeterRegistry
+import org.http4k.config.Environment
+import org.http4k.core.Request
 import sollecitom.libs.swissknife.core.domain.networking.Port
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.web.api.domain.endpoint.Endpoint
-import io.micrometer.core.instrument.MeterRegistry
-import org.http4k.config.Environment
-import org.http4k.core.Request
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.api.HttpDrivingAdapter
 
@@ -36,8 +36,8 @@ class EndpointHttpDrivingAdapter internal constructor(private val endpoints: Set
     companion object : Loggable()
 }
 
-context(CoreDataGenerator, HttpApiDefinition)
-fun EndpointHttpDrivingAdapter.Companion.create(endpoints: Set<Endpoint>, environment: Environment, meterRegistry: MeterRegistry) = EndpointHttpDrivingAdapter(endpoints, environment, meterRegistry, this@CoreDataGenerator, this@HttpApiDefinition)
+context(generator: CoreDataGenerator, api: HttpApiDefinition)
+fun EndpointHttpDrivingAdapter.Companion.create(endpoints: Set<Endpoint>, environment: Environment, meterRegistry: MeterRegistry) = EndpointHttpDrivingAdapter(endpoints, environment, meterRegistry, generator, api)
 
-context(CoreDataGenerator, HttpApiDefinition)
-fun EndpointHttpDrivingAdapter.Companion.create(endpoints: Set<Endpoint>, configuration: HttpDrivingAdapter.Configuration, meterRegistry: MeterRegistry) = EndpointHttpDrivingAdapter(endpoints, configuration, meterRegistry, this@CoreDataGenerator, this@HttpApiDefinition)
+context(generator: CoreDataGenerator, api: HttpApiDefinition)
+fun EndpointHttpDrivingAdapter.Companion.create(endpoints: Set<Endpoint>, configuration: HttpDrivingAdapter.Configuration, meterRegistry: MeterRegistry) = EndpointHttpDrivingAdapter(endpoints, configuration, meterRegistry, generator, api)

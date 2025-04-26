@@ -10,7 +10,7 @@ import sollecitom.libs.swissknife.messaging.domain.event.processing.ProcessEvent
 import sollecitom.libs.swissknife.messaging.test.utils.message.ReceivedMessageSpy
 import sollecitom.libs.swissknife.messaging.test.utils.message.waitUntilAllAcked
 
-context(CoreDataGenerator)
+context(_: CoreDataGenerator)
 suspend fun <EVENT : Event> List<ReceivedMessageSpy<out EVENT>>.processAndWaitUntilAllAcked(processEvent: ProcessEvent<EVENT>) = coroutineScope {
 
     val processor = EventProcessor.withMessages(asFlow(), processEvent)

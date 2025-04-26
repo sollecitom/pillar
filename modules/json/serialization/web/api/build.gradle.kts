@@ -2,7 +2,7 @@ dependencies {
     api(projects.pillarJsonSerializationCore)
     api(projects.swissknifeWebApiDomain)
 
-    implementation(projects.acmeSchemataJsonCommon)
+    implementation(projects.acmeSchemaCatalogueJsonCommon)
     implementation(projects.swissknifeKotlinExtensions)
 
     testImplementation(projects.pillarJsonSerializationTestUtils)

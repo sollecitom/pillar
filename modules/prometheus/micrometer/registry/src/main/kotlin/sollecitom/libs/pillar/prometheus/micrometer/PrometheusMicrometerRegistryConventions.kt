@@ -12,7 +12,7 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusRenameFilter
 import java.io.File
 
-context(MonitoringConventions)
+context(_: MonitoringConventions)
 fun prometheusMeterRegistry(meterBinders: List<MeterBinder> = standardMicrometerMeterBinders()): PrometheusMeterRegistry {
 
     val registry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
@@ -21,7 +21,7 @@ fun prometheusMeterRegistry(meterBinders: List<MeterBinder> = standardMicrometer
     return registry
 }
 
-context(MonitoringConventions)
+context(_: MonitoringConventions)
 fun standardMicrometerMeterBinders(): List<MeterBinder> = listOf(
     JvmInfoMetrics(),
     JvmMemoryMetrics(),

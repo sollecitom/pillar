@@ -11,11 +11,11 @@ import org.http4k.core.*
 import org.json.JSONObject
 import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
 
-context(CoreDataGenerator)
-fun InvocationContextFilter.parseInvocationContextFromGatewayHeader(headerNames: HttpHeaderNames.Correlation): Filter = GatewayInfoContextParsingFilter(key, headerNames, this@CoreDataGenerator)
+context(generator: CoreDataGenerator)
+fun InvocationContextFilter.parseInvocationContextFromGatewayHeader(headerNames: HttpHeaderNames.Correlation): Filter = GatewayInfoContextParsingFilter(key, headerNames, generator)
 
-context(HttpApiDefinition, CoreDataGenerator)
-fun InvocationContextFilter.parseInvocationContextFromGatewayHeader(): Filter = parseInvocationContextFromGatewayHeader(headerNames.correlation)
+context(api: HttpApiDefinition, _: CoreDataGenerator)
+fun InvocationContextFilter.parseInvocationContextFromGatewayHeader(): Filter = parseInvocationContextFromGatewayHeader(api.headerNames.correlation)
 
 internal class GatewayInfoContextParsingFilter(private val key: InvocationContextFilter.Key, private val headerNames: HttpHeaderNames.Correlation, coreDataGenerator: CoreDataGenerator) : Filter, CoreDataGenerator by coreDataGenerator {
 

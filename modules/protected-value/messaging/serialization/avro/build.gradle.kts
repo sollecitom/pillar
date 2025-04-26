@@ -5,7 +5,7 @@ dependencies {
 
     implementation(projects.swissknifeKotlinExtensions)
     implementation(projects.pillarEncryptionMessagingSerializationAvro)
-    implementation(projects.acmeSchemataAvroCommon)
+    implementation(projects.acmeSchemaCatalogueAvroCommon)
     implementation(projects.pillarAvroSerializationCore)
 
     testImplementation(projects.swissknifeTestUtils)

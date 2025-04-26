@@ -52,7 +52,7 @@ private class MessagingEventProcessor<in EVENT : Event>(
     companion object : Loggable()
 }
 
-context(CoreDataGenerator)
+context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
     processEvent: ProcessEvent<EVENT>,
@@ -61,10 +61,10 @@ fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     processEvent = processEvent,
     messages = connector.messages,
     scope = scope,
-    coreDataGenerator = this@CoreDataGenerator
+    coreDataGenerator = generator
 )
 
-context(CoreDataGenerator)
+context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessages(
     messages: Flow<ReceivedMessage<EVENT>>,
     processEvent: ProcessEvent<EVENT>,
@@ -73,16 +73,16 @@ fun <EVENT : Event> EventProcessor.Companion.withMessages(
     processEvent = processEvent,
     messages = messages,
     scope = scope,
-    coreDataGenerator = this@CoreDataGenerator
+    coreDataGenerator = generator
 )
 
-context(CoreDataGenerator, CoroutineScope)
+context(generator: CoreDataGenerator, scope: CoroutineScope)
 fun <EVENT : Event> EventProcessor.Companion.withMessages(
     messages: Flow<ReceivedMessage<EVENT>>,
     processEvent: ProcessEvent<EVENT>,
 ): EventProcessor = MessagingEventProcessor(
     messages = messages,
-    scope = this@CoroutineScope,
-    coreDataGenerator = this@CoreDataGenerator,
+    scope = scope,
+    coreDataGenerator = generator,
     processEvent = processEvent
 )

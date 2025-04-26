@@ -3,7 +3,7 @@ dependencies {
     api(projects.swissknifeJsonUtils)
 
     implementation(projects.swissknifeKotlinExtensions)
-    implementation(projects.acmeSchemataJsonCommon)
+    implementation(projects.acmeSchemaCatalogueJsonCommon)
 
     testImplementation(projects.pillarJsonSerializationTestUtils)
     testImplementation(projects.swissknifeCoreTestUtils)

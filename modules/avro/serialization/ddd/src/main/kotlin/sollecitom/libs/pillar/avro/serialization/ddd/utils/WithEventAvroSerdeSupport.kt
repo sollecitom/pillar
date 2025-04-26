@@ -13,20 +13,20 @@ import org.apache.avro.generic.GenericRecord
 
 interface WithEventAvroSerdeSupport {
 
-    context(AvroRecordBuilder)
+    context(builder: AvroRecordBuilder)
     fun setEventFields(event: Event) {
 
-        setValue(Fields.id, event.id, Id.avroSerde)
-        setValue(Fields.timestamp, event.timestamp, Instant.avroSerde)
-        setValue(Fields.context, event.context, Event.Context.avroSerde)
+        builder.setValue(Fields.id, event.id, Id.avroSerde)
+        builder.setValue(Fields.timestamp, event.timestamp, Instant.avroSerde)
+        builder.setValue(Fields.context, event.context, Event.Context.avroSerde)
     }
 
-    context(GenericRecord)
+    context(builder: GenericRecord)
     fun getEventFields(): EventFields {
 
-        val id = getValue(Fields.id, Id.avroSerde)
-        val timestamp = getValue(Fields.timestamp, Instant.avroSerde)
-        val context = getValue(Fields.context, Event.Context.avroSerde)
+        val id = builder.getValue(Fields.id, Id.avroSerde)
+        val timestamp = builder.getValue(Fields.timestamp, Instant.avroSerde)
+        val context = builder.getValue(Fields.context, Event.Context.avroSerde)
         return EventFields(id = id, timestamp = timestamp, context = context)
     }
 

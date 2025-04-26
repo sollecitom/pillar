@@ -21,5 +21,5 @@ object Acme : CompanyConventions, MessagePropertyNames by AcmeMessagePropertyNam
     override val defaultLocale: Locale = Locale.UK
 }
 
-context(InvocationContext<*>)
-val locale: Locale get() = localeOrNull ?: defaultLocale
+context(context: InvocationContext<*>)
+val locale: Locale get() = context.localeOrNull ?: defaultLocale

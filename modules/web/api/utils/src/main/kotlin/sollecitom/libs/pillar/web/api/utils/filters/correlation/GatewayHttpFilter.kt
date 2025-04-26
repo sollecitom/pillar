@@ -19,7 +19,7 @@ import org.http4k.lens.LensFailure
 
 object GatewayHttpFilter : Loggable() {
 
-    context(HttpApiDefinition, CoreDataGenerator)
+    context(_: HttpApiDefinition, time: CoreDataGenerator)
     fun forRequests(meterRegistry: MeterRegistry, jwtProcessorConfiguration: JwtProcessor.Configuration, issuerForDomain: (String) -> JwtParty): Filter = ServerFilters.catchAndLogErrors
         .then(
             CatchLensFailure { request: Request, lensFailure: LensFailure ->
@@ -28,7 +28,7 @@ object GatewayHttpFilter : Loggable() {
                 Response(BAD_REQUEST.description(errorDescription))
             }
         )
-        .then(ServerFilters.MicrometerMetrics.RequestTimer(meterRegistry = meterRegistry, clock = javaClock))
+        .then(ServerFilters.MicrometerMetrics.RequestTimer(meterRegistry = meterRegistry, clock = time.javaClock))
         .then(DebuggingFilters.PrintRequestAndResponse().inIntelliJOnly())
         .then(InvocationContextFilter.parseInvocationContextFromRequest(issuerForDomain = issuerForDomain, jwtProcessorConfiguration = jwtProcessorConfiguration))
         .then(InvocationContextFilter.parseInvocationContextFromGatewayHeader())

@@ -3,7 +3,7 @@ dependencies {
     api(projects.swissknifeAvroSerializationUtils)
     api(projects.swissknifeAvroSchemaCatalogueDomain)
 
-    api(projects.acmeSchemataAvroCommon)
+    api(projects.acmeSchemaCatalogueAvroCommon)
 
     implementation(projects.swissknifeKotlinExtensions)
 

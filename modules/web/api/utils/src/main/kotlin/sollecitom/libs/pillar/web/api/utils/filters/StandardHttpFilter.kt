@@ -24,7 +24,7 @@ import sollecitom.libs.pillar.web.api.utils.filters.correlation.parseInvocationC
 
 object StandardHttpFilter : Loggable() {
 
-    context(HttpApiDefinition, CoreDataGenerator)
+    context(_: HttpApiDefinition, time: CoreDataGenerator)
     fun forRequests(meterRegistry: MeterRegistry): Filter = ServerFilters.catchAndLogErrors
         .then(
             ServerFilters.CatchLensFailure { request: Request, lensFailure: LensFailure ->
@@ -33,7 +33,7 @@ object StandardHttpFilter : Loggable() {
                 Response.Companion(Status.Companion.BAD_REQUEST.description(errorDescription))
             }
         )
-        .then(ServerFilters.MicrometerMetrics.RequestTimer(meterRegistry = meterRegistry, clock = javaClock))
+        .then(ServerFilters.MicrometerMetrics.RequestTimer(meterRegistry = meterRegistry, clock = time.javaClock))
         .then(RequestFilters.GunZip())
         .then(DebuggingFilters.PrintRequestAndResponse().inIntelliJOnly())
         .then(InvocationContextFilter.parseInvocationContextFromGatewayHeader())

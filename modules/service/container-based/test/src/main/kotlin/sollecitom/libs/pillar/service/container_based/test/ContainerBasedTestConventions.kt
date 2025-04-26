@@ -7,8 +7,8 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy
 import org.testcontainers.containers.wait.strategy.Wait
 
-context(ContainerBasedTestConventions, LoggingConventions)
+context(_: ContainerBasedTestConventions, _: LoggingConventions)
 fun <CONTAINER : GenericContainer<CONTAINER>> CONTAINER.waitingForServiceStarted(): CONTAINER = waitingFor(waitForServiceStartedLogMessage())
 
-context(ContainerBasedTestConventions, LoggingConventions)
+context(_: ContainerBasedTestConventions, _: LoggingConventions)
 private fun waitForServiceStartedLogMessage(): LogMessageWaitStrategy = Wait.forLogMessage(".*$serviceStartedLogMessage.*", 1)

@@ -8,8 +8,8 @@ import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.api.withInvocationContext
 import kotlin.toString
 
-context(HttpApiDefinition)
+context(_: HttpApiDefinition)
 fun Request.withInvocationContext(context: InvocationContext<*>): Request = withInvocationContext(context) { ctx -> InvocationContext.jsonSerde.serialize(ctx).toString() }
 
-context(HttpApiDefinition, InvocationContext<*>)
-fun Request.withInvocationContext(): Request = withInvocationContext(this@InvocationContext)
+context(_: HttpApiDefinition, context: InvocationContext<*>)
+fun Request.withInvocationContext(): Request = withInvocationContext(context)

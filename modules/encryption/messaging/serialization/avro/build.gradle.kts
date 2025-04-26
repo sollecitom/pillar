@@ -4,7 +4,7 @@ dependencies {
     api(projects.swissknifeCryptographyDomain)
 
     implementation(projects.swissknifeKotlinExtensions)
-    implementation(projects.acmeSchemataAvroCommon)
+    implementation(projects.acmeSchemaCatalogueAvroCommon)
 
     testImplementation(projects.swissknifeTestUtils)
     testImplementation(projects.pillarAvroSerializationTestUtils)

@@ -4,7 +4,7 @@ dependencies {
     api(projects.pillarJsonSerializationCore)
 
     implementation(projects.swissknifeKotlinExtensions)
-    implementation(projects.acmeSchemataJsonCommon)
+    implementation(projects.acmeSchemaCatalogueJsonCommon)
 
     testImplementation(projects.pillarJsonSerializationTestUtils)
     testImplementation(projects.swissknifeCorrelationCoreTestUtils)
