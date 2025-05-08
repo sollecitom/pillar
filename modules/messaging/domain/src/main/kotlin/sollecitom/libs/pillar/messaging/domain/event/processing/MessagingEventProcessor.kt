@@ -56,7 +56,17 @@ context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
     processEvent: ProcessEvent<EVENT>,
-    scope: CoroutineScope = CoroutineScope(Job()) // TODO should this be SupervisorJob()?
+): EventProcessor = withMessageConnector(
+    CoroutineScope(Job()), // TODO should this be SupervisorJob()?
+    connector,
+    processEvent
+)
+
+context(generator: CoreDataGenerator)
+fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
+    scope: CoroutineScope,
+    connector: MessageConnector<EVENT>,
+    processEvent: ProcessEvent<EVENT>,
 ): EventProcessor = MessagingEventProcessor(
     processEvent = processEvent,
     messages = connector.messages,
