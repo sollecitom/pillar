@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.swissknifeCorrelationLoggingUtils)
+    api(libs.swissknife.correlation.logging.utils)
 
-    implementation(projects.pillarJsonSerializationCorrelationCore)
+    implementation(projects.jsonSerializationCorrelationCore)
 }

@@ -1,11 +1,11 @@
 dependencies {
-    api(projects.swissknifeOpenapiCheckingChecker)
+    api(libs.swissknife.openapi.checking.checker)
 
-    implementation(projects.swissknifeKotlinExtensions)
-    implementation(projects.swissknifeJsonUtils)
+    implementation(libs.swissknife.kotlin.extensions)
+    implementation(libs.swissknife.json.utils)
 
-    testImplementation(projects.swissknifeOpenapiCheckingTestUtils)
-    testImplementation(projects.swissknifeKotlinExtensions)
-    testImplementation(projects.swissknifeResourceUtils)
-    testImplementation(projects.swissknifeLoggingStandardSlf4jConfiguration)
+    testImplementation(libs.swissknife.openapi.checking.test.utils)
+    testImplementation(libs.swissknife.kotlin.extensions)
+    testImplementation(libs.swissknife.resource.utils)
+    testImplementation(libs.swissknife.logging.standard.slf4j.configuration)
 }

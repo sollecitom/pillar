@@ -1,14 +1,14 @@
 dependencies {
-    api(projects.swissknifeCoreDomain)
-    api(projects.swissknifeAvroSerializationUtils)
-    api(projects.swissknifeAvroSchemaCatalogueDomain)
+    api(libs.swissknife.core.domain)
+    api(libs.swissknife.avro.serialization.utils)
+    api(libs.swissknife.avro.schema.catalogue.domain)
 
-    api(projects.acmeSchemaCatalogueAvroCommon)
+    api(libs.acme.schema.catalogue.avro.common)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(libs.swissknife.kotlin.extensions)
 
-    testImplementation(projects.pillarAvroSerializationTestUtils)
-    testImplementation(projects.swissknifeAvroSchemaCatalogueTestUtils)
-    testImplementation(projects.swissknifeCoreTestUtils)
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.avroSerializationTestUtils)
+    testImplementation(libs.swissknife.avro.schema.catalogue.test.utils)
+    testImplementation(libs.swissknife.core.test.utils)
+    testImplementation(libs.swissknife.test.utils)
 }

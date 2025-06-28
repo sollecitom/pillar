@@ -1,10 +1,10 @@
 dependencies {
-    api(projects.swissknifeAvroSchemaChecker)
+    api(libs.swissknife.avro.schema.checker)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(libs.swissknife.kotlin.extensions)
 
-    testImplementation(projects.pillarAvroSerializationTestUtils)
-    testImplementation(projects.swissknifeResourceUtils)
-    testImplementation(projects.swissknifeLoggingStandardSlf4jConfiguration)
-    testImplementation(projects.swissknifeComplianceCheckerTestUtils)
+    testImplementation(projects.avroSerializationTestUtils)
+    testImplementation(libs.swissknife.resource.utils)
+    testImplementation(libs.swissknife.logging.standard.slf4j.configuration)
+    testImplementation(libs.swissknife.compliance.checker.test.utils)
 }

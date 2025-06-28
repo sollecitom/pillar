@@ -1,3 +1,3 @@
 dependencies {
-    api(projects.pillarMessagingConventions)
+    api(projects.messagingConventions)
 }

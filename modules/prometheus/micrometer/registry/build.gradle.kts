@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.pillarAcmeConventions)
+    api(projects.acmeConventions)
     api(libs.micrometer.registry.prometheus)
 }

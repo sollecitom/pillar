@@ -1,9 +1,9 @@
 dependencies {
-    api(projects.swissknifeMessagingDomain)
+    api(libs.swissknife.messaging.domain)
 
-    implementation(projects.pillarCorrelationLoggingUtils)
+    implementation(projects.correlationLoggingUtils)
 
-    testImplementation(projects.swissknifeDddTestUtils)
-    testImplementation(projects.pillarMessagingTestUtils)
-    testImplementation(projects.swissknifeLoggingStandardSlf4jConfiguration)
+    testImplementation(libs.swissknife.ddd.test.utils)
+    testImplementation(projects.messagingTestUtils)
+    testImplementation(libs.swissknife.logging.standard.slf4j.configuration)
 }

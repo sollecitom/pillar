@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.pillarMessagingDomain)
-    api(projects.swissknifeMessagingTestUtils)
+    api(projects.messagingDomain)
+    api(libs.swissknife.messaging.test.utils)
 }

@@ -1,13 +1,13 @@
 dependencies {
-    api(projects.swissknifePaginationDomain)
-    api(projects.swissknifeJsonUtils)
-    api(projects.pillarJsonSerializationCore)
+    api(libs.swissknife.pagination.domain)
+    api(libs.swissknife.json.utils)
+    api(projects.jsonSerializationCore)
 
-    implementation(projects.acmeSchemaCatalogueJsonCommon)
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(libs.acme.schema.catalogue.json.common)
+    implementation(libs.swissknife.kotlin.extensions)
 
-    testImplementation(projects.pillarJsonSerializationTestUtils)
-    testImplementation(projects.swissknifePaginationTestUtils)
-    testImplementation(projects.swissknifeCoreTestUtils)
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.jsonSerializationTestUtils)
+    testImplementation(libs.swissknife.pagination.test.utils)
+    testImplementation(libs.swissknife.core.test.utils)
+    testImplementation(libs.swissknife.test.utils)
 }

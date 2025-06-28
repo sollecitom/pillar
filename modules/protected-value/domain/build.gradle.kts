@@ -1,8 +1,8 @@
 dependencies {
-    api(projects.swissknifeCryptographyDomain)
-    api(projects.swissknifeProtectedValueDomain)
+    api(libs.swissknife.cryptography.domain)
+    api(libs.swissknife.protected.value.domain)
 
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(libs.swissknife.kotlin.extensions)
 
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(libs.swissknife.test.utils)
 }

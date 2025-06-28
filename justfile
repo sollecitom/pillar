@@ -4,15 +4,16 @@ push:
     git add . && git commit -m "WIP" && git push --recurse-submodules=on-demand origin main
 
 pull:
-    git submodule update --recursive --remote
+    git pull
 
 build:
     ./gradlew build
-#    ./gradlew build jibDockerBuild containerBasedServiceTest
 
 rebuild:
-    ./gradlew --refresh-dependencies --rerun-tasks build
-#    ./gradlew --refresh-dependencies --rerun-tasks build jibDockerBuild containerBasedServiceTest
+    ./gradlew build --refresh-dependencies --rerun-tasks
+
+publish:
+    ./gradlew publishToMavenLocal
 
 updateDependencies:
     ./gradlew versionCatalogUpdate

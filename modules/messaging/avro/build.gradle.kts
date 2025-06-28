@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.pillarMessagingConventions)
-    api(projects.swissknifeAvroSerializationUtils)
+    api(projects.messagingConventions)
+    api(libs.swissknife.avro.serialization.utils)
 }

@@ -1,5 +1,5 @@
 dependencies {
-    api(projects.pillarJwtDomain)
-    api(projects.swissknifeTestUtils)
-    api(projects.swissknifeJwtTestUtils)
+    api(projects.jwtDomain)
+    api(libs.swissknife.test.utils)
+    api(libs.swissknife.jwt.test.utils)
 }

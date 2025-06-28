@@ -1,7 +1,7 @@
 dependencies {
-    api(projects.pillarMessagingJson)
-    api(projects.swissknifePulsarMessagingAdapter)
-    api(projects.swissknifePulsarUtils)
-    api(projects.swissknifePulsarJsonUtils)
-    api(projects.swissknifePulsarJsonSerialization)
+    api(projects.messagingJson)
+    api(libs.swissknife.pulsar.messaging.adapter)
+    api(libs.swissknife.pulsar.utils)
+    api(libs.swissknife.pulsar.json.utils)
+    api(libs.swissknife.pulsar.json.serialization)
 }

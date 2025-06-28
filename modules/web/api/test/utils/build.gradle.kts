@@ -1,8 +1,8 @@
 dependencies {
-    api(projects.swissknifeTestContainersUtils)
-    api(projects.swissknifeCoreTestUtils)
-    api(projects.pillarWebApiUtils)
-    api(projects.swissknifeWebApiTestUtils)
+    api(libs.swissknife.test.containers.utils)
+    api(libs.swissknife.core.test.utils)
+    api(projects.webApiUtils)
+    api(libs.swissknife.web.api.test.utils)
 
-    implementation(projects.pillarJsonSerializationWebApi)
+    implementation(projects.jsonSerializationWebApi)
 }

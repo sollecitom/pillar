@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.pillarJsonSchemaRules)
-    api(projects.swissknifeJsonTestUtils)
+    api(projects.jsonSchemaRules)
+    api(libs.swissknife.json.test.utils)
 }

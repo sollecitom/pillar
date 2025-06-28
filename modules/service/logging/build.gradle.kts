@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.pillarAcmeConventions)
-    api(projects.swissknifeLoggerCore)
+    api(projects.acmeConventions)
+    api(libs.swissknife.logger.core)
 
-    runtimeOnly(projects.swissknifeLoggingStandardSlf4jConfiguration)
+    runtimeOnly(libs.swissknife.logging.standard.slf4j.configuration)
 }

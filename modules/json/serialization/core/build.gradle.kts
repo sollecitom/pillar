@@ -1,11 +1,11 @@
 dependencies {
-    api(projects.swissknifeCoreDomain)
-    api(projects.swissknifeJsonUtils)
+    api(libs.swissknife.core.domain)
+    api(libs.swissknife.json.utils)
 
-    implementation(projects.swissknifeKotlinExtensions)
-    implementation(projects.acmeSchemaCatalogueJsonCommon)
+    implementation(libs.swissknife.kotlin.extensions)
+    implementation(libs.acme.schema.catalogue.json.common)
 
-    testImplementation(projects.pillarJsonSerializationTestUtils)
-    testImplementation(projects.swissknifeCoreTestUtils)
-    testImplementation(projects.swissknifeTestUtils)
+    testImplementation(projects.jsonSerializationTestUtils)
+    testImplementation(libs.swissknife.core.test.utils)
+    testImplementation(libs.swissknife.test.utils)
 }

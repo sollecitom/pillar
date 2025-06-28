@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.pillarAcmeConventions)
-    api(projects.swissknifeWebApiUtils)
+    api(projects.acmeConventions)
+    api(libs.swissknife.web.api.utils)
 }

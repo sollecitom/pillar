@@ -1,16 +1,16 @@
 dependencies {
-    api(projects.pillarProtectedValueDomain)
-    api(projects.swissknifeAvroSerializationUtils)
-    api(projects.swissknifeAvroSchemaCatalogueDomain)
+    api(projects.protectedValueDomain)
+    api(libs.swissknife.avro.serialization.utils)
+    api(libs.swissknife.avro.schema.catalogue.domain)
 
-    implementation(projects.swissknifeKotlinExtensions)
-    implementation(projects.pillarEncryptionMessagingSerializationAvro)
-    implementation(projects.acmeSchemaCatalogueAvroCommon)
-    implementation(projects.pillarAvroSerializationCore)
+    implementation(libs.swissknife.kotlin.extensions)
+    implementation(projects.encryptionMessagingSerializationAvro)
+    implementation(libs.acme.schema.catalogue.avro.common)
+    implementation(projects.avroSerializationCore)
 
-    testImplementation(projects.swissknifeTestUtils)
-    testImplementation(projects.pillarAvroSerializationTestUtils)
-    testImplementation(projects.swissknifeAvroSchemaCatalogueTestUtils)
-    testImplementation(projects.swissknifeCryptographyImplementationBouncyCastle)
-    testImplementation(projects.swissknifeProtectedValueFactoryAes)
+    testImplementation(libs.swissknife.test.utils)
+    testImplementation(projects.avroSerializationTestUtils)
+    testImplementation(libs.swissknife.avro.schema.catalogue.test.utils)
+    testImplementation(libs.swissknife.cryptography.implementation.bouncy.castle)
+    testImplementation(libs.swissknife.protected.value.factory.aes)
 }

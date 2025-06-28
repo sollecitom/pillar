@@ -1,11 +1,11 @@
 dependencies {
-    api(projects.swissknifeJsonUtils)
+    api(libs.swissknife.json.utils)
 
-    implementation(projects.swissknifeKotlinExtensions)
-    implementation(projects.swissknifeJsonUtils)
+    implementation(libs.swissknife.kotlin.extensions)
+    implementation(libs.swissknife.json.utils)
 
-    testImplementation(projects.swissknifeJsonTestUtils)
-    testImplementation(projects.swissknifeKotlinExtensions)
-    testImplementation(projects.swissknifeResourceUtils)
-    testImplementation(projects.swissknifeLoggingStandardSlf4jConfiguration)
+    testImplementation(libs.swissknife.json.test.utils)
+    testImplementation(libs.swissknife.kotlin.extensions)
+    testImplementation(libs.swissknife.resource.utils)
+    testImplementation(libs.swissknife.logging.standard.slf4j.configuration)
 }

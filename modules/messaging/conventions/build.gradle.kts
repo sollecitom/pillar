@@ -1,4 +1,4 @@
 dependencies {
-    api(projects.pillarAcmeConventions)
-    api(projects.swissknifeMessagingDomain)
+    api(projects.acmeConventions)
+    api(libs.swissknife.messaging.domain)
 }

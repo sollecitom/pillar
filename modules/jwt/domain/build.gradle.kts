@@ -1,6 +1,6 @@
 dependencies {
-    api(projects.swissknifeCoreUtils)
-    api(projects.swissknifeJwtDomain)
-    api(projects.swissknifeJsonUtils)
-    api(projects.pillarAcmeBusinessDomain)
+    api(libs.swissknife.core.utils)
+    api(libs.swissknife.jwt.domain)
+    api(libs.swissknife.json.utils)
+    api(projects.acmeBusinessDomain)
 }

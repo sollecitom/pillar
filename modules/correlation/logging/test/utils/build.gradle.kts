@@ -1,11 +1,11 @@
 dependencies {
-    api(projects.pillarCorrelationLoggingUtils)
-    api(projects.swissknifeCorrelationCoreDomain)
-    api(projects.swissknifeJsonTestUtils)
-    api(projects.swissknifeCorrelationCoreTestUtils)
-    api(projects.swissknifeCoreTestUtils)
-    api(projects.swissknifeTestUtils)
+    api(projects.correlationLoggingUtils)
+    api(libs.swissknife.correlation.core.domain)
+    api(libs.swissknife.json.test.utils)
+    api(libs.swissknife.correlation.core.test.utils)
+    api(libs.swissknife.core.test.utils)
+    api(libs.swissknife.test.utils)
 
-    implementation(projects.pillarJsonSerializationCorrelationCore)
-    implementation(projects.swissknifeKotlinExtensions)
+    implementation(projects.jsonSerializationCorrelationCore)
+    implementation(libs.swissknife.kotlin.extensions)
 }
