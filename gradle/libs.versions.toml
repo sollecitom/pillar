@@ -42,6 +42,7 @@ classgraph = "4.8.179"
 opentelemetry = "1.50.0"
 grafana-otel-lgtm = "1.21.0"
 sollecitom-swissknife = "1.0.0-SNAPSHOT"
+sollecitom-acme-schema-catalogue = "1.0.0-SNAPSHOT"
 # plugins
 sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
 palantir-git-plugin = "3.2.0"
@@ -121,8 +122,8 @@ liquibase-slf4j = { module = "com.mattbertolini:liquibase-slf4j", version.ref = 
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 jib-gradle-plugin = { module = "com.google.cloud.tools:jib-gradle-plugin", version.ref = "jib-plugin" }
 sollecitom-gradle-plugins = { module = "sollecitom.gradle-plugins:gradle-plugins", version.ref = "sollecitom-gradle-plugins" }
-acme-schema-catalogue-avro-common = { module = "sollecitom.acme-schema-catalogue:avro-common", version.ref = "sollecitom-swissknife" }
-acme-schema-catalogue-json-common = { module = "sollecitom.acme-schema-catalogue:json-common", version.ref = "sollecitom-swissknife" }
+acme-schema-catalogue-avro-common = { module = "sollecitom.acme-schema-catalogue:avro-common", version.ref = "sollecitom-acme-schema-catalogue" }
+acme-schema-catalogue-json-common = { module = "sollecitom.acme-schema-catalogue:json-common", version.ref = "sollecitom-acme-schema-catalogue" }
 swissknife-avro-schema-checker = { module = "sollecitom.swissknife:avro-schema-checker", version.ref = "sollecitom-swissknife" }
 swissknife-avro-schema-catalogue-domain = { module = "sollecitom.swissknife:avro-schema-catalogue-domain", version.ref = "sollecitom-swissknife" }
 swissknife-avro-schema-catalogue-test-utils = { module = "sollecitom.swissknife:avro-schema-catalogue-test-utils", version.ref = "sollecitom-swissknife" }
