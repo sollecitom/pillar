@@ -7,7 +7,7 @@ import sollecitom.libs.swissknife.core.utils.TimeGenerator
 import sollecitom.libs.swissknife.core.utils.UniqueIdGenerator
 import sollecitom.libs.swissknife.jwt.domain.StringOrURI
 import sollecitom.libs.swissknife.kotlin.extensions.time.truncatedToSeconds
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import java.net.URI
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds

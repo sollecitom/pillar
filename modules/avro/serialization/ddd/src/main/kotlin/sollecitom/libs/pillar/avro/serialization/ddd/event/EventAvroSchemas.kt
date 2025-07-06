@@ -7,7 +7,7 @@ import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalog
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.apache.avro.Schema
 
 object EventAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.event") {

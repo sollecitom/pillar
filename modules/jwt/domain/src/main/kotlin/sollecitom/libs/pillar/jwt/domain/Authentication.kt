@@ -1,6 +1,6 @@
 package sollecitom.libs.pillar.jwt.domain
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class Authentication(val timestamp: Instant, val isSecure: Boolean) {
 

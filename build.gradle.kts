@@ -27,7 +27,6 @@ repositories {
     RepositoryConfiguration.BuildScript.apply(this)
 }
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     `java-library`
     idea
@@ -36,6 +35,7 @@ plugins {
 
 apply<GitVersionPlugin>()
 apply<DependencyUpdateConvention>()
+apply<KotlinTaskConventions>()
 
 val parentProject = this
 val projectGroup: String by properties

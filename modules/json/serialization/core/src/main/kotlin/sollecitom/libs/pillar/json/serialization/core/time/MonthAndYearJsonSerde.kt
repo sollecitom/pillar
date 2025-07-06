@@ -1,26 +1,25 @@
 package sollecitom.libs.pillar.json.serialization.core.time
 
-import sollecitom.libs.swissknife.core.domain.time.MonthAndYear
+import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
+import org.json.JSONObject
 import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
-import org.json.JSONObject
-import java.time.Month
-import java.time.Year
 
-private object MonthAndYearJsonSerde : JsonSerde.SchemaAware<MonthAndYear> {
+private object MonthAndYearJsonSerde : JsonSerde.SchemaAware<YearMonth> {
 
     private const val SCHEMA_LOCATION = "json/schemas/acme/common/time/MonthAndYear.json"
     override val schema by lazy { jsonSchemaAt(SCHEMA_LOCATION) }
 
-    override fun serialize(value: MonthAndYear) = JSONObject().apply {
+    override fun serialize(value: YearMonth) = JSONObject().apply {
+        put(Fields.YEAR, value.year)
         put(Fields.MONTH, value.month.name)
-        put(Fields.YEAR, value.year.value)
     }
 
     override fun deserialize(value: JSONObject) = with(value) {
-        val month = getString(Fields.MONTH)
         val year = getInt(Fields.YEAR)
-        MonthAndYear(Month.valueOf(month), Year.of(year))
+        val month = getString(Fields.MONTH).let(Month::valueOf)
+        YearMonth(year = year, month = month)
     }
 
     private object Fields {
@@ -29,4 +28,4 @@ private object MonthAndYearJsonSerde : JsonSerde.SchemaAware<MonthAndYear> {
     }
 }
 
-val MonthAndYear.Companion.jsonSerde: JsonSerde.SchemaAware<MonthAndYear> get() = MonthAndYearJsonSerde
+val YearMonth.Companion.jsonSerde: JsonSerde.SchemaAware<YearMonth> get() = MonthAndYearJsonSerde

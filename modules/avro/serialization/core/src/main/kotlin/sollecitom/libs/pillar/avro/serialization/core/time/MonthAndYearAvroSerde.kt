@@ -1,32 +1,32 @@
 package sollecitom.libs.pillar.avro.serialization.core.time
 
+import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
+import org.apache.avro.generic.GenericRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.getEnum
 import sollecitom.libs.swissknife.avro.serialization.utils.getInt
-import sollecitom.libs.swissknife.core.domain.time.MonthAndYear
-import kotlinx.datetime.Month
-import org.apache.avro.generic.GenericRecord
-import java.time.Year
 
-val MonthAndYear.Companion.avroSchema get() = TimeAvroSchemas.monthAndYear
-val MonthAndYear.Companion.avroSerde: AvroSerde<MonthAndYear> get() = MonthAndYearAvroSerde
+val YearMonth.Companion.avroSchema get() = TimeAvroSchemas.monthAndYear
 
-private object MonthAndYearAvroSerde : AvroSerde<MonthAndYear> {
+val YearMonth.Companion.avroSerde: AvroSerde<YearMonth> get() = MonthAndYearAvroSerde
 
-    override val schema get() = MonthAndYear.avroSchema
+private object MonthAndYearAvroSerde : AvroSerde<YearMonth> {
 
-    override fun serialize(value: MonthAndYear): GenericRecord = buildRecord {
+    override val schema get() = YearMonth.avroSchema
 
+    override fun serialize(value: YearMonth): GenericRecord = buildRecord {
+
+        set(Fields.YEAR, value.year)
         setEnum(Fields.MONTH, value.month.name)
-        set(Fields.YEAR, value.year.value)
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
 
+        val year = getInt(Fields.YEAR)
         val month = getEnum(Fields.MONTH).let(Month::valueOf)
-        val year = getInt(Fields.YEAR).let(Year::of)
-        MonthAndYear(month = month, year = year)
+        YearMonth(year = year, month = month)
     }
 
     private object Fields {

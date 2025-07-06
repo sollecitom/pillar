@@ -8,7 +8,7 @@ import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContain
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.correlation.core.domain.access.session.FederatedSession
 import sollecitom.libs.swissknife.correlation.core.domain.access.session.SimpleSession
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.apache.avro.Schema
 
 object AuthenticationAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.correlation.access.authentication") {

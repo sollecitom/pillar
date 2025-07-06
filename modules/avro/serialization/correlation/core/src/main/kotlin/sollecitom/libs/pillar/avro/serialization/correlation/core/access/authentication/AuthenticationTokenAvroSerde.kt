@@ -5,7 +5,7 @@ import sollecitom.libs.pillar.avro.serialization.core.time.avroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.*
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.correlation.core.domain.access.authentication.Authentication
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.apache.avro.generic.GenericRecord
 
 val Authentication.Token.Companion.avroSchema get() = AuthenticationAvroSchemas.authenticationToken

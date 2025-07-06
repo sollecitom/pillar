@@ -4,7 +4,7 @@ import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.getEnum
 import sollecitom.libs.swissknife.avro.serialization.utils.getString
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.apache.avro.generic.GenericRecord
 
 val Instant.Companion.avroSchema get() = TimeAvroSchemas.timestamp

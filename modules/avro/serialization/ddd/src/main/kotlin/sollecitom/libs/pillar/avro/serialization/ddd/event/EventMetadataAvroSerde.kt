@@ -8,7 +8,7 @@ import sollecitom.libs.swissknife.avro.serialization.utils.getValue
 import sollecitom.libs.swissknife.avro.serialization.utils.setValue
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.ddd.domain.Event
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.apache.avro.generic.GenericRecord
 
 val Event.Metadata.Companion.avroSchema get() = EventAvroSchemas.eventMetadata

@@ -6,7 +6,7 @@ import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.correlation.core.test.utils.context.authenticated
 import sollecitom.libs.swissknife.ddd.domain.Event
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 

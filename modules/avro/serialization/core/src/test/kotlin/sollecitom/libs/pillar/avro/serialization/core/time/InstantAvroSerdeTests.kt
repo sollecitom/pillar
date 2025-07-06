@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.core.time
 import sollecitom.libs.pillar.avro.serialization.test.utils.AcmeAvroSerdeTestSpecification
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import kotlin.time.Duration.Companion.days

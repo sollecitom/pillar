@@ -2,7 +2,7 @@ package sollecitom.libs.pillar.messaging.domain.event.processing
 
 import assertk.assertThat
 import assertk.assertions.each
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS

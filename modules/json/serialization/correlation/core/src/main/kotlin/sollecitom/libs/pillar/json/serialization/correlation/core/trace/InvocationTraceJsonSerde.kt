@@ -8,7 +8,7 @@ import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 import sollecitom.libs.swissknife.json.utils.serde.getValue
 import sollecitom.libs.swissknife.json.utils.serde.setValue
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.json.JSONObject
 
 private object InvocationTraceJsonSerde : JsonSerde.SchemaAware<InvocationTrace> {

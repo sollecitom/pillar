@@ -4,7 +4,7 @@ import sollecitom.libs.pillar.acme.business.domain.AcmeRoles
 import sollecitom.libs.swissknife.json.utils.*
 import sollecitom.libs.swissknife.jwt.domain.StringOrURI
 import sollecitom.libs.swissknife.kotlin.extensions.text.removeFromLast
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import org.json.JSONArray
 import org.json.JSONObject
 
