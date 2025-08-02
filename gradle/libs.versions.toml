@@ -4,7 +4,7 @@ kotlin = "2.2.0"
 http4k = "6.15.1.0"
 guava = "33.4.8-jre"
 test-containers = "1.21.3"
-micrometer = "1.15.1"
+micrometer = "1.15.2"
 sollecitom-swissknife = "1.0.0-SNAPSHOT"
 sollecitom-acme-schema-catalogue = "1.0.0-SNAPSHOT"
 # plugins
@@ -12,14 +12,12 @@ sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
 palantir-git-plugin = "4.0.0"
 
 [libraries]
-
 http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4k" }
 http4k-ops-micrometer = { module = "org.http4k:http4k-ops-micrometer" }
 http4k-server-jetty = { module = "org.http4k:http4k-server-jetty" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 test-containers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "test-containers" }
-
 sollecitom-gradle-plugins = { module = "sollecitom.gradle-plugins:gradle-plugins", version.ref = "sollecitom-gradle-plugins" }
 acme-schema-catalogue-avro-common = { module = "sollecitom.acme-schema-catalogue:avro-common", version.ref = "sollecitom-acme-schema-catalogue" }
 acme-schema-catalogue-json-common = { module = "sollecitom.acme-schema-catalogue:json-common", version.ref = "sollecitom-acme-schema-catalogue" }
