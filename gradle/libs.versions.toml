@@ -1,10 +1,10 @@
 [versions]
 # libraries
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 http4k = "6.15.1.0"
 guava = "33.4.8-jre"
 test-containers = "1.21.3"
-micrometer = "1.15.2"
+micrometer = "1.15.3"
 sollecitom-swissknife = "1.0.0-SNAPSHOT"
 sollecitom-acme-schema-catalogue = "1.0.0-SNAPSHOT"
 # plugins
