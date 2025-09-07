@@ -12,13 +12,14 @@ sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
 palantir-git-plugin = "4.0.0"
 
 [libraries]
+sollecitom-gradle-plugins-base = { module = "sollecitom.gradle-plugins:base", version.ref = "sollecitom-gradle-plugins" }
+sollecitom-gradle-plugins-kotlin-jvm = { module = "sollecitom.gradle-plugins:kotlin-jvm", version.ref = "sollecitom-gradle-plugins" }
 http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4k" }
 http4k-ops-micrometer = { module = "org.http4k:http4k-ops-micrometer" }
 http4k-server-jetty = { module = "org.http4k:http4k-server-jetty" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 test-containers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "test-containers" }
-sollecitom-gradle-plugins = { module = "sollecitom.gradle-plugins:gradle-plugins", version.ref = "sollecitom-gradle-plugins" }
 acme-schema-catalogue-avro-common = { module = "sollecitom.acme-schema-catalogue:avro-common", version.ref = "sollecitom-acme-schema-catalogue" }
 acme-schema-catalogue-json-common = { module = "sollecitom.acme-schema-catalogue:json-common", version.ref = "sollecitom-acme-schema-catalogue" }
 swissknife-avro-schema-checker = { module = "sollecitom.swissknife:avro-schema-checker", version.ref = "sollecitom-swissknife" }
