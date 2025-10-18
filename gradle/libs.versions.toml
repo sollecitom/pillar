@@ -1,10 +1,10 @@
 [versions]
 # libraries
 kotlin = "2.2.20"
-http4k = "6.18.1.0"
+http4k = "6.19.0.0"
 guava = "33.5.0-jre"
 test-containers = "1.21.3"
-micrometer = "1.15.4"
+micrometer = "1.15.5"
 sollecitom-swissknife = "1.0.0-SNAPSHOT"
 sollecitom-acme-schema-catalogue = "1.0.0-SNAPSHOT"
 # plugins
