@@ -1,7 +1,7 @@
 [versions]
 # libraries
 kotlin = "2.2.21"
-http4k = "6.20.2.1"
+http4k = "6.22.0.0"
 guava = "33.5.0-jre"
 test-containers = "1.21.3"
 micrometer = "1.16.0"
@@ -9,7 +9,7 @@ sollecitom-swissknife = "1.0.0-SNAPSHOT"
 sollecitom-acme-schema-catalogue = "1.0.0-SNAPSHOT"
 # plugins
 sollecitom-gradle-plugins = "1.0.0-SNAPSHOT"
-palantir-git-plugin = "4.1.0"
+palantir-git-plugin = "4.2.0"
 
 [libraries]
 sollecitom-gradle-plugins-base = { module = "sollecitom.gradle-plugins:base", version.ref = "sollecitom-gradle-plugins" }
