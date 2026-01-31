@@ -6,6 +6,11 @@ import sollecitom.libs.swissknife.avro.serialization.utils.getLong
 import sollecitom.libs.swissknife.avro.serialization.utils.getString
 import sollecitom.libs.swissknife.cryptography.domain.key.CryptographicKey
 import org.apache.avro.generic.GenericRecord
+import sollecitom.libs.swissknife.avro.serialization.utils.getBigInteger
+import sollecitom.libs.swissknife.avro.serialization.utils.getHexStringAsByteArray
+import sollecitom.libs.swissknife.hashing.utils.Hash
+import sollecitom.libs.swissknife.hashing.utils.asBigInteger
+import sollecitom.libs.swissknife.hashing.utils.create
 
 val CryptographicKey.Metadata.Companion.avroSchema get() = EncryptionAvroSchemas.cryptographicKeyMetadata
 val CryptographicKey.Metadata.Companion.avroSerde: AvroSerde<CryptographicKey.Metadata> get() = CryptographicKeyMetadataAvroSerde
@@ -17,13 +22,13 @@ private object CryptographicKeyMetadataAvroSerde : AvroSerde<CryptographicKey.Me
     override fun serialize(value: CryptographicKey.Metadata) = buildRecord {
         set(Fields.algorithm, value.algorithm)
         set(Fields.format, value.format)
-        set(Fields.hash, value.hash)
+        setByteArrayAsHexString(Fields.hash, value.hash.bytes)
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
         val algorithm = getString(Fields.algorithm)
         val format = getString(Fields.format)
-        val hash = getLong(Fields.hash)
+        val hash = getHexStringAsByteArray(Fields.hash).let(Hash::create)
         CryptographicKey.Metadata(algorithm, format, hash)
     }
 
