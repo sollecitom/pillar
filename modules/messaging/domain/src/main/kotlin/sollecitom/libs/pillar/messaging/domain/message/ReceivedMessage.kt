@@ -18,10 +18,10 @@ import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 
 context(scope: CoroutineScope, _: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
-fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(start: CoroutineStart = LAZY, action: suspend context(context: InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = processWithForkedContext(scope, start, action)
+fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(start: CoroutineStart = LAZY, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = processWithForkedContext(scope, start, action)
 
 context(_: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
-fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(scope: CoroutineScope, start: CoroutineStart = LAZY, action: suspend context(context: InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = scope.launch(start = start) {
+fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(scope: CoroutineScope, start: CoroutineStart = LAZY, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = scope.launch(start = start) {
     onEach { message ->
         val invocationContext = message.value.forkAndLogInvocationContext()
         withLoggingContext(invocationContext) {
