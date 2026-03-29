@@ -7,6 +7,8 @@ plugins {
 rootProject.name = "pillar"
 
 includeBuild("../gradle-plugins")
+includeBuild("../swissknife")
+includeBuild("../acme-schema-catalogue")
 
 fun module(vararg pathSegments: String) = subProject(rootFolder = "modules", pathSegments = pathSegments)
 
