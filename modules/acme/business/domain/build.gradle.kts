@@ -10,4 +10,6 @@ dependencies {
     api(projects.acmeConventions)
     api(projects.messagingConventions)
     api(projects.httpApiConventions)
+
+    testImplementation(libs.swissknife.test.utils)
 }

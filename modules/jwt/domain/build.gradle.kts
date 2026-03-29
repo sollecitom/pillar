@@ -8,4 +8,6 @@ dependencies {
     api(libs.swissknife.jwt.domain)
     api(libs.swissknife.json.utils)
     api(projects.acmeBusinessDomain)
+
+    testImplementation(libs.swissknife.test.utils)
 }

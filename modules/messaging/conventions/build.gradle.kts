@@ -6,4 +6,6 @@ plugins {
 dependencies {
     api(projects.acmeConventions)
     api(libs.swissknife.messaging.domain)
+
+    testImplementation(libs.swissknife.test.utils)
 }
