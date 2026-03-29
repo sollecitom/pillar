@@ -2,7 +2,7 @@ package sollecitom.libs.pillar.messaging.domain.event.processing
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart.LAZY
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import sollecitom.libs.pillar.messaging.domain.message.processWithForkedContext
@@ -57,7 +57,7 @@ fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
     processEvent: ProcessEvent<EVENT>,
 ): EventProcessor = withMessageConnector(
-    CoroutineScope(Job()), // TODO should this be SupervisorJob()?
+    CoroutineScope(SupervisorJob()),
     connector,
     processEvent
 )
@@ -78,7 +78,7 @@ context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessages(
     messages: Flow<ReceivedMessage<EVENT>>,
     processEvent: ProcessEvent<EVENT>,
-    scope: CoroutineScope = CoroutineScope(Job())
+    scope: CoroutineScope = CoroutineScope(SupervisorJob())
 ): EventProcessor = MessagingEventProcessor(
     processEvent = processEvent,
     messages = messages,
