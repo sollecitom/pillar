@@ -1,3 +1,8 @@
+plugins {
+    id("sollecitom.kotlin-library-conventions")
+    id("sollecitom.maven-publish-conventions")
+}
+
 dependencies {
     api(libs.swissknife.test.containers.utils)
     api(libs.swissknife.core.test.utils)
