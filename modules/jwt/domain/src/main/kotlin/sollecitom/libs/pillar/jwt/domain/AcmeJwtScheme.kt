@@ -1,9 +1,9 @@
 package sollecitom.libs.pillar.jwt.domain
 
 import sollecitom.libs.pillar.acme.business.domain.AcmeRoles
+import sollecitom.libs.swissknife.core.domain.email.EmailAddress
 import sollecitom.libs.swissknife.json.utils.*
 import sollecitom.libs.swissknife.jwt.domain.StringOrURI
-import sollecitom.libs.swissknife.kotlin.extensions.text.removeFromLast
 import kotlin.time.Instant
 import org.json.JSONArray
 import org.json.JSONObject
@@ -68,15 +68,15 @@ object AcmeJwtScheme {
 
         val id = getRequiredString(Fields.SUBJECT)
         val orgId = getRequiredString(Fields.ORGANIZATION_ID)
-        val emailAddress = getRequiredString(Fields.EMAIL_ADDRESS)
-        val organizationName = emailAddress.split("@").drop(1).single().removeFromLast(".")
+        val emailAddress = EmailAddress(getRequiredString(Fields.EMAIL_ADDRESS))
+        val organizationName = emailAddress.value.substringAfter("@").substringBeforeLast(".")
         val organization = Organization(id = orgId, name = organizationName)
         val userName = getRequiredString(Fields.USERNAME)
         val firstName = getRequiredString(Fields.GIVEN_NAME)
         val lastName = getRequiredString(Fields.FAMILY_NAME)
         val fullName = getRequiredString(Fields.FULL_NAME)
         val otherNames = fullName.removePrefix(firstName).removeSuffix(lastName).trim().split(" ").filterNot(String::isBlank)
-        return User(id = id, organization = organization, userName = userName, emailAddress = emailAddress, firstName = firstName, lastName = lastName, otherNames = otherNames)
+        return User(id = id, organization = organization, userName = userName, emailAddress = emailAddress.value, firstName = firstName, lastName = lastName, otherNames = otherNames)
     }
 
     private fun JSONObject.access(): Access {
