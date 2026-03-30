@@ -36,4 +36,5 @@ internal object EventContextJsonSerde : JsonSerde.SchemaAware<Event.Context> {
     }
 }
 
+/** JSON serializer/deserializer for [Event.Context], including the invocation context and optional parent/originating event references. */
 val Event.Context.Companion.jsonSerde: JsonSerde.SchemaAware<Event.Context> get() = EventContextJsonSerde

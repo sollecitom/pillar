@@ -58,9 +58,17 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
+/**
+ * Creates a filter that builds an [InvocationContext] directly from the HTTP request, parsing JWT bearer tokens,
+ * trace headers, toggles, and locale. Verified JWTs are cached to avoid repeated verification.
+ */
 context(api: HttpApiDefinition, random: RandomGenerator, time: TimeGenerator, ids: UniqueIdGenerator)
 fun InvocationContextFilter.parseInvocationContextFromRequest(jwtProcessorConfiguration: JwtProcessor.Configuration = newJwtProcessorConfiguration(), cacheExpiry: Duration = GatewayInvocationContextFilter.defaultCacheExpiry, cacheMaximumSize: Long = GatewayInvocationContextFilter.defaultCacheMaximumSize, issuerForDomain: (String) -> JwtParty): Filter = parseInvocationContextFromRequest(headerNames = api.headerNames, cacheExpiry = cacheExpiry, cacheMaximumSize = cacheMaximumSize, issuerForDomain = issuerForDomain, jwtProcessorConfiguration = jwtProcessorConfiguration, randomGenerator = random, timeGenerator = time, uniqueIdGenerator = ids)
 
+/**
+ * Creates a filter that builds an [InvocationContext] directly from the HTTP request with explicit dependencies.
+ * Parses JWT bearer tokens, trace headers, toggles, and locale. Verified JWTs are cached.
+ */
 fun InvocationContextFilter.parseInvocationContextFromRequest(headerNames: HttpHeaderNames, cacheExpiry: Duration = GatewayInvocationContextFilter.defaultCacheExpiry, cacheMaximumSize: Long = GatewayInvocationContextFilter.defaultCacheMaximumSize, issuerForDomain: (String) -> JwtParty, jwtProcessorConfiguration: JwtProcessor.Configuration, randomGenerator: RandomGenerator, timeGenerator: TimeGenerator, uniqueIdGenerator: UniqueIdGenerator): Filter = GatewayInvocationContextFilter(headerNames, cacheExpiry, cacheMaximumSize, jwtProcessorConfiguration, issuerForDomain, randomGenerator, timeGenerator, uniqueIdGenerator)
 
 internal class GatewayInvocationContextFilter(override val headerNames: HttpHeaderNames, private val cacheExpiry: Duration, private val cacheMaximumSize: Long, private val jwtProcessorConfiguration: JwtProcessor.Configuration, private val issuerForDomain: (String) -> JwtParty, randomGenerator: RandomGenerator, timeGenerator: TimeGenerator, uniqueIdGenerator: UniqueIdGenerator) : Filter, HttpApiDefinition, RandomGenerator by randomGenerator, TimeGenerator by timeGenerator, UniqueIdGenerator by uniqueIdGenerator {

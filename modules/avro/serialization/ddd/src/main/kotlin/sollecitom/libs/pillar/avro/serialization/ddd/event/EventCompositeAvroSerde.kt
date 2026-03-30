@@ -5,8 +5,10 @@ import sollecitom.libs.swissknife.ddd.domain.Event
 import org.apache.avro.Schema
 import org.apache.avro.generic.GenericRecord
 
+/** Creates an Avro serde for [Event.Composite] using custom serialize/deserialize functions for the event data. */
 fun <DATA : Event.Data> Event.Composite.Companion.avroSerde(schema: Schema, serializeData: (DATA) -> GenericRecord, deserializeData: (GenericRecord) -> DATA): AvroSerde<Event.Composite<DATA>> = EventCompositeAvroSerde(schema, serializeData, deserializeData)
 
+/** Creates an Avro serde for [Event.Composite] using an existing [AvroSerde] for the event data. */
 fun <DATA : Event.Data> Event.Composite.Companion.avroSerde(schema: Schema, dataSerde: AvroSerde<DATA>): AvroSerde<Event.Composite<DATA>> = avroSerde(schema, dataSerde::serialize, dataSerde::deserialize)
 
 private class EventCompositeAvroSerde<DATA : Event.Data>(override val schema: Schema, private val serializeData: (DATA) -> GenericRecord, private val deserializeData: (GenericRecord) -> DATA) : AvroSerde<Event.Composite<DATA>> {

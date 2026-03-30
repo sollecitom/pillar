@@ -13,6 +13,7 @@ import sollecitom.libs.swissknife.messaging.domain.message.properties.MessagePro
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import java.util.*
 
+/** Example tenant used for demos and testing. Scheduled for removal. */
 // TODO remove
 object Example : CompanyConventions, MessagePropertyNames by AcmeMessagePropertyNames, HttpApiDefinition by HttpApiDefinition.companyWide {
 

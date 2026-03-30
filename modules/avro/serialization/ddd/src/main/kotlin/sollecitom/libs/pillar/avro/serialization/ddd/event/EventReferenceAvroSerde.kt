@@ -12,7 +12,9 @@ import sollecitom.libs.swissknife.ddd.domain.Happening
 import kotlin.time.Instant
 import org.apache.avro.generic.GenericRecord
 
+/** Avro schema for [Event.Reference]. */
 val Event.Reference.Companion.avroSchema get() = EventAvroSchemas.eventReference
+/** Avro serializer/deserializer for [Event.Reference]. */
 val Event.Reference.Companion.avroSerde: AvroSerde<Event.Reference> get() = EventReferenceAvroSerde
 
 private object EventReferenceAvroSerde : AvroSerde<Event.Reference> {

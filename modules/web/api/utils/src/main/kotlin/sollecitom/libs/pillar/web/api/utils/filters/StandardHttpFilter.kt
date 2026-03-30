@@ -22,8 +22,10 @@ import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationCo
 import sollecitom.libs.pillar.web.api.utils.filters.correlation.addInvocationContextToLoggingStack
 import sollecitom.libs.pillar.web.api.utils.filters.correlation.parseInvocationContextFromGatewayHeader
 
+/** Standard HTTP filter chain for backend services behind a gateway. Includes error handling, metrics, decompression, correlation context parsing, and logging. */
 object StandardHttpFilter : Loggable() {
 
+    /** Builds the request filter chain: error catching, lens validation, Micrometer metrics, GunZip, invocation context parsing, and logging context. */
     context(_: HttpApiDefinition, time: CoreDataGenerator)
     fun forRequests(meterRegistry: MeterRegistry): Filter = ServerFilters.catchAndLogErrors
         .then(
@@ -39,6 +41,7 @@ object StandardHttpFilter : Loggable() {
         .then(InvocationContextFilter.parseInvocationContextFromGatewayHeader())
         .then(InvocationContextFilter.addInvocationContextToLoggingStack())
 
+    /** Builds the response filter chain: GZip compression and Content-Length header. */
     fun forResponses(): Filter = ResponseFilters.GZip().then(
         ResponseFilters.AddContentLength
     )

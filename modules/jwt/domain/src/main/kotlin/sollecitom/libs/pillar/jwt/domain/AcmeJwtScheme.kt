@@ -8,10 +8,16 @@ import kotlin.time.Instant
 import org.json.JSONArray
 import org.json.JSONObject
 
+/** Converts these JWT parameters into a Keycloak-compatible JSON claims object. */
 fun AcmeJwtScheme.Parameters.asClaims() = AcmeJwtScheme.claimsFor(parameters = this)
 
+/**
+ * Defines the Acme-specific JWT claim structure based on Keycloak conventions.
+ * Handles both serialization (parameters to claims JSON) and deserialization (claims JSON to parameters).
+ */
 object AcmeJwtScheme {
 
+    /** All parameters needed to construct or that can be extracted from an Acme JWT. */
     data class Parameters(
         val user: User,
         val access: Access,
@@ -25,6 +31,7 @@ object AcmeJwtScheme {
         val authorizationHeaderType: String
     )
 
+    /** Builds a Keycloak-compatible JWT claims JSON from individual parameters. */
     fun claimsFor(
         user: User,
         access: Access,
@@ -38,6 +45,7 @@ object AcmeJwtScheme {
         authorizationHeaderType: String
     ) = claimsFor(Parameters(user, access, isUserEmailAddressVerified, authentication, token, session, targetApplication, issuer, openIdConnectParams, authorizationHeaderType))
 
+    /** Extracts all Acme JWT parameters from a Keycloak-format claims JSON object. */
     fun parseParametersFromClaims(claims: JSONObject): Parameters {
 
         val user = claims.user()

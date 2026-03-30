@@ -7,7 +7,9 @@ import sollecitom.libs.swissknife.avro.serialization.utils.getString
 import sollecitom.libs.swissknife.core.domain.identity.*
 import org.apache.avro.generic.GenericRecord
 
+/** Avro schema for [Id]. */
 val Id.Companion.avroSchema get() = IdentityAvroSchemas.id
+/** Avro serializer/deserializer for [Id]. Supports ULID, KSUID, UUID, and String ID types. */
 val Id.Companion.avroSerde: AvroSerde<Id> get() = IdAvroSerde
 
 private object IdAvroSerde : AvroSerde<Id> {

@@ -4,6 +4,7 @@ import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalog
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import org.apache.avro.Schema
 
+/** Avro schema catalogue for currency-related types (Currency enum and CurrencyAmount record). */
 object CurrencyAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.currency") {
 
     val currency : Schema by lazy { getSchema(name = "Currency") }

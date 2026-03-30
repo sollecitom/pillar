@@ -8,6 +8,7 @@ import sollecitom.libs.pillar.correlation.logging.utils.toLoggingContext
 import sollecitom.libs.swissknife.logger.core.withCoroutineLoggingContext
 import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
 
+/** Creates a filter that adds the invocation context to the coroutine logging MDC, so all log entries include correlation data. */
 fun InvocationContextFilter.addInvocationContextToLoggingStack(): Filter = InvocationContextLoggingFilter()
 
 internal class InvocationContextLoggingFilter : Filter {

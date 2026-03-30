@@ -7,7 +7,9 @@ import sollecitom.libs.swissknife.avro.serialization.utils.getString
 import kotlin.time.Instant
 import org.apache.avro.generic.GenericRecord
 
+/** Avro schema for [Instant] timestamps. */
 val Instant.Companion.avroSchema get() = TimeAvroSchemas.timestamp
+/** Avro serializer/deserializer for [Instant], using ISO 8601 string format. */
 val Instant.Companion.avroSerde: AvroSerde<Instant> get() = InstantAvroSerde
 
 private object InstantAvroSerde : AvroSerde<Instant> {

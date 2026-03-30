@@ -17,9 +17,11 @@ import sollecitom.libs.swissknife.ddd.domain.forkAndLogInvocationContext
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 
+/** Launches a coroutine that processes each message with a forked invocation context and structured logging. Uses the coroutine scope from the context receiver. */
 context(scope: CoroutineScope, _: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
 fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(start: CoroutineStart = LAZY, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = processWithForkedContext(scope, start, action)
 
+/** Launches a coroutine in the given [scope] that processes each message with a forked invocation context and structured logging. */
 context(_: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
 fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(scope: CoroutineScope, start: CoroutineStart = LAZY, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = scope.launch(start = start) {
     onEach { message ->

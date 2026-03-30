@@ -9,6 +9,7 @@ import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 import org.json.JSONObject
 import java.net.URI
 
+/** JSON serializer/deserializer for [FileContent.Remote], storing a URI reference, length, and format. */
 val FileContent.Remote.Companion.jsonSerde: JsonSerde.SchemaAware<FileContent.Remote> get() = RemoteFileContentJsonSerde
 
 internal object RemoteFileContentJsonSerde : JsonSerde.SchemaAware<FileContent.Remote> {

@@ -8,8 +8,10 @@ import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.getEnum
 import sollecitom.libs.swissknife.avro.serialization.utils.getInt
 
+/** Avro schema for [YearMonth]. */
 val YearMonth.Companion.avroSchema get() = TimeAvroSchemas.monthAndYear
 
+/** Avro serializer/deserializer for [YearMonth], storing year and month name separately. */
 val YearMonth.Companion.avroSerde: AvroSerde<YearMonth> get() = MonthAndYearAvroSerde
 
 private object MonthAndYearAvroSerde : AvroSerde<YearMonth> {

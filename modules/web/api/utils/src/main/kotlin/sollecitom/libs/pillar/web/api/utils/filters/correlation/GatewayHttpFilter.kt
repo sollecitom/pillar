@@ -17,8 +17,10 @@ import org.http4k.filter.ServerFilters.CatchLensFailure
 import org.http4k.filter.inIntelliJOnly
 import org.http4k.lens.LensFailure
 
+/** HTTP filter chain for API gateway services. Unlike [StandardHttpFilter], this parses JWT bearer tokens directly from requests to build the invocation context. */
 object GatewayHttpFilter : Loggable() {
 
+    /** Builds the request filter chain for the gateway: error catching, metrics, JWT parsing, context forwarding, and logging. */
     context(_: HttpApiDefinition, time: CoreDataGenerator)
     fun forRequests(meterRegistry: MeterRegistry, jwtProcessorConfiguration: JwtProcessor.Configuration, issuerForDomain: (String) -> JwtParty): Filter = ServerFilters.catchAndLogErrors
         .then(

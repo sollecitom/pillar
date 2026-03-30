@@ -9,6 +9,7 @@ import sollecitom.libs.swissknife.json.utils.putBytesAsBase64String
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 import org.json.JSONObject
 
+/** JSON serializer/deserializer for [FileContent.Inline], encoding file bytes as Base64. */
 val FileContent.Inline.Companion.jsonSerde: JsonSerde.SchemaAware<FileContent.Inline> get() = InlineFileContentJsonSerde
 
 internal object InlineFileContentJsonSerde : JsonSerde.SchemaAware<FileContent.Inline> {

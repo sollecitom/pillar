@@ -10,6 +10,7 @@ import sollecitom.libs.swissknife.web.api.domain.endpoint.Endpoint
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.api.HttpDrivingAdapter
 
+/** HTTP driving adapter that hosts a set of [Endpoint]s with standard filters, metrics, and correlation context propagation. */
 class EndpointHttpDrivingAdapter internal constructor(private val endpoints: Set<Endpoint>, private val configuration: HttpDrivingAdapter.Configuration, private val meterRegistry: MeterRegistry, private val coreDataGenerator: CoreDataGenerator, httpApiDefinition: HttpApiDefinition) : HttpDrivingAdapter, CoreDataGenerator by coreDataGenerator, HttpApiDefinition by httpApiDefinition {
 
     internal constructor(endpoints: Set<Endpoint>, environment: Environment, meterRegistry: MeterRegistry, coreDataGenerator: CoreDataGenerator, httpApiDefinition: HttpApiDefinition) : this(endpoints, HttpDrivingAdapter.Configuration.from(environment), meterRegistry, coreDataGenerator, httpApiDefinition)
@@ -36,8 +37,10 @@ class EndpointHttpDrivingAdapter internal constructor(private val endpoints: Set
     companion object : Loggable()
 }
 
+/** Creates an [EndpointHttpDrivingAdapter] from environment configuration with context receivers for data generation and API definition. */
 context(generator: CoreDataGenerator, api: HttpApiDefinition)
 fun EndpointHttpDrivingAdapter.Companion.create(endpoints: Set<Endpoint>, environment: Environment, meterRegistry: MeterRegistry) = EndpointHttpDrivingAdapter(endpoints, environment, meterRegistry, generator, api)
 
+/** Creates an [EndpointHttpDrivingAdapter] from explicit configuration with context receivers for data generation and API definition. */
 context(generator: CoreDataGenerator, api: HttpApiDefinition)
 fun EndpointHttpDrivingAdapter.Companion.create(endpoints: Set<Endpoint>, configuration: HttpDrivingAdapter.Configuration, meterRegistry: MeterRegistry) = EndpointHttpDrivingAdapter(endpoints, configuration, meterRegistry, generator, api)

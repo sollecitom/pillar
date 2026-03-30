@@ -1,5 +1,6 @@
 package sollecitom.libs.pillar.acme.business.domain
 
+/** Application-level role constants used in JWT realm access claims. Supports `in` checks (e.g., `"customer" in AcmeRoles`). */
 object AcmeRoles {
 
     const val customer = "customer"

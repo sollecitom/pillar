@@ -39,4 +39,5 @@ internal object EventReferenceJsonSerde : JsonSerde.SchemaAware<Event.Reference>
     }
 }
 
+/** JSON serializer/deserializer for [Event.Reference], a lightweight pointer to an event (ID, type, timestamp). */
 val Event.Reference.Companion.jsonSerde: JsonSerde.SchemaAware<Event.Reference> get() = EventReferenceJsonSerde

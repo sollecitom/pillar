@@ -29,4 +29,5 @@ private object UnitJsonSerde : JsonSerde.SchemaAware<Unit> {
     }
 }
 
+/** JSON serializer/deserializer for [Unit], used as a placeholder result type (e.g., for event bridges with no return value). */
 val Unit.jsonSerde: JsonSerde.SchemaAware<Unit> get() = UnitJsonSerde

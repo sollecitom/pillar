@@ -9,7 +9,9 @@ import sollecitom.libs.swissknife.core.domain.versioning.IntVersion
 import sollecitom.libs.swissknife.ddd.domain.Happening
 import org.apache.avro.generic.GenericRecord
 
+/** Avro schema for [Happening.Type]. */
 val Happening.Type.Companion.avroSchema get() = EventAvroSchemas.happeningType
+/** Avro serializer/deserializer for [Happening.Type], storing event type name and version. */
 val Happening.Type.Companion.avroSerde: AvroSerde<Happening.Type> get() = HappeningTypeAvroSerde
 
 private object HappeningTypeAvroSerde : AvroSerde<Happening.Type> {

@@ -4,6 +4,7 @@ import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalog
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import org.apache.avro.Schema
 
+/** Avro schema catalogue for identity types (IdType enum and Id record). */
 object IdentityAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.identity") {
 
     val idType : Schema by lazy { getSchema(name = "IdType") }

@@ -28,4 +28,5 @@ private object MonthAndYearJsonSerde : JsonSerde.SchemaAware<YearMonth> {
     }
 }
 
+/** JSON serializer/deserializer for [YearMonth], storing year and month name separately. */
 val YearMonth.Companion.jsonSerde: JsonSerde.SchemaAware<YearMonth> get() = MonthAndYearJsonSerde

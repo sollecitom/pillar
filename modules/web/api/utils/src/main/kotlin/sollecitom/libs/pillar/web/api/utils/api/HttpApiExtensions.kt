@@ -8,5 +8,6 @@ import sollecitom.libs.swissknife.web.api.domain.endpoint.Endpoint
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.api.mainHttpApi
 
+/** Creates a main HTTP API with standard Acme filters (error handling, metrics, correlation context, gzip). */
 context(_: HttpApiDefinition, _: CoreDataGenerator)
 fun mainHttpApi(endpoints: Set<Endpoint>, requestedPort: RequestedPort, meterRegistry: MeterRegistry) = mainHttpApi(endpoints, requestedPort, StandardHttpFilter.forRequests(meterRegistry), StandardHttpFilter.forResponses())

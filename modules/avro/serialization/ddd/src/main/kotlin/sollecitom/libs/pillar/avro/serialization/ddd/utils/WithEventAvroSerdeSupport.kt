@@ -11,8 +11,10 @@ import sollecitom.libs.swissknife.ddd.domain.Event
 import kotlin.time.Instant
 import org.apache.avro.generic.GenericRecord
 
+/** Mixin interface providing helper methods to serialize/deserialize common event fields (id, timestamp, context) in Avro records. */
 interface WithEventAvroSerdeSupport {
 
+    /** Writes the standard event fields (id, timestamp, context) into the Avro record being built. */
     context(builder: AvroRecordBuilder)
     fun setEventFields(event: Event) {
 
@@ -21,6 +23,7 @@ interface WithEventAvroSerdeSupport {
         builder.setValue(Fields.context, event.context, Event.Context.avroSerde)
     }
 
+    /** Reads the standard event fields (id, timestamp, context) from an Avro record. */
     context(builder: GenericRecord)
     fun getEventFields(): EventFields {
 

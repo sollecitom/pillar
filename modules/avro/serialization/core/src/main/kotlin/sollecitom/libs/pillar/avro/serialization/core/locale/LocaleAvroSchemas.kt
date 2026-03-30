@@ -4,6 +4,7 @@ import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalog
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import org.apache.avro.Schema
 
+/** Avro schema catalogue for locale types. */
 object LocaleAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.locale") {
 
     val locale: Schema by lazy { getSchema(name = "Locale") }

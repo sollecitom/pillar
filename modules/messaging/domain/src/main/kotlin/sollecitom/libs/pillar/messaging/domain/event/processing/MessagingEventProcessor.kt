@@ -52,6 +52,7 @@ private class MessagingEventProcessor<in EVENT : Event>(
     companion object : Loggable()
 }
 
+/** Creates an [EventProcessor] that consumes events from a [MessageConnector], processing each with a forked invocation context. */
 context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
@@ -62,6 +63,7 @@ fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     processEvent
 )
 
+/** Creates an [EventProcessor] that consumes events from a [MessageConnector] within the given [scope]. */
 context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     scope: CoroutineScope,
@@ -74,6 +76,7 @@ fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     coreDataGenerator = generator
 )
 
+/** Creates an [EventProcessor] from a raw message [Flow], useful when not using a [MessageConnector]. */
 context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessages(
     messages: Flow<ReceivedMessage<EVENT>>,
@@ -86,6 +89,7 @@ fun <EVENT : Event> EventProcessor.Companion.withMessages(
     coreDataGenerator = generator
 )
 
+/** Creates an [EventProcessor] from a raw message [Flow], using the [CoroutineScope] from the context receiver. */
 context(generator: CoreDataGenerator, scope: CoroutineScope)
 fun <EVENT : Event> EventProcessor.Companion.withMessages(
     messages: Flow<ReceivedMessage<EVENT>>,

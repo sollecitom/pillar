@@ -45,4 +45,5 @@ private object IdJsonSerde : JsonSerde.SchemaAware<Id> {
     }
 }
 
+/** JSON serializer/deserializer for [Id], supporting ULID, KSUID, UUID, and String ID types via a `type` discriminator. */
 val Id.Companion.jsonSerde: JsonSerde.SchemaAware<Id> get() = IdJsonSerde

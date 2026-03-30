@@ -6,6 +6,7 @@ import sollecitom.libs.swissknife.avro.serialization.utils.getString
 import org.apache.avro.generic.GenericRecord
 import java.util.*
 
+/** Avro serializer/deserializer for [Locale], using language tags. Handles the problematic Norwegian locale (`no_NO_NY`) as a special case. */
 val localeAvroSerde: AvroSerde<Locale> get() = LocaleAvroSerde
 
 private object LocaleAvroSerde : AvroSerde<Locale> {

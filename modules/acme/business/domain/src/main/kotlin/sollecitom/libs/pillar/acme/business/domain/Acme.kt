@@ -13,13 +13,16 @@ import sollecitom.libs.swissknife.messaging.domain.message.properties.MessagePro
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import java.util.*
 
+/** Central entry point for Acme company-wide conventions, tenant identity, and role definitions. */
 object Acme : CompanyConventions, MessagePropertyNames by AcmeMessagePropertyNames, HttpApiDefinition by HttpApiDefinition.companyWide {
 
+    /** The default tenant representing the Acme company. */
     val tenant = Tenant(id = StringId("acme.com"))
     val roles get() = AcmeRoles
 
     override val defaultLocale: Locale = Locale.UK
 }
 
+/** Resolves the locale from the current invocation context, falling back to the company default. */
 context(context: InvocationContext<*>)
 val locale: Locale get() = context.localeOrNull ?: defaultLocale

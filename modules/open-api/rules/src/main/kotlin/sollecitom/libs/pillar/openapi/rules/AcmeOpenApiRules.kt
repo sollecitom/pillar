@@ -12,6 +12,12 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.PathItem.HttpMethod.*
 
+/**
+ * Acme-specific OpenAPI compliance rules. Enforces conventions including:
+ * lowercase-kebab-case paths, mandatory operation IDs and summaries, camelCase operation IDs,
+ * request/response body requirements per HTTP method, JSON schema compliance for examples,
+ * and whitelisted OpenAPI versions (3.0.0, 3.1.0).
+ */
 object AcmeOpenApiRules : ComplianceRuleSet<OpenAPI> {
 
     private val mediaTypesForRequestsThatMustHaveAnExample = setOf("application/json")

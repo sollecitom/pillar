@@ -14,7 +14,9 @@ import sollecitom.libs.swissknife.core.domain.currency.known.JPY
 import sollecitom.libs.swissknife.core.domain.currency.known.USD
 import sollecitom.libs.swissknife.core.domain.text.Name
 
+/** Avro schema for [CurrencyAmount]. */
 val CurrencyAmount.Companion.avroSchema get() = CurrencyAvroSchemas.currencyAmount
+/** Avro serializer/deserializer for [CurrencyAmount]. Supports GBP, USD, EUR, and JPY. */
 val CurrencyAmount.Companion.avroSerde: AvroSerde<CurrencyAmount> get() = CurrencyAmountAvroSerde
 
 private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {

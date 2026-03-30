@@ -11,7 +11,9 @@ import sollecitom.libs.swissknife.ddd.domain.Event
 import kotlin.time.Instant
 import org.apache.avro.generic.GenericRecord
 
+/** Avro schema for [Event.Metadata]. */
 val Event.Metadata.Companion.avroSchema get() = EventAvroSchemas.eventMetadata
+/** Avro serializer/deserializer for [Event.Metadata]. */
 val Event.Metadata.Companion.avroSerde: AvroSerde<Event.Metadata> get() = EventMetadataAvroSerde
 
 private object EventMetadataAvroSerde : AvroSerde<Event.Metadata> {

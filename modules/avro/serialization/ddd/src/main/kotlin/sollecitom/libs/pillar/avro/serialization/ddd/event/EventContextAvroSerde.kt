@@ -6,7 +6,9 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationCont
 import sollecitom.libs.swissknife.ddd.domain.Event
 import org.apache.avro.generic.GenericRecord
 
+/** Avro schema for [Event.Context]. */
 val Event.Context.Companion.avroSchema get() = EventAvroSchemas.eventContext
+/** Avro serializer/deserializer for [Event.Context], including invocation context and optional parent/originating references. */
 val Event.Context.Companion.avroSerde: AvroSerde<Event.Context> get() = EventContextAvroSerde
 
 private object EventContextAvroSerde : AvroSerde<Event.Context> {

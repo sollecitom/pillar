@@ -36,4 +36,5 @@ private object EventMetadataJsonSerde : JsonSerde.SchemaAware<Event.Metadata> {
     }
 }
 
+/** JSON serializer/deserializer for [Event.Metadata], including event ID, timestamp, and context. */
 val Event.Metadata.Companion.jsonSerde: JsonSerde.SchemaAware<Event.Metadata> get() = EventMetadataJsonSerde

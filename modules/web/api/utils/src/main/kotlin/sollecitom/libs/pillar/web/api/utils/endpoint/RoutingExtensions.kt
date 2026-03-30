@@ -16,6 +16,7 @@ import org.http4k.core.Status
 import org.http4k.routing.PathMethod
 import org.http4k.routing.RoutingHttpHandler
 
+/** Routes to an action that requires an authenticated invocation context. Returns 422 if the context is not authenticated. */
 infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Authenticated>.(request: Request) -> Response): RoutingHttpHandler = to { request ->
 
     val context = InvocationContextFilter.key.mandatory(request)
@@ -27,6 +28,7 @@ infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Au
     }
 }
 
+/** Routes to an action that requires an unauthenticated invocation context. Returns 422 if the context is authenticated. */
 infix fun PathMethod.toUnauthenticated(action: suspend InvocationContext<Access.Unauthenticated>.(request: Request) -> Response): RoutingHttpHandler = to { request ->
 
     val context = InvocationContextFilter.key.mandatory(request)
@@ -38,6 +40,7 @@ infix fun PathMethod.toUnauthenticated(action: suspend InvocationContext<Access.
     }
 }
 
+/** Routes to an action with the invocation context available, regardless of authentication status. */
 infix fun PathMethod.toWithInvocationContext(action: suspend InvocationContext<Access>.(request: Request) -> Response): RoutingHttpHandler = to { request ->
 
     val context = InvocationContextFilter.key.mandatory(request)

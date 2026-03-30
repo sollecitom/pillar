@@ -6,6 +6,7 @@ import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 import org.json.JSONObject
 
+/** JSON serializer/deserializer for [FileContent], dispatching to [Inline][FileContent.Inline] or [Remote][FileContent.Remote] based on the `type` discriminator. */
 val FileContent.Companion.jsonSerde: JsonSerde.SchemaAware<FileContent> get() = FileContentJsonSerde
 
 private object FileContentJsonSerde : JsonSerde.SchemaAware<FileContent> {

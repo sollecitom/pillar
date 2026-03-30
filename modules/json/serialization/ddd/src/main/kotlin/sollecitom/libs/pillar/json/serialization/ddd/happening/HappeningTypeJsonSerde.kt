@@ -32,4 +32,5 @@ internal object HappeningTypeJsonSerde : JsonSerde.SchemaAware<Happening.Type> {
     }
 }
 
+/** JSON serializer/deserializer for [Happening.Type], storing the event type name and version. */
 val Happening.Type.Companion.jsonSerde: JsonSerde.SchemaAware<Happening.Type> get() = HappeningTypeJsonSerde

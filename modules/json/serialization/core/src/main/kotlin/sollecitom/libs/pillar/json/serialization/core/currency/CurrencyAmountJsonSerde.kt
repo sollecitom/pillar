@@ -14,6 +14,7 @@ import sollecitom.libs.swissknife.json.utils.getRequiredString
 import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 
+/** JSON serializer/deserializer for [CurrencyAmount], backed by a JSON schema. Supports GBP, USD, EUR, and JPY. */
 val CurrencyAmount.Companion.jsonSerde: JsonSerde.SchemaAware<CurrencyAmount> get() = CurrencyAmountJsonSerde
 
 internal object CurrencyAmountJsonSerde : JsonSerde.SchemaAware<CurrencyAmount> {

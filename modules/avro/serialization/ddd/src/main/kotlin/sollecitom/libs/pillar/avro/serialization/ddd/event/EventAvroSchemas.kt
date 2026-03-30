@@ -10,6 +10,7 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationCont
 import kotlin.time.Instant
 import org.apache.avro.Schema
 
+/** Avro schema catalogue for DDD event types (HappeningType, EventReference, EventContext, EventMetadata). */
 object EventAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.event") {
 
     val happeningType by lazy { getSchema(name = "HappeningType") }
