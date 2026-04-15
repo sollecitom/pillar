@@ -5,8 +5,8 @@ http4k = "6.42.0.0"
 guava = "33.6.0-jre"
 test-containers = "1.21.4"
 micrometer = "1.16.5"
-sollecitom-swissknife = "1.0.0-SNAPSHOT"
-sollecitom-acme-schema-catalogue = "1.0.0-SNAPSHOT"
+sollecitom-swissknife = "1.0.0"
+sollecitom-acme-schema-catalogue = "1.0.0"
 # plugins
 sollecitom-gradle-plugins = "1.0.2"
 palantir-git-plugin = "5.0.0"
@@ -80,3 +80,4 @@ sollecitom-aggregate-test-metrics-conventions = { id = "sollecitom.aggregate-tes
 sollecitom-dependency-update-conventions = { id = "sollecitom.dependency-update-conventions", version.ref = "sollecitom-gradle-plugins" }
 sollecitom-kotlin-library-conventions = { id = "sollecitom.kotlin-library-conventions", version.ref = "sollecitom-gradle-plugins" }
 sollecitom-maven-publish-conventions = { id = "sollecitom.maven-publish-conventions", version.ref = "sollecitom-gradle-plugins" }
+sollecitom-publish-changed-conventions = { id = "sollecitom.publish-if-changed-conventions", version.ref = "sollecitom-gradle-plugins" }
