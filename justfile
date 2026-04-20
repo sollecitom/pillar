@@ -9,7 +9,10 @@ pull:
     git pull
 
 build:
-    ./gradlew updateInternalCatalogVersions && ./scripts/publish-if-changed.sh
+    ./gradlew updateInternalCatalogVersions && ./gradlew build
+
+cleanup:
+    bash ../scripts/cleanup-maven-local.sh --repo-root . --keep 5 --max-age-days 30
 
 update-internal-dependencies:
     ./gradlew updateInternalCatalogVersions
@@ -31,3 +34,6 @@ update-all:
 
 publish-libraries:
     ./scripts/publish-if-changed.sh
+
+workflow +steps:
+    bash ../scripts/run-just-workflow.sh {{steps}}
