@@ -14,6 +14,9 @@ build:
 license-audit:
     bash ../scripts/run-license-audit.sh pillar
 
+license-audit-compact:
+    bash ../scripts/run-license-audit.sh pillar --compact
+
 generate-sbom:
     bash ../scripts/run-generate-sbom.sh pillar
 
