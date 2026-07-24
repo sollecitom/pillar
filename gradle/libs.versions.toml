@@ -8,7 +8,7 @@ micrometer = "1.17.0"
 sollecitom-swissknife = "1.0.11"
 sollecitom-acme-schema-catalogue = "1.0.0"
 # plugins
-sollecitom-gradle-plugins = "1.0.20"
+sollecitom-gradle-plugins = "1.0.21"
 palantir-git-plugin = "5.0.0"
 
 [libraries]
