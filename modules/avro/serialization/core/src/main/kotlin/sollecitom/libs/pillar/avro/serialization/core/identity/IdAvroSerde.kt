@@ -29,6 +29,7 @@ private object IdAvroSerde : AvroSerde<Id> {
             Type.STRING -> StringId(stringValue)
             Type.ULID -> ULID(stringValue)
             Type.UUID -> UUID(stringValue)
+            Type.UUIDV7 -> UUIDv7(stringValue)
             Type.KSUID -> KSUID(stringValue)
             else -> error("Unknown Id type '${type}'")
         }
@@ -38,6 +39,7 @@ private object IdAvroSerde : AvroSerde<Id> {
         get() = when (this) {
             is ULID -> Type.ULID
             is KSUID -> Type.KSUID
+            is UUIDv7 -> Type.UUIDV7
             is UUID -> Type.UUID
             is StringId -> Type.STRING
         }
@@ -51,6 +53,7 @@ private object IdAvroSerde : AvroSerde<Id> {
         const val ULID = "ULID"
         const val KSUID = "KSUID"
         const val UUID = "UUID"
+        const val UUIDV7 = "UUIDV7"
         const val STRING = "STRING"
     }
 }

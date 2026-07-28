@@ -17,6 +17,7 @@ class IdAvroSerdeTests : AcmeAvroSerdeTestSpecification<Id>, CoreDataGenerator b
         "STRING" to StringId(newId.external().stringValue),
         "ULID" to newId.ulid.monotonic(),
         "UUID" to newId.uuid.random(),
+        "UUIDV7" to newId.uuid.v7(),
         "KSUID" to newId.ksuid.monotonic()
     )
 }

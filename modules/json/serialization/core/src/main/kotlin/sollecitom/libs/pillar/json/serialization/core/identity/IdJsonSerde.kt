@@ -11,6 +11,7 @@ private object IdJsonSerde : JsonSerde.SchemaAware<Id> {
     private const val TYPE_ULID = "ulid"
     private const val TYPE_KSUID = "ksuid"
     private const val TYPE_UUID = "uuid"
+    private const val TYPE_UUIDV7 = "uuidv7"
     private const val TYPE_STRING = "string"
     private const val SCHEMA_LOCATION = "json/schemas/acme/common/identity/Id.json"
     override val schema by lazy { jsonSchemaAt(SCHEMA_LOCATION) }
@@ -20,6 +21,7 @@ private object IdJsonSerde : JsonSerde.SchemaAware<Id> {
         val type = when (value) {
             is ULID -> TYPE_ULID
             is KSUID -> TYPE_KSUID
+            is UUIDv7 -> TYPE_UUIDV7
             is UUID -> TYPE_UUID
             is StringId -> TYPE_STRING
         }
@@ -34,6 +36,7 @@ private object IdJsonSerde : JsonSerde.SchemaAware<Id> {
             TYPE_ULID -> ULID(stringValue)
             TYPE_KSUID -> KSUID(stringValue)
             TYPE_UUID -> UUID(stringValue)
+            TYPE_UUIDV7 -> UUIDv7(stringValue)
             TYPE_STRING -> StringId(stringValue)
             else -> error("Unknown ID type $type")
         }

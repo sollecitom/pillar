@@ -20,6 +20,7 @@ class IdJsonSerializationTests : AcmeJsonSerdeTestSpecification<Id>, CoreDataGen
         "ULID" to newId.ulid.monotonic(),
         "KSUID" to newId.ksuid.monotonic(),
         "UUID" to newId.uuid.random(),
+        "UUIDV7" to newId.uuid.v7(),
         "STRING" to StringId("whatever"),
     )
 }
