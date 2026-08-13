@@ -8,8 +8,10 @@ object EncryptionAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.encrypti
 
     val cryptographicKeyMetadata: Schema by lazy { getSchema(name = "CryptographicKeyMetadata") }
     val ctrEncryptionMetadata: Schema by lazy { getSchema(name = "CtrEncryptionMetadata", dependencies = setOf(cryptographicKeyMetadata)) }
+    val gcmEncryptionMetadata: Schema by lazy { getSchema(name = "GcmEncryptionMetadata", dependencies = setOf(cryptographicKeyMetadata)) }
+    val xtsEncryptionMetadata: Schema by lazy { getSchema(name = "XtsEncryptionMetadata", dependencies = setOf(cryptographicKeyMetadata)) }
 
     override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
 
-    override val all: Sequence<Schema> = sequenceOf(cryptographicKeyMetadata, ctrEncryptionMetadata)
+    override val all: Sequence<Schema> = sequenceOf(cryptographicKeyMetadata, ctrEncryptionMetadata, gcmEncryptionMetadata, xtsEncryptionMetadata)
 }
