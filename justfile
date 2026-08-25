@@ -30,7 +30,7 @@ rebuild:
     ./gradlew clean build --refresh-dependencies --rerun-tasks
 
 publish:
-    ./scripts/publish-if-changed.sh
+    bash ../scripts/publish-if-changed.sh
 
 update-dependencies:
     ./gradlew versionCatalogUpdate
@@ -42,7 +42,7 @@ update-all:
     just update-internal-dependencies && just update-dependencies && just update-gradle
 
 publish-libraries:
-    ./scripts/publish-if-changed.sh
+    bash ../scripts/publish-if-changed.sh
 
 workflow +steps:
     bash ../scripts/run-just-workflow.sh {{steps}}
