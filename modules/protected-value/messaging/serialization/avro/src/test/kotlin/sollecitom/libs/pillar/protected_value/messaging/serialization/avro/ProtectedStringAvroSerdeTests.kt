@@ -12,7 +12,7 @@ import sollecitom.libs.swissknife.cryptography.domain.symmetric.encryption.aes.A
 import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.bouncyCastle
 import sollecitom.libs.swissknife.protected_value.domain.ProtectedValue
 import sollecitom.libs.swissknife.protected_value.domain.ProtectedValueFactory
-import sollecitom.libs.swissknife.protected_value.implementation.bouncy_castle.aes256WithCTR
+import sollecitom.libs.swissknife.protected_value.implementation.bouncy_castle.aes256WithGCM
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -22,7 +22,7 @@ private class ProtectedStringAvroSerdeTests : AcmeAvroSerdeTestSpecification<Pro
 
     override val cryptographicOperations: CryptographicOperations = CryptographicOperations.bouncyCastle(secureRandom)
     private val key = newAesKey(variant = AES_256)
-    private val factory = ProtectedValueFactory.aes256WithCTR { key }
+    private val factory = ProtectedValueFactory.aes256WithGCM { key }
     override val avroSerde = ProtectedValue.stringAvroSerde
 
     override fun parameterizedArguments() = listOf(

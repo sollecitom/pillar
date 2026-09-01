@@ -9,7 +9,7 @@ import org.apache.avro.Schema
 
 object ProtectedValueAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.protected.value") {
 
-    val protectedString: Schema by lazy { getSchema(name = "ProtectedString", dependencies = setOf(Id.avroSchema, EncryptionAvroSchemas.ctrEncryptionMetadata)) }
+    val protectedString: Schema by lazy { getSchema(name = "ProtectedString", dependencies = setOf(Id.avroSchema, EncryptionAvroSchemas.encryptionMetadata)) }
 
     override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
 

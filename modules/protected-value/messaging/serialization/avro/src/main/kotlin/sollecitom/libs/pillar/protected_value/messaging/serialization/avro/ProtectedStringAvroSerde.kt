@@ -22,15 +22,17 @@ private object ProtectedStringAvroSerde : AvroSerde<ProtectedString> {
         set(Fields.name, value.name.value)
         setValue(Fields.owner, value.owner, Id.avroSerde)
         setByteArrayAsHexString(Fields.value_hex, value.value)
-        setValue(Fields.metadata, value.metadata, EncryptionMode.CTR.Metadata.avroSerde)
+        setValue(Fields.metadata, value.metadata, EncryptionMode.Metadata.avroSerde)
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
         val name = getString(Fields.name).let(::Name)
         val owner = getValue(Fields.owner, Id.avroSerde)
         val bytesValue = getHexStringAsByteArray(Fields.value_hex)
-        val metadata = getValue(Fields.metadata, EncryptionMode.CTR.Metadata.avroSerde)
-        ProtectedValueData<String, EncryptionMode.CTR.Metadata>(bytesValue, name, owner, metadata)
+        val metadata = getValue(Fields.metadata, EncryptionMode.Metadata.avroSerde)
+        // The envelope can carry any registered mode; a ProtectedString is defined as a GCM-protected value.
+        check(metadata is EncryptionMode.GCM.Metadata) { "A ProtectedString must carry GCM metadata but carried ${metadata::class.simpleName}" }
+        ProtectedValueData<String, EncryptionMode.GCM.Metadata>(bytesValue, name, owner, metadata)
     }
 
     private object Fields {

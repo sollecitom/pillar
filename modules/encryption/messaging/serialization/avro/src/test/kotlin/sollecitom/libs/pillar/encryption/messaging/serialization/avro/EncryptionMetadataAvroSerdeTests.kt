@@ -12,13 +12,15 @@ import sollecitom.libs.swissknife.cryptography.implementation.bouncycastle.bounc
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 
+/** Round-trips the mode-agnostic envelope, so the branch discriminator stays in step with the schema's union. */
 @TestInstance(PER_CLASS)
-private class CtrEncryptionMetadataAvroSerdeTests : AcmeAvroSerdeTestSpecification<EncryptionMode.CTR.Metadata>, CoreDataGenerator by CoreDataGenerator.testProvider, CryptographicKeyGenerator {
+private class EncryptionMetadataAvroSerdeTests : AcmeAvroSerdeTestSpecification<EncryptionMode.Metadata>, CoreDataGenerator by CoreDataGenerator.testProvider, CryptographicKeyGenerator {
 
     override val cryptographicOperations: CryptographicOperations = CryptographicOperations.bouncyCastle(secureRandom)
-    override val avroSerde = EncryptionMode.CTR.Metadata.avroSerde
+    override val avroSerde = EncryptionMode.Metadata.avroSerde
 
-    override fun parameterizedArguments() = listOf(
-        "AES_256" to newAesKey(variant = AES.Variant.AES_256).ctr.encryptWithRandomIV("hello".toByteArray()).metadata
+    override fun parameterizedArguments(): List<Pair<String, EncryptionMode.Metadata>> = listOf(
+        "GCM_without_associated_data" to newAesKey(variant = AES.Variant.AES_256).gcm.encryptWithRandomIV("hello".toByteArray()).metadata,
+        "GCM_with_associated_data" to newAesKey(variant = AES.Variant.AES_256).gcm.encryptWithRandomIV("hello".toByteArray(), associatedData = "a public header".toByteArray()).metadata
     )
 }
