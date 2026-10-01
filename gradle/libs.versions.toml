@@ -1,14 +1,14 @@
 [versions]
 # libraries
 kotlin = "2.4.20"
-http4k = "6.60.0.0"
-guava = "33.7.1-jre"
+http4k = "6.61.0.0"
+guava = "33.7.2-jre"
 test-containers = "2.0.5"
 micrometer = "1.17.1"
-sollecitom-swissknife = "1.0.33"
-sollecitom-acme-schema-catalogue = "1.0.5"
+sollecitom-swissknife = "1.0.34"
+sollecitom-acme-schema-catalogue = "1.0.6"
 # plugins
-sollecitom-gradle-plugins = "1.0.30"
+sollecitom-gradle-plugins = "1.0.32"
 palantir-git-plugin = "5.1.0"
 
 [libraries]
