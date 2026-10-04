@@ -19,6 +19,7 @@ class ActorAccountJsonSerializationTests : AcmeJsonSerdeTestSpecification<Actor.
     override fun parameterizedArguments() = listOf(
         "user" to Actor.Account.user(),
         "user-with-explicit-locale" to Actor.Account.user(locale = Locale.ITALY),
+        "user-without-locale" to Actor.Account.user().copy(locale = null),
         "external-service" to Actor.Account.externalService(),
         "internal-service" to Actor.Account.internalService()
     )

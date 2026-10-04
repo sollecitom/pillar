@@ -30,5 +30,7 @@ dependencies {
 
     testImplementation(libs.swissknife.web.api.test.utils)
     testImplementation(libs.swissknife.test.utils)
+    testImplementation(libs.swissknife.core.test.utils)
+    testImplementation(libs.swissknife.correlation.core.test.utils)
     testImplementation(projects.jwtTestUtils)
 }

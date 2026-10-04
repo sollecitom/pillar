@@ -27,7 +27,7 @@ class UserTests {
 
             val user = User(id = "user-1", organization = Organization(id = "org-1", name = "acme"), userName = "jdoe", emailAddress = "john@acme.com", firstName = "John", lastName = "Doe", otherNames = listOf("William"))
 
-            assertThat(user.fullName).isEqualTo("JohnWilliam Doe")
+            assertThat(user.fullName).isEqualTo("John William Doe")
         }
 
         @Test
@@ -35,7 +35,7 @@ class UserTests {
 
             val user = User(id = "user-1", organization = Organization(id = "org-1", name = "acme"), userName = "jdoe", emailAddress = "john@acme.com", firstName = "John", lastName = "Doe", otherNames = listOf("William", "James"))
 
-            assertThat(user.fullName).isEqualTo("JohnWilliam James Doe")
+            assertThat(user.fullName).isEqualTo("John William James Doe")
         }
     }
 }

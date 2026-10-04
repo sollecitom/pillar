@@ -11,7 +11,7 @@ import org.json.JSONObject
 
 internal object HappeningTypeJsonSerde : JsonSerde.SchemaAware<Happening.Type> {
 
-    private const val SCHEMA_LOCATION = "/json/schemas/acme/common/happening/HappeningType.json"
+    private const val SCHEMA_LOCATION = "json/schemas/acme/common/happening/HappeningType.json"
     override val schema by lazy { jsonSchemaAt(SCHEMA_LOCATION) }
 
     override fun serialize(value: Happening.Type) = JSONObject().apply {

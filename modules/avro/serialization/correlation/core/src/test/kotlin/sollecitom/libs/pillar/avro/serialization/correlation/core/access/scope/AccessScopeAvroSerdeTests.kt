@@ -14,6 +14,7 @@ private class AccessScopeAvroSerdeTests : AcmeAvroSerdeTestSpecification<AccessS
     override val avroSerde = AccessScope.avroSerde
 
     override fun parameterizedArguments() = listOf(
+        "empty" to AccessScope(containerStack = emptyList()),
         "single-value" to AccessScope(containerStack = listOf(AccessContainer(id = newId.external()))),
         "multiple-values" to AccessScope(containerStack = listOf(AccessContainer(id = newId.external()), AccessContainer(id = newId.external()), AccessContainer(id = newId.external())))
     )

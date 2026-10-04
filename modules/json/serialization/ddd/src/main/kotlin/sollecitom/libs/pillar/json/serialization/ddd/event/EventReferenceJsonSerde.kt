@@ -15,7 +15,7 @@ import org.json.JSONObject
 
 internal object EventReferenceJsonSerde : JsonSerde.SchemaAware<Event.Reference> {
 
-    private const val SCHEMA_LOCATION = "/json/schemas/acme/common/event/EventReference.json"
+    private const val SCHEMA_LOCATION = "json/schemas/acme/common/event/EventReference.json"
     override val schema by lazy { jsonSchemaAt(SCHEMA_LOCATION) }
 
     override fun serialize(value: Event.Reference) = JSONObject().apply {

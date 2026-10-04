@@ -1,7 +1,7 @@
 package sollecitom.libs.pillar.http.api.conventions
 
 import assertk.assertThat
-import assertk.assertions.isNotNull
+import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -16,19 +16,25 @@ class AcmeHttpApiDefinitionTests {
     inner class `companyWide` {
 
         @Test
-        fun `provides a non-null HttpApiDefinition`() {
+        fun `provides the Acme correlation header names`() {
 
-            val definition = HttpApiDefinition.companyWide
+            val headerNames = HttpApiDefinition.companyWide.headerNames
 
-            assertThat(definition).isNotNull()
+            assertThat(headerNames.correlation.invocationContext).isEqualTo("x-acme-invocation-context")
         }
 
         @Test
-        fun `provides header names`() {
+        fun `provides the Acme gateway header names`() {
 
-            val definition = HttpApiDefinition.companyWide
+            val headerNames = HttpApiDefinition.companyWide.headerNames
 
-            assertThat(definition.headerNames).isNotNull()
+            assertThat(headerNames.gateway.externalInvocationId).isEqualTo("x-acme-external-trace-invocation-id")
+            assertThat(headerNames.gateway.externalActionId).isEqualTo("x-acme-external-trace-action-id")
+            assertThat(headerNames.gateway.specifiedLocale).isEqualTo("x-acme-specified-locale-language-tag")
+            assertThat(headerNames.gateway.specifiedTargetTenant).isEqualTo("x-acme-specified-target-tenant")
+            assertThat(headerNames.gateway.specifiedTargetCustomerId).isEqualTo("x-acme-specified-target-customer-id")
+            assertThat(headerNames.gateway.isTest).isEqualTo("x-acme-is-test")
+            assertThat(headerNames.gateway.toggles).isEqualTo("x-acme-toggles")
         }
     }
 }

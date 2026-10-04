@@ -20,5 +20,5 @@ object AccessAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.correlation.
 
     override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
 
-    override val all: Sequence<Schema> = sequenceOf(unauthenticatedAccess)
+    override val all: Sequence<Schema> = sequenceOf(unauthenticatedAccess, authenticatedAccess, access)
 }

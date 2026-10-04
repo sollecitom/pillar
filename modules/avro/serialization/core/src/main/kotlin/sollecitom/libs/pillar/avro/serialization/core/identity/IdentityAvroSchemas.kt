@@ -12,5 +12,5 @@ object IdentityAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.identity")
 
     override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
 
-    override val all: Sequence<Schema> = sequenceOf(id)
+    override val all: Sequence<Schema> = sequenceOf(idType, id)
 }

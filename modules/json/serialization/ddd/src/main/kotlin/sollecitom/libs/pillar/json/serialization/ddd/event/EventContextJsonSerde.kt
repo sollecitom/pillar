@@ -12,7 +12,7 @@ import org.json.JSONObject
 
 internal object EventContextJsonSerde : JsonSerde.SchemaAware<Event.Context> {
 
-    private const val SCHEMA_LOCATION = "/json/schemas/acme/common/event/EventContext.json"
+    private const val SCHEMA_LOCATION = "json/schemas/acme/common/event/EventContext.json"
     override val schema by lazy { jsonSchemaAt(SCHEMA_LOCATION) }
 
     override fun serialize(value: Event.Context) = JSONObject().apply {

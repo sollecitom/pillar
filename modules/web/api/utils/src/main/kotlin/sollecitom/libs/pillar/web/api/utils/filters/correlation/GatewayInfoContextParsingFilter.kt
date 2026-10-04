@@ -41,15 +41,13 @@ internal class GatewayInfoContextParsingFilter(private val key: InvocationContex
 
         val rawValue = request.rawInvocationContextValue(headerNames) ?: return null
         val jsonValue = runCatching { JSONObject(rawValue) }.getOrElse { error("Invalid value for header ${headerNames.invocationContext}. Must be a JSON object.") }
-        return InvocationContext.jsonSerde.deserialize(jsonValue) // TODO this should be forked!
+        return InvocationContext.jsonSerde.deserialize(jsonValue)
     }
 
     private fun Request.rawInvocationContextValue(headerNames: HttpHeaderNames.Correlation): String? {
 
-        val invocationContextHeaders = headers.filter { it.first == headerNames.invocationContext }.takeUnless { it.isEmpty() } ?: return null
-        return when {
-            invocationContextHeaders.size > 1 -> invocationContextHeaders.joinToString(separator = ",") { it.second!! }
-            else -> invocationContextHeaders.single().second.takeUnless { it.isNullOrBlank() }
-        }
+        val invocationContextValues = headerValues(headerNames.invocationContext)
+        check(invocationContextValues.size <= 1) { "Multiple values for header ${headerNames.invocationContext}. At most one is allowed." }
+        return invocationContextValues.singleOrNull().takeUnless { it.isNullOrBlank() }
     }
 }

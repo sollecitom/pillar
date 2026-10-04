@@ -63,6 +63,19 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         }
     }
 
+    @Test
+    fun `throwing while processing an event`() = testWithInvocationContext {
+
+        val messages = listOf<ReceivedMessageSpy<Event>>(testEvent1().asMessage(), testEvent2().asMessage())
+
+        messages.processAndWaitUntilAllAcked { throw IllegalStateException("An unexpected error occurred") }
+
+        assertThat(messages).each {
+            it.wasAcknowledgedAsFailed()
+            it.wasNotAcknowledgedSuccessfully()
+        }
+    }
+
     private fun <EVENT : Event> EVENT.asMessage() = ReceivedMessage.Companion.inMemorySpy(this)
 
     private fun testEvent1(id: Id = newId(), timestamp: Instant = clock.now(), context: Event.Context = Event.Context.create()) = TestEvent1(id, timestamp, context)

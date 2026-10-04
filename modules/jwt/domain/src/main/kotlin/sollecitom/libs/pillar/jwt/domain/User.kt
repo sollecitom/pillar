@@ -4,7 +4,7 @@ package sollecitom.libs.pillar.jwt.domain
 data class User(val id: String, val organization: Organization, val userName: String, val emailAddress: String, val firstName: String, val lastName: String, val otherNames: List<String>) {
 
     /** Full name assembled from first, other, and last names (e.g., "Jean Pierre Dupont"). */
-    val fullName: String = "$firstName${otherNames.takeUnless(List<String>::isEmpty)?.joinToString(separator = " ") ?: ""} $lastName"
+    val fullName: String = (listOf(firstName) + otherNames + lastName).joinToString(separator = " ")
 
     companion object
 }

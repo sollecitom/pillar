@@ -3,7 +3,6 @@ package sollecitom.libs.pillar.acme.business.domain
 import sollecitom.libs.pillar.acme.conventions.CompanyConventions
 import sollecitom.libs.pillar.http.api.conventions.companyWide
 import sollecitom.libs.pillar.messaging.conventions.AcmeMessagePropertyNames
-import sollecitom.libs.pillar.acme.business.domain.Example.defaultLocale
 import sollecitom.libs.swissknife.core.domain.identity.StringId
 import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
@@ -25,4 +24,4 @@ object Acme : CompanyConventions, MessagePropertyNames by AcmeMessagePropertyNam
 
 /** Resolves the locale from the current invocation context, falling back to the company default. */
 context(context: InvocationContext<*>)
-val locale: Locale get() = context.localeOrNull ?: defaultLocale
+val locale: Locale get() = context.localeOrNull ?: Acme.defaultLocale

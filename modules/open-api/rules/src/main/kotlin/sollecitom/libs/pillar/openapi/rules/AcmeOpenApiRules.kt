@@ -31,7 +31,7 @@ object AcmeOpenApiRules : ComplianceRuleSet<OpenAPI> {
     private val whitelistedHeadersAlphabet by lazy { (letters + '-').toSet() }
     private val requiredOperationFields by lazy { setOf(OpenApiField("operationId", Operation::getOperationId), OpenApiField("summary", Operation::getSummary)) }
     private val whitelistedOpenApiVersions by lazy { setOf("3.1.0", "3.0.0") }
-    private val versioningPathSegmentRegex = Regex("v[1-9]+\$")
+    private val versioningPathSegmentRegex = Regex("v[1-9][0-9]*")
 
     private val mandatoryRequestBodyRule by lazy { MandatoryRequestBodyRule(methods = setOf(POST to true, PUT to true, PATCH to true)) }
     private val forbiddenRequestBodyRule by lazy { ForbiddenRequestBodyRule(methods = setOf(GET, DELETE, HEAD, TRACE, OPTIONS)) }

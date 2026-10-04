@@ -1,6 +1,7 @@
 package sollecitom.libs.pillar.jwt.domain
 
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -192,4 +193,72 @@ class AcmeJwtSchemeTests {
             assertThat(parsed).isEqualTo(parameters)
         }
     }
+
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class `user names` {
+
+        @Test
+        fun `the full name claim separates every name with a space`() {
+
+            val parameters = parameters(user = user.copy(otherNames = listOf("William", "James")))
+
+            val claims = parameters.asClaims()
+
+            assertThat(claims.getString("name")).isEqualTo("John William James Doe")
+        }
+
+        @Test
+        fun `other names are parsed from the full name claim`() {
+
+            val claims = parameters(user = user).asClaims().put("name", "John William James Doe")
+
+            val parsed = AcmeJwtScheme.parseParametersFromClaims(claims)
+
+            assertThat(parsed.user.otherNames).isEqualTo(listOf("William", "James"))
+        }
+
+        @Test
+        fun `no other names are parsed when the full name doesn't start with the given name`() {
+
+            val claims = parameters(user = user.copy(firstName = "Johnny")).asClaims().put("name", "John Doe")
+
+            val parsed = AcmeJwtScheme.parseParametersFromClaims(claims)
+
+            assertThat(parsed.user.otherNames).isEmpty()
+        }
+
+        @Test
+        fun `no other names are parsed when the given name is only a partial word of the full name`() {
+
+            val claims = parameters(user = user.copy(firstName = "Jo")).asClaims().put("name", "John Doe")
+
+            val parsed = AcmeJwtScheme.parseParametersFromClaims(claims)
+
+            assertThat(parsed.user.otherNames).isEmpty()
+        }
+
+        @Test
+        fun `no other names are parsed when the full name doesn't end with the family name`() {
+
+            val claims = parameters(user = user).asClaims().put("name", "John William Smith")
+
+            val parsed = AcmeJwtScheme.parseParametersFromClaims(claims)
+
+            assertThat(parsed.user.otherNames).isEmpty()
+        }
+    }
+
+    private fun parameters(user: User) = AcmeJwtScheme.Parameters(
+        user = user,
+        access = access,
+        isUserEmailAddressVerified = true,
+        authentication = authentication,
+        token = token,
+        session = session,
+        targetApplication = targetApplication,
+        issuer = issuer,
+        openIdConnectParams = openIdConnectParams,
+        authorizationHeaderType = "Bearer"
+    )
 }

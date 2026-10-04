@@ -79,10 +79,12 @@ internal class GatewayInvocationContextFilter(override val headerNames: HttpHead
 
     override fun invoke(next: HttpHandler) = { request: Request ->
 
-        runCatching { invocationContext(request) }.map { invocationContext -> next(request.withoutAuthorization().withInvocationContext(invocationContext)) }.getOrElse { it.asResponse() }
+        runCatching { invocationContext(request) }.map { invocationContext -> next(request.withoutAuthorization().withoutInvocationContext().withInvocationContext(invocationContext)) }.getOrElse { it.asResponse() }
     }
 
     private fun Request.withoutAuthorization(): Request = removeHeader("Authorization")
+
+    private fun Request.withoutInvocationContext(): Request = removeHeader(headerNames.correlation.invocationContext)
 
     private fun invocationContext(request: Request): InvocationContext<Access> {
 

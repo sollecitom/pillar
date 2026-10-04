@@ -16,6 +16,7 @@ class OriginJsonSerializationTests : AcmeJsonSerdeTestSpecification<Origin>, Cor
 
     override fun parameterizedArguments() = listOf(
         "with-V4-ip-address" to Origin.create(ipAddress = IpAddress.create("127.0.0.1")),
-        "with-V6-ip-address" to Origin.create(ipAddress = IpAddress.create("::1"))
+        "with-V6-ip-address" to Origin.create(ipAddress = IpAddress.create("::1")),
+        "without-ip-address" to Origin.create().copy(ipAddress = null)
     )
 }

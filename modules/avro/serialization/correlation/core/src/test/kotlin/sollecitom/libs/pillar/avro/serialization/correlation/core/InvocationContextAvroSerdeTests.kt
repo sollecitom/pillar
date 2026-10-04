@@ -8,6 +8,8 @@ import sollecitom.libs.swissknife.correlation.core.domain.tenancy.Tenant
 import sollecitom.libs.swissknife.correlation.core.test.utils.context.authenticated
 import sollecitom.libs.swissknife.correlation.core.test.utils.context.unauthenticated
 import sollecitom.libs.swissknife.correlation.core.test.utils.tenancy.create
+import sollecitom.libs.swissknife.correlation.core.domain.access.customer.Customer
+import sollecitom.libs.swissknife.correlation.core.test.utils.customer.create
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import java.util.*
@@ -23,6 +25,8 @@ private class InvocationContextAvroSerdeTests : AcmeAvroSerdeTestSpecification<I
         "authenticated-specified-locale" to InvocationContext.authenticated(specifiedLocale = { Locale.US }),
         "authenticated-specified-target-tenant" to InvocationContext.authenticated(specifiedTargetTenant = { Tenant.create() }),
         "unauthenticated-specified-locale" to InvocationContext.unauthenticated(specifiedLocale = { Locale.US }),
-        "unauthenticated-specified-target-tenant" to InvocationContext.unauthenticated(specifiedTargetTenant = { Tenant.create() })
+        "unauthenticated-specified-target-tenant" to InvocationContext.unauthenticated(specifiedTargetTenant = { Tenant.create() }),
+        "authenticated-specified-target-customer" to InvocationContext.authenticated(specifiedTargetCustomer = { Customer.create() }),
+        "unauthenticated-specified-target-customer" to InvocationContext.unauthenticated(specifiedTargetCustomer = { Customer.create(isTest = true) })
     )
 }

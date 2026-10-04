@@ -120,14 +120,12 @@ Pillar makes heavy use of Kotlin context receivers. Convention interfaces (e.g.,
 
 4. **Access scope**: `accessScope()` always returns an empty container stack with a TODO to `"add support for access scopes after we'll support this in JWT via custom attributes"`.
 
-5. **Invocation context forking**: In `GatewayInfoContextParsingFilter`, there is a TODO noting `"this should be forked!"` when deserializing invocation context from the gateway header.
-
-6. **Tracing headers OpenAPI rules**: `AcmeTracingHeadersOpenApiRules` has an empty rule set with a comment `"put some rules here"`.
+5. **Tracing headers OpenAPI rules**: `AcmeTracingHeadersOpenApiRules` has an empty rule set with a comment `"put some rules here"`.
 
 ## Build and Dependency Conventions
 
-- **Build system**: Gradle with Kotlin DSL, using version catalogs (`libs.versions.toml` from swissknife).
-- **Composite builds**: `settings.gradle.kts` uses `includeBuild("../swissknife")` and `includeBuild("../acme-schema-catalogue")` for local development.
+- **Build system**: Gradle with Kotlin DSL, using its own version catalog (`gradle/libs.versions.toml`).
+- **Local dependencies**: `settings.gradle.kts` resolves swissknife and acme-schema-catalogue artifacts from `mavenLocal()` (no composite builds).
 - **Plugin conventions**: Custom Gradle plugins from `../gradle-plugins` (e.g., `sollecitom.dependency-update-conventions`, `sollecitom.aggregate-test-metrics-conventions`).
 - **Module naming**: Modules are declared via `module("segment1", "segment2", ...)` which creates a flat Gradle project name like `segment1-segment2`.
 - **Feature preview**: `TYPESAFE_PROJECT_ACCESSORS` is enabled for type-safe project dependency references.

@@ -5,10 +5,10 @@ http4k = "6.61.0.0"
 guava = "33.7.2-jre"
 test-containers = "2.0.5"
 micrometer = "1.17.1"
-sollecitom-swissknife = "1.0.35"
-sollecitom-acme-schema-catalogue = "1.0.6"
+sollecitom-swissknife = "1.0.36"
+sollecitom-acme-schema-catalogue = "1.0.7"
 # plugins
-sollecitom-gradle-plugins = "1.0.32"
+sollecitom-gradle-plugins = "1.0.33"
 palantir-git-plugin = "5.1.0"
 
 [libraries]

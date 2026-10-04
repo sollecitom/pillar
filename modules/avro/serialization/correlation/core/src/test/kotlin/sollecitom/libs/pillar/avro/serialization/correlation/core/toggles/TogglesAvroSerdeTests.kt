@@ -13,6 +13,7 @@ private class TogglesAvroSerdeTests : AcmeAvroSerdeTestSpecification<Toggles>, C
     override val avroSerde = Toggles.avroSerde
 
     override fun parameterizedArguments() = listOf(
+        "empty" to Toggles(values = emptySet()),
         "single" to Toggles(values = setOf(BooleanToggleValue(id = newId.external(), value = true))),
         "multiple" to Toggles(values = setOf(BooleanToggleValue(id = newId.external(), value = true), EnumToggleValue(id = newId.external(), value = "A_TOGGLE"), IntegerToggleValue(id = newId.external(), value = 23), DecimalToggleValue(id = newId.external(), value = -71.23))),
     )

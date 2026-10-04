@@ -17,5 +17,6 @@ private class AccountAvroSerdeTests : AcmeAvroSerdeTestSpecification<Account>, C
         "internal-service-account" to ServiceAccount.Internal.create(),
         "external-service-account" to ServiceAccount.External.create(),
         "user-account" to UserAccount.create(),
+        "user-account-without-locale" to UserAccount.create().copy(locale = null),
     )
 }

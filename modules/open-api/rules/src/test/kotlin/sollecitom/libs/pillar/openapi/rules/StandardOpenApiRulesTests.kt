@@ -14,15 +14,22 @@ import sollecitom.libs.swissknife.logging.standard.configuration.StandardLogging
 import sollecitom.libs.swissknife.logging.standard.configuration.applyTo
 import sollecitom.libs.swissknife.openapi.builder.OpenApiBuilder
 import sollecitom.libs.swissknife.openapi.builder.buildOpenApi
+import sollecitom.libs.swissknife.openapi.builder.content
+import sollecitom.libs.swissknife.openapi.builder.mediaTypes
 import sollecitom.libs.swissknife.openapi.builder.post
+import sollecitom.libs.swissknife.openapi.builder.requestBody
+import sollecitom.libs.swissknife.openapi.builder.responses
 import sollecitom.libs.swissknife.openapi.checking.checker.model.OpenApiFields
 import sollecitom.libs.swissknife.openapi.checking.checker.model.ParameterLocation
 import sollecitom.libs.swissknife.openapi.checking.checker.rules.MandatoryInfoFieldsRule
+import sollecitom.libs.swissknife.openapi.checking.checker.rules.MandatoryRequestBodyExampleRule
+import sollecitom.libs.swissknife.openapi.checking.checker.rules.MandatoryResponseBodyExampleRule
 import sollecitom.libs.swissknife.openapi.checking.checker.rules.WhitelistedAlphabetPathNameRule
 import sollecitom.libs.swissknife.openapi.checking.checker.rules.WhitelistedOpenApiVersionFieldRule
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.PathItem.HttpMethod.*
 import io.swagger.v3.oas.models.SpecVersion
+import io.swagger.v3.oas.models.media.StringSchema
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -140,6 +147,34 @@ private class StandardOpenApiRulesTests : OpenApiTestSpecification {
         }
 
         @Test
+        fun `trailing version path segment with multi-digit number works`() {
+
+            val path = "/commands/register-user/v10"
+            val api = openApi {
+                path(path)
+            }
+
+            val result = api.checkAgainstRules(AcmeOpenApiRules)
+
+            assertThat(result).isCompliant()
+        }
+
+        @Test
+        fun `cannot contain trailing version path segment with a leading zero`() {
+
+            val invalidPath = "/commands/register-user/v01"
+            val api = openApi {
+                path(invalidPath)
+            }
+
+            val result = api.checkAgainstRules(AcmeOpenApiRules)
+
+            assertThat(result).isNotCompliantWithOnlyViolation<WhitelistedAlphabetPathNameRule.Violation, OpenAPI> { violation ->
+                assertThat(violation.path).isEqualTo(invalidPath)
+            }
+        }
+
+        @Test
         fun `cannot contain trailing invalid path segment that looks like a version with number`() {
 
             val invalidPath = "/commands/register-user/av1"
@@ -173,6 +208,19 @@ private class StandardOpenApiRulesTests : OpenApiTestSpecification {
         fun `leading version path segment with number works`() {
 
             val path = "/v1/commands/register-user"
+            val api = openApi {
+                path(path)
+            }
+
+            val result = api.checkAgainstRules(AcmeOpenApiRules)
+
+            assertThat(result).isCompliant()
+        }
+
+        @Test
+        fun `leading version path segment with multi-digit number works`() {
+
+            val path = "/v10/commands/register-user"
             val api = openApi {
                 path(path)
             }
@@ -281,7 +329,7 @@ private class StandardOpenApiRulesTests : OpenApiTestSpecification {
         inner class Cookies : OperationParametersTestSpecification.WithDisallowedUppercaseLetters, OpenApiTestSpecification by this@StandardOpenApiRulesTests {
 
             override val validParameterName = "some-session-id"
-            override val parameterLocation = ParameterLocation.path
+            override val parameterLocation = ParameterLocation.cookie
         }
 
         @Nested
@@ -391,6 +439,71 @@ private class StandardOpenApiRulesTests : OpenApiTestSpecification {
             override val validSummary get() = this@StandardOpenApiRulesTests.validSummary
 
             override fun openApi(version: OpenApiBuilder.OpenApiVersion, customize: OpenApiBuilder.() -> Unit) = this@StandardOpenApiRulesTests.openApi(version, customize)
+        }
+    }
+
+    @Nested
+    @TestInstance(PER_CLASS)
+    inner class JsonExamples {
+
+        @Test
+        fun `a JSON request body must have an example`() {
+
+            val api = openApi {
+                path(validPath) {
+                    post {
+                        withValidFields()
+                        requestBody {
+                            required = true
+                            description = "Some request body description."
+                            content {
+                                mediaTypes {
+                                    add("application/json") {
+                                        schema = StringSchema()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            val result = api.checkAgainstRules(AcmeOpenApiRules)
+
+            assertThat(result).isNotCompliantWithOnlyViolation<MandatoryRequestBodyExampleRule.Violation, OpenAPI> { violation ->
+                assertThat(violation.mediaTypesWithoutMandatoryExample).containsOnly("application/json")
+            }
+        }
+
+        @Test
+        fun `a JSON response body must have an example`() {
+
+            val api = openApi {
+                path(validPath) {
+                    post {
+                        withValidFields()
+                        setValidRequestBody()
+                        responses {
+                            status(200) {
+                                description = "Some response description."
+                                content {
+                                    mediaTypes {
+                                        add("application/json") {
+                                            schema = StringSchema()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            val result = api.checkAgainstRules(AcmeOpenApiRules)
+
+            assertThat(result).isNotCompliantWithOnlyViolation<MandatoryResponseBodyExampleRule.Violation, OpenAPI> { violation ->
+                assertThat(violation.responsesWithoutAMandatoryExample).isEqualTo(mapOf("200" to setOf("application/json")))
+            }
         }
     }
 

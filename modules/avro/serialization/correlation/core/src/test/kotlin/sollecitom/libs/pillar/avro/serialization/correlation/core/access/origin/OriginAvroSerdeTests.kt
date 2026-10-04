@@ -16,6 +16,7 @@ private class OriginAvroSerdeTests : AcmeAvroSerdeTestSpecification<Origin>, Cor
 
     override fun parameterizedArguments() = listOf(
         "V4_ipAddress" to Origin.create(ipAddress = IpAddress.V4.localhost),
-        "V6_ipAddress" to Origin.create(ipAddress = IpAddress.V6.localhost)
+        "V6_ipAddress" to Origin.create(ipAddress = IpAddress.V6.localhost),
+        "without-ip-address" to Origin.create().copy(ipAddress = null)
     )
 }

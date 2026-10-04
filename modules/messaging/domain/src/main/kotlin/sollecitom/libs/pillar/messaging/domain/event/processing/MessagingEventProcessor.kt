@@ -12,8 +12,10 @@ import sollecitom.libs.swissknife.ddd.domain.EventProcessor
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.messaging.domain.event.processing.EventProcessingResult.*
 import sollecitom.libs.swissknife.messaging.domain.event.processing.ProcessEvent
+import sollecitom.libs.swissknife.messaging.domain.event.processing.asProcessingFailure
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.domain.message.connector.MessageConnector
+import kotlin.coroutines.cancellation.CancellationException
 
 private class MessagingEventProcessor<in EVENT : Event>(
     private val processEvent: ProcessEvent<EVENT>,
@@ -25,7 +27,7 @@ private class MessagingEventProcessor<in EVENT : Event>(
     val processing = messages.processWithForkedContext(start = LAZY, scope = scope) { message ->
 
         logger.info { "Received message with ID ${message.id.stringRepresentation}, key: ${message.key}, and value ${message.value}" }
-        when (val result = processEvent(message)) {
+        when (val result = runCatching { processEvent(message) }.getOrElse { error -> if (error is CancellationException) throw error else error.asProcessingFailure() }) {
             is Success -> {
                 logger.info { "Successfully processed message with ID ${message.id.stringRepresentation}, key: ${message.key}, and value ${message.value}" }
                 message.acknowledge()
