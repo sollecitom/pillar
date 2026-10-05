@@ -1,6 +1,6 @@
 package sollecitom.libs.pillar.web.api.utils.filters.correlation
 
-import sollecitom.libs.pillar.json.serialization.correlation.core.context.jsonSerde
+import sollecitom.libs.pillar.web.api.utils.fromHeaderValue
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
@@ -8,7 +8,6 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.forked
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.headers.HttpHeaderNames
 import org.http4k.core.*
-import org.json.JSONObject
 import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
 
 /** Creates a filter that parses the invocation context from a gateway-forwarded header and forks it for the current invocation. */
@@ -40,8 +39,7 @@ internal class GatewayInfoContextParsingFilter(private val key: InvocationContex
     private fun invocationContext(request: Request, headerNames: HttpHeaderNames.Correlation): InvocationContext<Access>? {
 
         val rawValue = request.rawInvocationContextValue(headerNames) ?: return null
-        val jsonValue = runCatching { JSONObject(rawValue) }.getOrElse { error("Invalid value for header ${headerNames.invocationContext}. Must be a JSON object.") }
-        return InvocationContext.jsonSerde.deserialize(jsonValue)
+        return runCatching { InvocationContext.fromHeaderValue(rawValue) }.getOrElse { error("Invalid value for header ${headerNames.invocationContext}. Must be the base64url encoding of an invocation context JSON object.") }
     }
 
     private fun Request.rawInvocationContextValue(headerNames: HttpHeaderNames.Correlation): String? {

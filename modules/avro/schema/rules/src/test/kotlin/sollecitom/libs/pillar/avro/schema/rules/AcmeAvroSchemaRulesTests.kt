@@ -3,7 +3,14 @@ package sollecitom.libs.pillar.avro.schema.rules
 import sollecitom.libs.pillar.avro.schema.rules.specs.FieldNamesTestSpecification
 import sollecitom.libs.pillar.avro.schema.rules.specs.NamespaceTestSpecification
 import sollecitom.libs.pillar.avro.schema.rules.specs.SchemaNameTestSpecification
+import assertk.assertThat
+import org.apache.avro.Schema
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import sollecitom.libs.swissknife.avro.schema.checker.MandatoryEnumDefaultSymbolRule
+import sollecitom.libs.swissknife.avro.schema.checker.NullFirstNullableUnionsRule
+import sollecitom.libs.swissknife.compliance.checker.domain.checkAgainstRules
+import sollecitom.libs.swissknife.compliance.checker.test.utils.isNotCompliantWithOnlyViolation
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 
@@ -26,5 +33,25 @@ class AcmeAvroSchemaRulesTests {
     inner class FieldNames : FieldNamesTestSpecification {
 
         override val rules get() = AcmeAvroSchemaRules
+    }
+
+    @Test
+    fun `nullable fields must list null first and default to null`() {
+
+        val schema = Schema.Parser().parse("""{"type":"record","namespace":"acme.test","name":"Agent","fields":[{"name":"name","type":["null","string"]}]}""")
+
+        val result = schema.checkAgainstRules(AcmeAvroSchemaRules)
+
+        assertThat(result).isNotCompliantWithOnlyViolation(NullFirstNullableUnionsRule.Violation.MissingNullDefault(path = "acme.test.Agent.name"))
+    }
+
+    @Test
+    fun `enums must default to UNKNOWN`() {
+
+        val schema = Schema.Parser().parse("""{"type":"enum","namespace":"acme.test","name":"Colour","symbols":["RED"]}""")
+
+        val result = schema.checkAgainstRules(AcmeAvroSchemaRules)
+
+        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryEnumDefaultSymbolRule.Violation(enumName = "acme.test.Colour", symbol = "UNKNOWN"))
     }
 }

@@ -21,6 +21,7 @@ val CurrencyAmount.Companion.avroSerde: AvroSerde<CurrencyAmount> get() = Curren
 
 private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {
 
+    private val UNKNOWN_CURRENCY = Name("UNKNOWN")
     override val schema get() = CurrencyAmount.avroSchema
 
     override fun serialize(value: CurrencyAmount): GenericRecord = buildRecord {
@@ -37,6 +38,7 @@ private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {
             Currency.USD.textualCode -> Currency.USD
             Currency.EUR.textualCode -> Currency.EUR
             Currency.JPY.textualCode -> Currency.JPY
+            UNKNOWN_CURRENCY -> error("Currency code is '$UNKNOWN_CURRENCY': the writer used a currency this reader doesn't know")
             else -> error("Unsupported currency code '${currencyCode}'")
         }
         GenericCurrencyAmount(units = units, currency = currency)

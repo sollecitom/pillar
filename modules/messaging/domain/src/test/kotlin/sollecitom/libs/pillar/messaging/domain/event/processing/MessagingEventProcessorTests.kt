@@ -1,7 +1,14 @@
 package sollecitom.libs.pillar.messaging.domain.event.processing
 
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.each
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import kotlin.time.Instant
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -15,11 +22,14 @@ import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.correlation.core.test.utils.testWithInvocationContext
 import sollecitom.libs.swissknife.ddd.domain.Event
+import sollecitom.libs.swissknife.ddd.domain.EventProcessor
 import sollecitom.libs.swissknife.ddd.domain.Happening
 import sollecitom.libs.swissknife.ddd.test.utils.create
 import sollecitom.libs.swissknife.messaging.domain.event.processing.EventProcessingResult
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.test.utils.message.*
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @TestInstance(PER_CLASS)
 class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Companion.testProvider {
@@ -31,10 +41,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
 
         messages.processAndWaitUntilAllAcked { EventProcessingResult.Success }
 
-        assertThat(messages).each {
-            it.wasAcknowledgedSuccessfully()
-            it.wasNotAcknowledgedAsFailed()
-        }
+        assertThat(messages).each { it.wasAcknowledgedSuccessfully() }
     }
 
     @Test
@@ -44,36 +51,63 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
 
         messages.processAndWaitUntilAllAcked { EventProcessingResult.NoOp }
 
-        assertThat(messages).each {
-            it.wasAcknowledgedSuccessfully()
-            it.wasNotAcknowledgedAsFailed()
-        }
+        assertThat(messages).each { it.wasAcknowledgedSuccessfully() }
     }
 
     @Test
-    fun `failing to process an event`() = testWithInvocationContext {
+    fun `a message that fails to process is retried in place until it succeeds, before the next one is processed`() = runTest {
 
-        val messages = listOf<ReceivedMessageSpy<Event>>(testEvent1().asMessage(), testEvent2().asMessage())
+        val failing = testEvent1()
+        val following = testEvent2()
+        val messages = listOf<ReceivedMessageSpy<Event>>(failing.asMessage(), following.asMessage())
+        val attempts = mutableListOf<Event>()
+        val processor = EventProcessor.withMessages(messages.asFlow(), scope = backgroundScope, processEvent = { message ->
+            attempts += message.value
+            if (message.value == failing && attempts.size <= 2) error("A temporary error occurred")
+            EventProcessingResult.Success
+        })
 
-        messages.processAndWaitUntilAllAcked { EventProcessingResult.Failure(IllegalStateException("A temporary error occurred")) }
+        processor.start()
+        messages.waitUntilAllAcked()
 
-        assertThat(messages).each {
-            it.wasAcknowledgedAsFailed()
-            it.wasNotAcknowledgedSuccessfully()
-        }
+        assertThat(attempts).containsExactly(failing, failing, failing, following)
+        assertThat(testScheduler.currentTime).isEqualTo(3.seconds.inWholeMilliseconds)
     }
 
     @Test
-    fun `throwing while processing an event`() = testWithInvocationContext {
+    fun `the delay between retries doubles up to a minute`() = runTest {
 
-        val messages = listOf<ReceivedMessageSpy<Event>>(testEvent1().asMessage(), testEvent2().asMessage())
+        val message = testEvent1().asMessage()
+        var attempts = 0
+        val processor = EventProcessor.withMessages(flowOf(message), scope = backgroundScope, processEvent = {
+            if (++attempts <= 8) error("A temporary error occurred")
+            EventProcessingResult.Success
+        })
 
-        messages.processAndWaitUntilAllAcked { throw IllegalStateException("An unexpected error occurred") }
+        processor.start()
+        message.awaitSuccessfulAck()
 
-        assertThat(messages).each {
-            it.wasAcknowledgedAsFailed()
-            it.wasNotAcknowledgedSuccessfully()
-        }
+        assertThat(testScheduler.currentTime).isEqualTo((1 + 2 + 4 + 8 + 16 + 32 + 60 + 60).seconds.inWholeMilliseconds)
+    }
+
+    @Test
+    fun `stopping the processor stops retrying a failing message`() = runTest {
+
+        val message = testEvent1().asMessage()
+        var attempts = 0
+        val processor = EventProcessor.withMessages(flowOf(message), scope = backgroundScope, processEvent = {
+            attempts++
+            error("A bug")
+        })
+        processor.start()
+        delay(10.seconds)
+        val attemptsBeforeStopping = attempts
+
+        processor.stop()
+        delay(10.minutes)
+
+        assertThat(attempts).isEqualTo(attemptsBeforeStopping)
+        assertThat(message.wasAcknowledgedSuccessfully).isFalse()
     }
 
     private fun <EVENT : Event> EVENT.asMessage() = ReceivedMessage.Companion.inMemorySpy(this)

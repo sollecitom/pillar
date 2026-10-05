@@ -31,6 +31,7 @@ private object IdAvroSerde : AvroSerde<Id> {
             Type.UUID -> UUID(stringValue)
             Type.UUIDV7 -> UUIDv7(stringValue)
             Type.KSUID -> KSUID(stringValue)
+            Type.UNKNOWN -> error("Id type is '${Type.UNKNOWN}': the writer used an Id type this reader doesn't know")
             else -> error("Unknown Id type '${type}'")
         }
     }
@@ -55,5 +56,6 @@ private object IdAvroSerde : AvroSerde<Id> {
         const val UUID = "UUID"
         const val UUIDV7 = "UUIDV7"
         const val STRING = "STRING"
+        const val UNKNOWN = "UNKNOWN"
     }
 }

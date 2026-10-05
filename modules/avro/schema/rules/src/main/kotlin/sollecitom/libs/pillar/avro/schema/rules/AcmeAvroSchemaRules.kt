@@ -9,6 +9,7 @@ import org.apache.avro.Schema
 object AcmeAvroSchemaRules : ComplianceRuleSet<Schema> {
 
     private const val MANDATORY_NAMESPACE_PREFIX = "acme."
+    private const val ENUM_DEFAULT_SYMBOL = "UNKNOWN"
     private val whitelistedSchemaNameAlphabet by lazy { (lowercaseCaseLetters + upperCaseLetters + '_').toSet() }
     private val whitelistedNamespaceAlphabet by lazy { (lowercaseCaseLetters + '.' + '_').toSet() }
     private val whitelistedFieldNameAlphabet by lazy { (lowercaseCaseLetters + '_').toSet() }
@@ -19,7 +20,9 @@ object AcmeAvroSchemaRules : ComplianceRuleSet<Schema> {
             UppercaseSchemaNameRule,
             MandatoryNamespacePrefixRule(prefix = MANDATORY_NAMESPACE_PREFIX),
             WhitelistedAlphabetNamespaceNameRule(alphabet = whitelistedNamespaceAlphabet),
-            WhitelistedAlphabetFieldNameRule(alphabet = whitelistedFieldNameAlphabet)
+            WhitelistedAlphabetFieldNameRule(alphabet = whitelistedFieldNameAlphabet),
+            NullFirstNullableUnionsRule,
+            MandatoryEnumDefaultSymbolRule(symbol = ENUM_DEFAULT_SYMBOL)
         )
     }
 }

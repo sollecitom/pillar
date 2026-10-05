@@ -46,21 +46,24 @@ internal interface NamespaceTestSpecification {
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "name",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "version",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 }
               ]
             }
@@ -90,21 +93,24 @@ internal interface NamespaceTestSpecification {
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "name",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "version",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 }
               ]
             }

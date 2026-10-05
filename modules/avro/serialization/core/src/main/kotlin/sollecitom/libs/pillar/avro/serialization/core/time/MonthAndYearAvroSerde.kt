@@ -16,6 +16,7 @@ val YearMonth.Companion.avroSerde: AvroSerde<YearMonth> get() = MonthAndYearAvro
 
 private object MonthAndYearAvroSerde : AvroSerde<YearMonth> {
 
+    private const val UNKNOWN_MONTH = "UNKNOWN"
     override val schema get() = YearMonth.avroSchema
 
     override fun serialize(value: YearMonth): GenericRecord = buildRecord {
@@ -27,7 +28,7 @@ private object MonthAndYearAvroSerde : AvroSerde<YearMonth> {
     override fun deserialize(value: GenericRecord) = with(value) {
 
         val year = getInt(Fields.YEAR)
-        val month = getEnum(Fields.MONTH).let(Month::valueOf)
+        val month = getEnum(Fields.MONTH).also { check(it != UNKNOWN_MONTH) { "Month is '$UNKNOWN_MONTH': the writer used a month this reader doesn't know" } }.let(Month::valueOf)
         YearMonth(year = year, month = month)
     }
 

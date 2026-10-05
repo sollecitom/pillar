@@ -32,6 +32,8 @@ believed downstream.
   toggles is gateway policy).
 - Trace: a new invocation id per request, plus the external invocation and action ids.
 - Origin: client IP and client info.
+- Forward it in the invocation-context header as the base64url encoding (no padding) of its UTF-8 JSON
+  (`InvocationContext.toHeaderValue()`), so proxies can't split or merge it on the commas in the JSON.
 
 **Sanitise what it forwards.**
 - Strip `Authorization` before forwarding.
@@ -55,15 +57,15 @@ believed downstream.
 | Responsibility | Current state |
 |---|---|
 | JWT audience | skipped (`setSkipDefaultAudienceValidation`); `aud` as an array is rejected |
-| JWT `nbf` | `JWT.isValidAtTime` ignores it |
 | Issuer per domain | `request.uri.authority` is empty on Jetty, so every request uses `issuerForDomain("")` |
 | Verified-token cache | keyed by token only |
 | Tenant / customer | hard-coded `Example.tenant`; `Customer(isTest = false)` for every id |
 | Caller-supplied gateway headers | target customer/tenant, is-test and toggles are taken from the request without an entitlement check |
 | Error responses | every failure becomes `400` with the raw exception message |
 | Claims | `acr` other than `0`/`1`, missing `allowed-origins` or `session_state` fail the request |
+| Organisation | derived from the email domain, which is wrong for subdomains and differently-cased domains |
 | Machine clients of event endpoints | no authentication scheme |
 | Route-level authorisation | none |
 | Body size limits | none |
-| Client-supplied invocation-context header | stripped; duplicates rejected (done) |
-| Error logging | method and path only (done) |
+| Client-supplied invocation-context header | not stripped: with the gateway's own it makes two, which the service rejects with `400` |
+| Error logging | validation failures are logged with the full request URI, query included |

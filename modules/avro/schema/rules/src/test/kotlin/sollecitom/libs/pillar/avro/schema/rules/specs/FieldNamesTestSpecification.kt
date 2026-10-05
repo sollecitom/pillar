@@ -39,21 +39,24 @@ internal interface FieldNamesTestSpecification {
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "name",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "version",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 }
               ]
             }

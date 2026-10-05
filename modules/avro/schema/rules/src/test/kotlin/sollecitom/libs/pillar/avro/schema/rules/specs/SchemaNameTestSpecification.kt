@@ -39,21 +39,24 @@ internal interface SchemaNameTestSpecification {
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "name",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "version",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 }
               ]
             }
@@ -83,21 +86,24 @@ internal interface SchemaNameTestSpecification {
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "name",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 },
                 {
                   "name": "version",
                   "type": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 }
               ]
             }

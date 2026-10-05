@@ -15,6 +15,7 @@ val Instant.Companion.avroSerde: AvroSerde<Instant> get() = InstantAvroSerde
 private object InstantAvroSerde : AvroSerde<Instant> {
 
     private const val ISO_8601_FORMAT = "ISO_8601"
+    private const val UNKNOWN_FORMAT = "UNKNOWN"
     override val schema get() = Instant.avroSchema
 
     override fun serialize(value: Instant): GenericRecord = buildRecord {
@@ -26,6 +27,7 @@ private object InstantAvroSerde : AvroSerde<Instant> {
     override fun deserialize(value: GenericRecord) = with(value) {
 
         val format = getEnum(Fields.format)
+        check(format != UNKNOWN_FORMAT) { "Timestamp format is '$UNKNOWN_FORMAT': the writer used a format this reader doesn't know" }
         check(format == ISO_8601_FORMAT) { "Expected format to be '$ISO_8601_FORMAT' but was '$format'" }
         val stringValue = getString(Fields.value)
         Instant.parse(stringValue)

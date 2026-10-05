@@ -5,8 +5,6 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.CoroutineStart.LAZY
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import sollecitom.libs.pillar.correlation.logging.utils.withLoggingContext
 import sollecitom.libs.swissknife.core.utils.TimeGenerator
@@ -24,10 +22,14 @@ fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(start:
 /** Launches a coroutine in the given [scope] that processes each message with a forked invocation context and structured logging. */
 context(_: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
 fun <EVENT : Event> Flow<ReceivedMessage<EVENT>>.processWithForkedContext(scope: CoroutineScope, start: CoroutineStart = LAZY, action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit): Job = scope.launch(start = start) {
-    onEach { message ->
-        val invocationContext = message.value.forkAndLogInvocationContext()
-        withLoggingContext(invocationContext) {
-            action(invocationContext, message)
-        }
-    }.collect()
+    collect { message -> message.processWithForkedContext(action) }
+}
+
+/** Processes this message with a forked invocation context and structured logging. */
+context(_: UniqueIdGenerator, _: TimeGenerator, _: Loggable)
+suspend fun <EVENT : Event> ReceivedMessage<EVENT>.processWithForkedContext(action: suspend context(InvocationContext<*>) (message: ReceivedMessage<EVENT>) -> Unit) {
+    val invocationContext = value.forkAndLogInvocationContext()
+    withLoggingContext(invocationContext) {
+        action(invocationContext, this)
+    }
 }
