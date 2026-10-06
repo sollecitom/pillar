@@ -1,11 +1,10 @@
 package sollecitom.libs.pillar.avro.serialization.core.time
 
-import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
-import org.apache.avro.generic.GenericRecordBuilder
-import org.apache.avro.generic.GenericData
-import assertk.assertions.messageContains
-import assertk.assertThat
+import assertk.assertFailure
+import assertk.assertions.hasMessage
+import assertk.assertions.isInstanceOf
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import sollecitom.libs.pillar.avro.serialization.test.utils.AcmeAvroSerdeTestSpecification
+import sollecitom.libs.pillar.avro.serialization.test.utils.serializeWithUnknownEnumSymbol
 import sollecitom.libs.swissknife.core.domain.time.monthAndYear
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
@@ -32,14 +32,10 @@ class MonthAndYearAvroSerdeTests : AcmeAvroSerdeTestSpecification<YearMonth>, Co
     )
 
     @Test
-    fun `a month this reader does not know fails with a clear error`() {
+    fun `an unknown month fails with a clear error`() {
 
-        val record = GenericRecordBuilder(avroSerde.schema).set("month", unknownSymbolOf("month")).set("year", 2026).build()
+        val record = avroSerde.serializeWithUnknownEnumSymbol(YearMonth(2026, Month.OCTOBER), fieldName = "month")
 
-        val result = runCatching { avroSerde.deserialize(record) }
-
-        assertThat(result).failedThrowing<IllegalStateException>().messageContains("the writer used a month this reader doesn't know")
+        assertFailure { avroSerde.deserialize(record) }.isInstanceOf<IllegalStateException>().hasMessage("Field 'month' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
     }
-
-    private fun unknownSymbolOf(fieldName: String) = GenericData.EnumSymbol(avroSerde.schema.getField(fieldName).schema(), "UNKNOWN")
 }

@@ -83,7 +83,7 @@ object AcmeJwtScheme {
         val firstName = getRequiredString(Fields.GIVEN_NAME)
         val lastName = getRequiredString(Fields.FAMILY_NAME)
         val fullName = getRequiredString(Fields.FULL_NAME)
-        val otherNames = fullName.takeIf { it.startsWith("$firstName ") && it.endsWith(" $lastName") }?.removePrefix(firstName)?.removeSuffix(lastName)?.split(" ")?.filterNot(String::isBlank) ?: emptyList()
+        val otherNames = if (fullName.startsWith("$firstName ") && fullName.endsWith(" $lastName")) fullName.removePrefix(firstName).removeSuffix(lastName).split(" ").filterNot(String::isBlank) else emptyList()
         return User(id = id, organization = organization, userName = userName, emailAddress = emailAddress.value, firstName = firstName, lastName = lastName, otherNames = otherNames)
     }
 

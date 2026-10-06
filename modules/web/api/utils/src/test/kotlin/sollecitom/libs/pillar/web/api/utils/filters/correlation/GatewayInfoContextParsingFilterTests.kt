@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import sollecitom.libs.pillar.json.serialization.correlation.core.context.jsonSerde
+import sollecitom.libs.pillar.web.api.utils.toHeaderValue
 import sollecitom.libs.pillar.web.api.utils.withInvocationContext
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
@@ -26,8 +27,8 @@ import sollecitom.libs.swissknife.web.api.utils.headers.of
 @TestInstance(PER_CLASS)
 class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenerator.testProvider {
 
-    private val headerName = "x-acme-invocation-context"
     private val headerNames = HttpHeaderNames.of(companyName = "acme")
+    private val headerName = headerNames.correlation.invocationContext
 
     @Test
     fun `the invocation context written by the gateway is parsed and forked`() {
@@ -43,7 +44,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
 
         assertThat(response.status).isEqualTo(OK)
         assertThat(parsedContext!!.access).isEqualTo(context.access)
-        assertThat(parsedContext!!.trace.parent).isEqualTo(context.trace.invocation)
+        assertThat(parsedContext.trace.parent).isEqualTo(context.trace.invocation)
     }
 
     @Test
@@ -54,9 +55,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
             parsedContext = InvocationContextFilter.key.mandatory(request)
             Response(OK)
         }
-        val encodedContext = Request(GET, "/").withInvocationContext(headerName, InvocationContext.authenticated()).header(headerName)!!
-
-        val response = handler(Request(GET, "/").header("X-Acme-Invocation-Context", encodedContext))
+        val response = handler(Request(GET, "/").header("X-Acme-Invocation-Context", InvocationContext.authenticated().toHeaderValue()))
 
         assertThat(response.status).isEqualTo(OK)
         assertThat(parsedContext).isNotNull()

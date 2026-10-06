@@ -5,6 +5,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.each
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flowOf
@@ -55,6 +56,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
     }
 
     @Test
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun `a message that fails to process is retried in place until it succeeds, before the next one is processed`() = runTest {
 
         val failing = testEvent1()
@@ -75,6 +77,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
     }
 
     @Test
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun `the delay between retries doubles up to a minute`() = runTest {
 
         val message = testEvent1().asMessage()

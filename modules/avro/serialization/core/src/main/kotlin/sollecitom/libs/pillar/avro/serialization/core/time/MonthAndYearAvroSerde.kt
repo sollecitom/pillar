@@ -5,7 +5,7 @@ import kotlinx.datetime.YearMonth
 import org.apache.avro.generic.GenericRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
-import sollecitom.libs.swissknife.avro.serialization.utils.getEnum
+import sollecitom.libs.pillar.avro.serialization.core.getKnownEnum
 import sollecitom.libs.swissknife.avro.serialization.utils.getInt
 
 /** Avro schema for [YearMonth]. */
@@ -16,7 +16,6 @@ val YearMonth.Companion.avroSerde: AvroSerde<YearMonth> get() = MonthAndYearAvro
 
 private object MonthAndYearAvroSerde : AvroSerde<YearMonth> {
 
-    private const val UNKNOWN_MONTH = "UNKNOWN"
     override val schema get() = YearMonth.avroSchema
 
     override fun serialize(value: YearMonth): GenericRecord = buildRecord {
@@ -28,7 +27,7 @@ private object MonthAndYearAvroSerde : AvroSerde<YearMonth> {
     override fun deserialize(value: GenericRecord) = with(value) {
 
         val year = getInt(Fields.YEAR)
-        val month = getEnum(Fields.MONTH).also { check(it != UNKNOWN_MONTH) { "Month is '$UNKNOWN_MONTH': the writer used a month this reader doesn't know" } }.let(Month::valueOf)
+        val month = getKnownEnum(Fields.MONTH).let(Month::valueOf)
         YearMonth(year = year, month = month)
     }
 

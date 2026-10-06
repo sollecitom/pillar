@@ -1,18 +1,17 @@
 package sollecitom.libs.pillar.avro.serialization.core.identity
 
-import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
-import org.apache.avro.generic.GenericRecordBuilder
-import org.apache.avro.generic.GenericData
-import assertk.assertions.messageContains
-import assertk.assertThat
+import assertk.assertFailure
+import assertk.assertions.hasMessage
+import assertk.assertions.isInstanceOf
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import sollecitom.libs.pillar.avro.serialization.test.utils.AcmeAvroSerdeTestSpecification
+import sollecitom.libs.pillar.avro.serialization.test.utils.serializeWithUnknownEnumSymbol
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.identity.StringId
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 
 @TestInstance(PER_CLASS)
 class IdAvroSerdeTests : AcmeAvroSerdeTestSpecification<Id>, CoreDataGenerator by CoreDataGenerator.testProvider {
@@ -28,14 +27,10 @@ class IdAvroSerdeTests : AcmeAvroSerdeTestSpecification<Id>, CoreDataGenerator b
     )
 
     @Test
-    fun `an Id type this reader does not know fails with a clear error`() {
+    fun `an unknown Id type fails with a clear error`() {
 
-        val record = GenericRecordBuilder(avroSerde.schema).set("type", unknownSymbolOf("type")).set("value", "1").build()
+        val record = avroSerde.serializeWithUnknownEnumSymbol(newId.ulid.monotonic(), fieldName = "type")
 
-        val result = runCatching { avroSerde.deserialize(record) }
-
-        assertThat(result).failedThrowing<IllegalStateException>().messageContains("the writer used an Id type this reader doesn't know")
+        assertFailure { avroSerde.deserialize(record) }.isInstanceOf<IllegalStateException>().hasMessage("Field 'type' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
     }
-
-    private fun unknownSymbolOf(fieldName: String) = GenericData.EnumSymbol(avroSerde.schema.getField(fieldName).schema(), "UNKNOWN")
 }

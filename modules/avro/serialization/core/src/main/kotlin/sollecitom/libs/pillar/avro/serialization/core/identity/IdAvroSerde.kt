@@ -2,7 +2,7 @@ package sollecitom.libs.pillar.avro.serialization.core.identity
 
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
-import sollecitom.libs.swissknife.avro.serialization.utils.getEnum
+import sollecitom.libs.pillar.avro.serialization.core.getKnownEnum
 import sollecitom.libs.swissknife.avro.serialization.utils.getString
 import sollecitom.libs.swissknife.core.domain.identity.*
 import org.apache.avro.generic.GenericRecord
@@ -25,13 +25,12 @@ private object IdAvroSerde : AvroSerde<Id> {
     override fun deserialize(value: GenericRecord) = with(value) {
 
         val stringValue = getString(Fields.value)
-        when (val type = getEnum(Fields.type)) {
+        when (val type = getKnownEnum(Fields.type)) {
             Type.STRING -> StringId(stringValue)
             Type.ULID -> ULID(stringValue)
             Type.UUID -> UUID(stringValue)
             Type.UUIDV7 -> UUIDv7(stringValue)
             Type.KSUID -> KSUID(stringValue)
-            Type.UNKNOWN -> error("Id type is '${Type.UNKNOWN}': the writer used an Id type this reader doesn't know")
             else -> error("Unknown Id type '${type}'")
         }
     }
@@ -56,6 +55,5 @@ private object IdAvroSerde : AvroSerde<Id> {
         const val UUID = "UUID"
         const val UUIDV7 = "UUIDV7"
         const val STRING = "STRING"
-        const val UNKNOWN = "UNKNOWN"
     }
 }

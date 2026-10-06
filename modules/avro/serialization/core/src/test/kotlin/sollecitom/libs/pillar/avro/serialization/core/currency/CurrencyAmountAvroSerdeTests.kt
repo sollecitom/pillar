@@ -1,14 +1,13 @@
 package sollecitom.libs.pillar.avro.serialization.core.currency
 
-import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
-import org.apache.avro.generic.GenericRecordBuilder
-import org.apache.avro.generic.GenericData
-import assertk.assertions.messageContains
-import assertk.assertThat
+import assertk.assertFailure
+import assertk.assertions.hasMessage
+import assertk.assertions.isInstanceOf
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import sollecitom.libs.pillar.avro.serialization.test.utils.AcmeAvroSerdeTestSpecification
+import sollecitom.libs.pillar.avro.serialization.test.utils.serializeWithUnknownEnumSymbol
 import sollecitom.libs.swissknife.core.domain.currency.Currency
 import sollecitom.libs.swissknife.core.domain.currency.CurrencyAmount
 import sollecitom.libs.swissknife.core.domain.currency.GenericCurrencyAmount
@@ -30,14 +29,10 @@ class CurrencyAmountAvroSerdeTests : AcmeAvroSerdeTestSpecification<CurrencyAmou
     )
 
     @Test
-    fun `a currency this reader does not know fails with a clear error`() {
+    fun `an unknown currency fails with a clear error`() {
 
-        val record = GenericRecordBuilder(avroSerde.schema).set("currency", unknownSymbolOf("currency")).set("units", "1").build()
+        val record = avroSerde.serializeWithUnknownEnumSymbol(0.99.pounds, fieldName = "currency")
 
-        val result = runCatching { avroSerde.deserialize(record) }
-
-        assertThat(result).failedThrowing<IllegalStateException>().messageContains("the writer used a currency this reader doesn't know")
+        assertFailure { avroSerde.deserialize(record) }.isInstanceOf<IllegalStateException>().hasMessage("Field 'currency' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
     }
-
-    private fun unknownSymbolOf(fieldName: String) = GenericData.EnumSymbol(avroSerde.schema.getField(fieldName).schema(), "UNKNOWN")
 }

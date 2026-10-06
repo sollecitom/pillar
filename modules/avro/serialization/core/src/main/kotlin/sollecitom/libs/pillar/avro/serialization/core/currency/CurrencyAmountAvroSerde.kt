@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.core.currency
 import org.apache.avro.generic.GenericRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
-import sollecitom.libs.swissknife.avro.serialization.utils.getEnum
+import sollecitom.libs.pillar.avro.serialization.core.getKnownEnum
 import sollecitom.libs.swissknife.avro.serialization.utils.getString
 import sollecitom.libs.swissknife.core.domain.currency.Currency
 import sollecitom.libs.swissknife.core.domain.currency.CurrencyAmount
@@ -21,7 +21,6 @@ val CurrencyAmount.Companion.avroSerde: AvroSerde<CurrencyAmount> get() = Curren
 
 private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {
 
-    private val UNKNOWN_CURRENCY = Name("UNKNOWN")
     override val schema get() = CurrencyAmount.avroSchema
 
     override fun serialize(value: CurrencyAmount): GenericRecord = buildRecord {
@@ -33,12 +32,11 @@ private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {
     override fun deserialize(value: GenericRecord) = with(value) {
 
         val units = getString(Fields.UNITS).toBigInteger()
-        val currency = when (val currencyCode = getEnum(Fields.CURRENCY).let(::Name)) {
+        val currency = when (val currencyCode = getKnownEnum(Fields.CURRENCY).let(::Name)) {
             Currency.GBP.textualCode -> Currency.GBP
             Currency.USD.textualCode -> Currency.USD
             Currency.EUR.textualCode -> Currency.EUR
             Currency.JPY.textualCode -> Currency.JPY
-            UNKNOWN_CURRENCY -> error("Currency code is '$UNKNOWN_CURRENCY': the writer used a currency this reader doesn't know")
             else -> error("Unsupported currency code '${currencyCode}'")
         }
         GenericCurrencyAmount(units = units, currency = currency)
