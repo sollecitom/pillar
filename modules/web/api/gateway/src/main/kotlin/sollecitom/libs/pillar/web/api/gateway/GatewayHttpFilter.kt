@@ -1,5 +1,7 @@
-package sollecitom.libs.pillar.web.api.utils.filters.correlation
+package sollecitom.libs.pillar.web.api.gateway
 
+import sollecitom.libs.pillar.web.api.utils.filters.correlation.addInvocationContextToLoggingStack
+import sollecitom.libs.pillar.web.api.utils.filters.correlation.parseInvocationContextFromGatewayHeader
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.jwt.domain.JwtParty
 import sollecitom.libs.swissknife.jwt.domain.JwtProcessor

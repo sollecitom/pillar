@@ -1,7 +1,7 @@
 # Gateway
 
 What the API gateway is responsible for, and therefore what every service behind it may take for granted.
-`GatewayHttpFilter` / `GatewayInvocationContextFilter` in this module are an **unfinished stub** of it; the gaps are
+`GatewayHttpFilter` / `GatewayInvocationContextFilter` in this module (`web-api-gateway`) are an **unfinished stub** of it; the gaps are
 listed at the end.
 
 ## Position
@@ -43,7 +43,8 @@ believed downstream.
 
 **Coarse authorisation.**
 - Route-level checks from roles alone, e.g. which roles may call which endpoints, and which machine clients may post to
-  which event endpoints.
+  which event endpoints. Event endpoints must only be reachable by the machine clients allowed to post to them: services
+  don't check who sends an event, they trust it.
 - Data-dependent authorisation (does this user own account A? does plan P belong to this customer?) is not the
   gateway's job: it needs domain data, so it lives in the service.
 

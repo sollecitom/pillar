@@ -18,10 +18,7 @@ dependencies {
     api(libs.swissknife.web.api.utils)
 
     implementation(libs.http4k.server.jetty)
-    implementation(libs.guava)
     implementation(libs.swissknife.kotlin.extensions)
-    implementation(libs.swissknife.lens.correlation.extensions)
-    implementation(libs.swissknife.web.client.info.analyzer)
     implementation(projects.jsonSerializationWebApi)
     implementation(libs.swissknife.jwt.jose4j.processor)
     implementation(libs.swissknife.jwt.jose4j.issuer)
