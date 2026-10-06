@@ -1,6 +1,7 @@
 package sollecitom.libs.pillar.web.api.utils.filters.correlation
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
@@ -107,6 +108,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
         val response = handler(request)
 
         assertThat(response.status).isEqualTo(BAD_REQUEST)
+        assertThat(response.status.description).contains("The invocation context doesn't match its schema")
     }
 
     private fun parsingFilter() = InvocationContextFilter.parseInvocationContextFromGatewayHeader(headerNames.correlation)

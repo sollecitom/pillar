@@ -1,15 +1,10 @@
 package sollecitom.libs.pillar.avro.serialization.core.time
 
-import assertk.assertFailure
-import assertk.assertions.hasMessage
-import assertk.assertions.isInstanceOf
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
 import sollecitom.libs.pillar.avro.serialization.test.utils.AcmeAvroSerdeTestSpecification
-import sollecitom.libs.pillar.avro.serialization.test.utils.serializeWithUnknownEnumSymbol
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 
@@ -21,14 +16,8 @@ class InstantAvroSerdeTests : AcmeAvroSerdeTestSpecification<Instant>, CoreDataG
     override fun parameterizedArguments() = listOf(
         "now" to clock.now(),
         "2 days ago" to clock.now() - 2.days,
-        "9 days from now" to clock.now() + 9.days
+        "9 days from now" to clock.now() + 9.days,
+        "nanosecond precision" to Instant.parse("2026-10-06T10:00:00.000000001Z"),
+        "before the epoch" to Instant.parse("1969-07-20T20:17:40.123456789Z")
     )
-
-    @Test
-    fun `an unknown timestamp format fails with a clear error`() {
-
-        val record = avroSerde.serializeWithUnknownEnumSymbol(clock.now(), fieldName = "format")
-
-        assertFailure { avroSerde.deserialize(record) }.isInstanceOf<IllegalStateException>().hasMessage("Field 'format' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
-    }
 }

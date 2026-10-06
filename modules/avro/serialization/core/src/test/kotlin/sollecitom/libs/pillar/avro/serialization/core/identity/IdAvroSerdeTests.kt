@@ -1,8 +1,7 @@
 package sollecitom.libs.pillar.avro.serialization.core.identity
 
-import assertk.assertFailure
+import assertk.assertThat
 import assertk.assertions.hasMessage
-import assertk.assertions.isInstanceOf
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -12,6 +11,7 @@ import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.core.domain.identity.StringId
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
+import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 
 @TestInstance(PER_CLASS)
 class IdAvroSerdeTests : AcmeAvroSerdeTestSpecification<Id>, CoreDataGenerator by CoreDataGenerator.testProvider {
@@ -30,7 +30,8 @@ class IdAvroSerdeTests : AcmeAvroSerdeTestSpecification<Id>, CoreDataGenerator b
     fun `an unknown Id type fails with a clear error`() {
 
         val record = avroSerde.serializeWithUnknownEnumSymbol(newId.ulid.monotonic(), fieldName = "type")
+        val result = runCatching { avroSerde.deserialize(record) }
 
-        assertFailure { avroSerde.deserialize(record) }.isInstanceOf<IllegalStateException>().hasMessage("Field 'type' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
+        assertThat(result).failedThrowing<IllegalStateException>().hasMessage("Field 'type' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
     }
 }

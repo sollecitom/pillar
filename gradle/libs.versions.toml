@@ -5,10 +5,10 @@ http4k = "6.61.0.0"
 guava = "33.7.2-jre"
 test-containers = "2.0.5"
 micrometer = "1.17.1"
-sollecitom-swissknife = "1.0.41"
-sollecitom-acme-schema-catalogue = "1.0.8"
+sollecitom-swissknife = "1.0.45"
+sollecitom-acme-schema-catalogue = "1.0.9"
 # plugins
-sollecitom-gradle-plugins = "1.0.35"
+sollecitom-gradle-plugins = "1.0.36"
 palantir-git-plugin = "5.1.0"
 
 [libraries]
@@ -18,6 +18,7 @@ http4k-bom = { module = "org.http4k:http4k-bom", version.ref = "http4k" }
 http4k-ops-micrometer = { module = "org.http4k:http4k-ops-micrometer" }
 http4k-server-jetty = { module = "org.http4k:http4k-server-jetty" }
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+micrometer-java21 = { module = "io.micrometer:micrometer-java21", version.ref = "micrometer" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 test-containers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "test-containers" }
 acme-schema-catalogue-avro-common = { module = "sollecitom.acme-schema-catalogue:avro-common", version.ref = "sollecitom-acme-schema-catalogue" }
@@ -63,6 +64,7 @@ swissknife-web-api-domain = { module = "sollecitom.swissknife:web-api-domain", v
 swissknife-web-api-utils = { module = "sollecitom.swissknife:web-api-utils", version.ref = "sollecitom-swissknife" }
 swissknife-web-api-test-utils = { module = "sollecitom.swissknife:web-api-test-utils", version.ref = "sollecitom-swissknife" }
 swissknife-logger-core = { module = "sollecitom.swissknife:logger-core", version.ref = "sollecitom-swissknife" }
+swissknife-logger-slf4j-adapter = { module = "sollecitom.swissknife:logger-slf4j-adapter", version.ref = "sollecitom-swissknife" }
 swissknife-pulsar-utils = { module = "sollecitom.swissknife:pulsar-utils", version.ref = "sollecitom-swissknife" }
 swissknife-http4k-server-utils = { module = "sollecitom.swissknife:http4k-server-utils", version.ref = "sollecitom-swissknife" }
 swissknife-pulsar-avro-utils = { module = "sollecitom.swissknife:pulsar-avro-utils", version.ref = "sollecitom-swissknife" }

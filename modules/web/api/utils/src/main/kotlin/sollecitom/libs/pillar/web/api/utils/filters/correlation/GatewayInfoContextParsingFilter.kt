@@ -34,12 +34,12 @@ internal class GatewayInfoContextParsingFilter(private val key: InvocationContex
         else -> with(key.mandatory of context, key.optional of context)
     }
 
-    private fun Throwable.asResponse() = Response(Status.BAD_REQUEST.description("Error while parsing the invocation context: $message"))
+    private fun Throwable.asResponse() = Response(Status.BAD_REQUEST.description("Error while parsing the invocation context: ${message?.replace(whitespace, " ")}"))
 
     private fun invocationContext(request: Request, headerNames: HttpHeaderNames.Correlation): InvocationContext<Access>? {
 
         val rawValue = request.rawInvocationContextValue(headerNames) ?: return null
-        return runCatching { InvocationContext.fromHeaderValue(rawValue) }.getOrElse { error("Invalid value for header ${headerNames.invocationContext}. Must be the base64url encoding of an invocation context JSON object.") }
+        return runCatching { InvocationContext.fromHeaderValue(rawValue) }.getOrElse { cause -> error("Invalid value for header ${headerNames.invocationContext}, which must be the base64url encoding of an invocation context JSON object. ${cause.message}") }
     }
 
     private fun Request.rawInvocationContextValue(headerNames: HttpHeaderNames.Correlation): String? {
@@ -47,5 +47,9 @@ internal class GatewayInfoContextParsingFilter(private val key: InvocationContex
         val invocationContextValues = headerValues(headerNames.invocationContext)
         check(invocationContextValues.size <= 1) { "Multiple values for header ${headerNames.invocationContext}. At most one is allowed." }
         return invocationContextValues.singleOrNull().takeUnless { it.isNullOrBlank() }
+    }
+
+    private companion object {
+        val whitespace = Regex("\\s+")
     }
 }

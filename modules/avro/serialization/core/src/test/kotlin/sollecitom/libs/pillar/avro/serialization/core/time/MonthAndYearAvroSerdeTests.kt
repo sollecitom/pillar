@@ -1,8 +1,7 @@
 package sollecitom.libs.pillar.avro.serialization.core.time
 
-import assertk.assertFailure
+import assertk.assertThat
 import assertk.assertions.hasMessage
-import assertk.assertions.isInstanceOf
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
@@ -17,6 +16,7 @@ import sollecitom.libs.swissknife.core.domain.time.monthAndYear
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.kotlin.extensions.time.localDate
+import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 
 @TestInstance(PER_CLASS)
 class MonthAndYearAvroSerdeTests : AcmeAvroSerdeTestSpecification<YearMonth>, CoreDataGenerator by CoreDataGenerator.testProvider {
@@ -35,7 +35,8 @@ class MonthAndYearAvroSerdeTests : AcmeAvroSerdeTestSpecification<YearMonth>, Co
     fun `an unknown month fails with a clear error`() {
 
         val record = avroSerde.serializeWithUnknownEnumSymbol(YearMonth(2026, Month.OCTOBER), fieldName = "month")
+        val result = runCatching { avroSerde.deserialize(record) }
 
-        assertFailure { avroSerde.deserialize(record) }.isInstanceOf<IllegalStateException>().hasMessage("Field 'month' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
+        assertThat(result).failedThrowing<IllegalStateException>().hasMessage("Field 'month' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
     }
 }

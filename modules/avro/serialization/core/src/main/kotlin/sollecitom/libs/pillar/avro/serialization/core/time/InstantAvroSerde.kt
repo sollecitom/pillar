@@ -1,38 +1,33 @@
 package sollecitom.libs.pillar.avro.serialization.core.time
 
+import org.apache.avro.generic.GenericRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
-import sollecitom.libs.pillar.avro.serialization.core.getKnownEnum
-import sollecitom.libs.swissknife.avro.serialization.utils.getString
+import sollecitom.libs.swissknife.avro.serialization.utils.getLong
 import kotlin.time.Instant
-import org.apache.avro.generic.GenericRecord
 
 /** Avro schema for [Instant] timestamps. */
 val Instant.Companion.avroSchema get() = TimeAvroSchemas.timestamp
-/** Avro serializer/deserializer for [Instant], using ISO 8601 string format. */
+/** Avro serializer/deserializer for [Instant], as nanoseconds since the epoch (the `timestamp-nanos` logical type). */
 val Instant.Companion.avroSerde: AvroSerde<Instant> get() = InstantAvroSerde
 
 private object InstantAvroSerde : AvroSerde<Instant> {
 
-    private const val ISO_8601_FORMAT = "ISO_8601"
+    private const val NANOS_PER_SECOND = 1_000_000_000L
     override val schema get() = Instant.avroSchema
 
     override fun serialize(value: Instant): GenericRecord = buildRecord {
 
-        set(Fields.value, value.toString())
-        setEnum(Fields.format, ISO_8601_FORMAT)
+        set(Fields.value, Math.addExact(Math.multiplyExact(value.epochSeconds, NANOS_PER_SECOND), value.nanosecondsOfSecond.toLong()))
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
 
-        val format = getKnownEnum(Fields.format)
-        check(format == ISO_8601_FORMAT) { "Expected format to be '$ISO_8601_FORMAT' but was '$format'" }
-        val stringValue = getString(Fields.value)
-        Instant.parse(stringValue)
+        val epochNanoseconds = getLong(Fields.value)
+        Instant.fromEpochSeconds(Math.floorDiv(epochNanoseconds, NANOS_PER_SECOND), Math.floorMod(epochNanoseconds, NANOS_PER_SECOND))
     }
 
     private object Fields {
         const val value = "value"
-        const val format = "format"
     }
 }

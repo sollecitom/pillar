@@ -33,4 +33,6 @@ dependencies {
     testImplementation(libs.swissknife.core.test.utils)
     testImplementation(libs.swissknife.correlation.core.test.utils)
     testImplementation(projects.jwtTestUtils)
+
+    testRuntimeOnly(libs.swissknife.logger.slf4j.adapter)
 }

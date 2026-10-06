@@ -7,6 +7,7 @@ import io.micrometer.core.instrument.binder.system.DiskSpaceMetrics
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
+import io.micrometer.java21.instrument.binder.jdk.VirtualThreadMetrics
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusRenameFilter
@@ -29,6 +30,7 @@ fun standardMicrometerMeterBinders(): List<MeterBinder> = listOf(
     JvmHeapPressureMetrics(),
     JvmCompilationMetrics(),
     JvmThreadMetrics(),
+    VirtualThreadMetrics(),
     ClassLoaderMetrics(),
     DiskSpaceMetrics(File("/tmp/.")),
     FileDescriptorMetrics(),

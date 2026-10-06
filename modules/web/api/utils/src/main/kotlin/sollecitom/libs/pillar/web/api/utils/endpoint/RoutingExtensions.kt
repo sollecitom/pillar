@@ -10,6 +10,7 @@ import sollecitom.libs.swissknife.web.api.domain.error.ApiError
 import sollecitom.libs.swissknife.web.api.domain.error.ErrorCode
 import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.slf4j.MDCContext
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
@@ -24,7 +25,7 @@ infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Au
     if (authenticated == null) {
         apiError(code = ErrorCode.AuthenticatedAccessRequired)
     } else {
-        runBlocking { with(authenticated) { action(request) } }
+        runBlocking(MDCContext()) { with(authenticated) { action(request) } }
     }
 }
 
@@ -36,7 +37,7 @@ infix fun PathMethod.toUnauthenticated(action: suspend InvocationContext<Access.
     if (unauthenticated == null) {
         apiError(code = ErrorCode.UnauthenticatedAccessRequired)
     } else {
-        runBlocking { with(unauthenticated) { action(request) } }
+        runBlocking(MDCContext()) { with(unauthenticated) { action(request) } }
     }
 }
 
@@ -44,7 +45,7 @@ infix fun PathMethod.toUnauthenticated(action: suspend InvocationContext<Access.
 infix fun PathMethod.toWithInvocationContext(action: suspend InvocationContext<Access>.(request: Request) -> Response): RoutingHttpHandler = to { request ->
 
     val context = InvocationContextFilter.key.mandatory(request)
-    runBlocking { with(context) { action(request) } }
+    runBlocking(MDCContext()) { with(context) { action(request) } }
 }
 
 private fun apiError(code: ErrorCode): Response {
