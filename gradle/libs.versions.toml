@@ -5,7 +5,7 @@ http4k = "6.61.0.0"
 guava = "33.7.2-jre"
 test-containers = "2.0.5"
 micrometer = "1.17.1"
-sollecitom-swissknife = "1.0.39"
+sollecitom-swissknife = "1.0.40"
 sollecitom-acme-schema-catalogue = "1.0.8"
 # plugins
 sollecitom-gradle-plugins = "1.0.34"
