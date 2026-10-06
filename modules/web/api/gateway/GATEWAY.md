@@ -42,6 +42,8 @@ believed downstream.
   merged.
 
 **Coarse authorisation.**
+- Decided by an authorisation query engine (Open Policy Agent or similar) that checks the caller's roles and attributes
+  against permissions defined as policy, rather than by checks written into the gateway's code.
 - Route-level checks from roles alone, e.g. which roles may call which endpoints, and which machine clients may post to
   which event endpoints. Event endpoints must only be reachable by the machine clients allowed to post to them: services
   don't check who sends an event, they trust it.
