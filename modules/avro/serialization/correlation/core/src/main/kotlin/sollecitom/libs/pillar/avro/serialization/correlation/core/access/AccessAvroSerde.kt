@@ -21,24 +21,20 @@ private object AccessAvroSerde : AvroSerde<Access> {
             is Authenticated -> Authenticated.avroSerde.serialize(value)
             is Unauthenticated -> Unauthenticated.avroSerde.serialize(value)
         }
-        setRecordInUnion(value.type(), record)
+        setRecordInUnion(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { unionTypeName, unionRecord ->
-        when (unionTypeName) {
+    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+        when (branchName) {
             Types.authenticated -> unionRecord.deserializeWith(Authenticated.avroSerde)
             Types.unauthenticated -> unionRecord.deserializeWith(Unauthenticated.avroSerde)
-            else -> error("Unknown access type $unionTypeName")
+            else -> error("Unknown access type $branchName")
         }
     }
 
-    private fun Access.type(): String = when (this) {
-        is Authenticated -> Types.authenticated
-        is Unauthenticated -> Types.unauthenticated
-    }
 
     private object Types {
-        const val authenticated = "authenticated"
-        const val unauthenticated = "unauthenticated"
+        const val authenticated = "AuthenticatedAccess"
+        const val unauthenticated = "UnauthenticatedAccess"
     }
 }

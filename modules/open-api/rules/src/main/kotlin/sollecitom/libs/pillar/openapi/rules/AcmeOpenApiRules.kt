@@ -57,7 +57,7 @@ object AcmeOpenApiRules : ComplianceRuleSet<OpenAPI> {
         setOf(
             pathNameRule,
             parametersNameRule,
-            DisallowReservedCharactersInParameterNameRule,
+            DisallowReservedCharactersInParameterValuesRule,
             MandatoryOperationFieldsRule(requiredFields = requiredOperationFields),
             EnforceOperationDescriptionDifferentFromSummaryRule,
             EnforceCamelCaseOperationIdRule,

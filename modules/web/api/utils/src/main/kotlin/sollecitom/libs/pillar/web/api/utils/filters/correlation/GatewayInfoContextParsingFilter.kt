@@ -8,17 +8,17 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.forked
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.headers.HttpHeaderNames
 import org.http4k.core.*
-import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
+import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
 
 /** Creates a filter that parses the invocation context from a gateway-forwarded header and forks it for the current invocation. */
 context(generator: CoreDataGenerator)
-fun InvocationContextFilter.parseInvocationContextFromGatewayHeader(headerNames: HttpHeaderNames.Correlation): Filter = GatewayInfoContextParsingFilter(key, headerNames, generator)
+fun InvocationContextKeys.parseInvocationContextFromGatewayHeader(headerNames: HttpHeaderNames.Correlation): Filter = GatewayInfoContextParsingFilter(key, headerNames, generator)
 
 /** Creates a filter that parses the invocation context from a gateway-forwarded header, using the API definition's header names. */
 context(api: HttpApiDefinition, _: CoreDataGenerator)
-fun InvocationContextFilter.parseInvocationContextFromGatewayHeader(): Filter = parseInvocationContextFromGatewayHeader(api.headerNames.correlation)
+fun InvocationContextKeys.parseInvocationContextFromGatewayHeader(): Filter = parseInvocationContextFromGatewayHeader(api.headerNames.correlation)
 
-internal class GatewayInfoContextParsingFilter(private val key: InvocationContextFilter.Key, private val headerNames: HttpHeaderNames.Correlation, coreDataGenerator: CoreDataGenerator) : Filter, CoreDataGenerator by coreDataGenerator {
+internal class GatewayInfoContextParsingFilter(private val key: InvocationContextKeys.Key, private val headerNames: HttpHeaderNames.Correlation, coreDataGenerator: CoreDataGenerator) : Filter, CoreDataGenerator by coreDataGenerator {
 
     override fun invoke(next: HttpHandler) = { request: Request ->
 

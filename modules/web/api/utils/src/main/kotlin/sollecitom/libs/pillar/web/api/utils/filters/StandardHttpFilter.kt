@@ -18,7 +18,7 @@ import sollecitom.libs.swissknife.http4k.utils.AddContentLength
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.filters.catchAndLogErrors
-import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
+import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
 import sollecitom.libs.pillar.web.api.utils.filters.correlation.addInvocationContextToLoggingStack
 import sollecitom.libs.pillar.web.api.utils.filters.correlation.parseInvocationContextFromGatewayHeader
 
@@ -38,8 +38,8 @@ object StandardHttpFilter : Loggable() {
         .then(ServerFilters.MicrometerMetrics.RequestTimer(meterRegistry = meterRegistry, clock = time.javaClock))
         .then(RequestFilters.GunZip())
         .then(DebuggingFilters.PrintRequestAndResponse().inIntelliJOnly())
-        .then(InvocationContextFilter.parseInvocationContextFromGatewayHeader())
-        .then(InvocationContextFilter.addInvocationContextToLoggingStack())
+        .then(InvocationContextKeys.parseInvocationContextFromGatewayHeader())
+        .then(InvocationContextKeys.addInvocationContextToLoggingStack())
 
     /** Builds the response filter chain: GZip compression and Content-Length header. */
     fun forResponses(): Filter = ResponseFilters.GZip().then(

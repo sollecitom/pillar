@@ -21,24 +21,20 @@ private object ServiceAccountAvroSerde : AvroSerde<ServiceAccount> {
             is Internal -> Internal.avroSerde.serialize(value)
             is External -> External.avroSerde.serialize(value)
         }
-        setRecordInUnion(value.type(), record)
+        setRecordInUnion(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { unionTypeName, unionRecord ->
-        when (unionTypeName) {
+    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+        when (branchName) {
             Types.internal -> unionRecord.deserializeWith(Internal.avroSerde)
             Types.external -> unionRecord.deserializeWith(External.avroSerde)
-            else -> error("Unknown service account type $unionTypeName")
+            else -> error("Unknown service account type $branchName")
         }
     }
 
-    private fun ServiceAccount.type(): String = when (this) {
-        is Internal -> Types.internal
-        is External -> Types.external
-    }
 
     private object Types {
-        const val internal = "internal"
-        const val external = "external"
+        const val internal = "InternalServiceAccount"
+        const val external = "ExternalServiceAccount"
     }
 }

@@ -10,7 +10,7 @@ import sollecitom.libs.swissknife.openapi.builder.get
 import sollecitom.libs.swissknife.openapi.builder.parameters
 import sollecitom.libs.swissknife.openapi.builder.post
 import sollecitom.libs.swissknife.openapi.builder.put
-import sollecitom.libs.swissknife.openapi.checking.checker.rules.DisallowReservedCharactersInParameterNameRule
+import sollecitom.libs.swissknife.openapi.checking.checker.rules.DisallowReservedCharactersInParameterValuesRule
 import sollecitom.libs.swissknife.openapi.checking.checker.rules.WhitelistedAlphabetParameterNameRule
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.PathItem
@@ -130,7 +130,7 @@ interface OperationParametersTestSpecification : OpenApiTestSpecification {
 
         val result = api.checkAgainstRules(AcmeOpenApiRules)
 
-        assertThat(result).isNotCompliantWithOnlyViolation<DisallowReservedCharactersInParameterNameRule.Violation, OpenAPI> { violation ->
+        assertThat(result).isNotCompliantWithOnlyViolation<DisallowReservedCharactersInParameterValuesRule.Violation, OpenAPI> { violation ->
             assertThat(violation.parameter.name).isEqualTo(parameterName)
             assertThat(violation.parameter.location.value).isEqualTo(parameterLocation)
             assertThat(violation.parameter.location.pathName).isEqualTo(validPath)

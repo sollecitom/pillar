@@ -8,7 +8,7 @@ import sollecitom.libs.swissknife.jwt.domain.JwtProcessor
 import sollecitom.libs.swissknife.logger.core.loggable.Loggable
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.swissknife.web.api.utils.filters.catchAndLogErrors
-import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
+import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
 import io.micrometer.core.instrument.MeterRegistry
 import org.http4k.core.*
 import org.http4k.core.Status.Companion.BAD_REQUEST
@@ -34,9 +34,9 @@ object GatewayHttpFilter : Loggable() {
         )
         .then(ServerFilters.MicrometerMetrics.RequestTimer(meterRegistry = meterRegistry, clock = time.javaClock))
         .then(DebuggingFilters.PrintRequestAndResponse().inIntelliJOnly())
-        .then(InvocationContextFilter.parseInvocationContextFromRequest(issuerForDomain = issuerForDomain, jwtProcessorConfiguration = jwtProcessorConfiguration))
-        .then(InvocationContextFilter.parseInvocationContextFromGatewayHeader())
-        .then(InvocationContextFilter.addInvocationContextToLoggingStack())
+        .then(InvocationContextKeys.parseInvocationContextFromRequest(issuerForDomain = issuerForDomain, jwtProcessorConfiguration = jwtProcessorConfiguration))
+        .then(InvocationContextKeys.parseInvocationContextFromGatewayHeader())
+        .then(InvocationContextKeys.addInvocationContextToLoggingStack())
 
     fun forResponses(): Filter = Filter.NoOp
 }

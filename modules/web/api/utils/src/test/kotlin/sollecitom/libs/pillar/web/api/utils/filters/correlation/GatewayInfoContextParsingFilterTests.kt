@@ -21,7 +21,7 @@ import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.correlation.core.test.utils.context.authenticated
-import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
+import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
 import sollecitom.libs.swissknife.web.api.utils.headers.HttpHeaderNames
 import sollecitom.libs.swissknife.web.api.utils.headers.of
 
@@ -37,7 +37,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
         val context = InvocationContext.authenticated()
         var parsedContext: InvocationContext<*>? = null
         val handler = parsingFilter().then { request: Request ->
-            parsedContext = InvocationContextFilter.key.mandatory(request)
+            parsedContext = InvocationContextKeys.key.mandatory(request)
             Response(OK)
         }
 
@@ -53,7 +53,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
 
         var parsedContext: InvocationContext<*>? = null
         val handler = parsingFilter().then { request: Request ->
-            parsedContext = InvocationContextFilter.key.mandatory(request)
+            parsedContext = InvocationContextKeys.key.mandatory(request)
             Response(OK)
         }
         val response = handler(Request(GET, "/").header("X-Acme-Invocation-Context", InvocationContext.authenticated().toHeaderValue()))
@@ -67,7 +67,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
 
         var parsedContext: InvocationContext<*>? = InvocationContext.authenticated()
         val handler = parsingFilter().then { request: Request ->
-            parsedContext = InvocationContextFilter.key.optional(request)
+            parsedContext = InvocationContextKeys.key.optional(request)
             Response(OK)
         }
 
@@ -111,5 +111,5 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
         assertThat(response.status.description).contains("The invocation context doesn't match its schema")
     }
 
-    private fun parsingFilter() = InvocationContextFilter.parseInvocationContextFromGatewayHeader(headerNames.correlation)
+    private fun parsingFilter() = InvocationContextKeys.parseInvocationContextFromGatewayHeader(headerNames.correlation)
 }

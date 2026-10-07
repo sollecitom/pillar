@@ -23,27 +23,22 @@ private object AuthenticationAvroSerde : AvroSerde<Authentication> {
             is FederatedAuthentication -> FederatedAuthentication.avroSerde.serialize(value)
             is StatelessAuthentication -> StatelessAuthentication.avroSerde.serialize(value)
         }
-        setRecordInUnion(value.type(), record)
+        setRecordInUnion(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { unionTypeName, unionRecord ->
-        when (unionTypeName) {
+    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+        when (branchName) {
             Types.credentialsBased -> unionRecord.deserializeWith(CredentialsBasedAuthentication.avroSerde)
             Types.federated -> unionRecord.deserializeWith(FederatedAuthentication.avroSerde)
             Types.stateless -> unionRecord.deserializeWith(StatelessAuthentication.avroSerde)
-            else -> error("Unknown authentication type $unionTypeName")
+            else -> error("Unknown authentication type $branchName")
         }
     }
 
-    private fun Authentication.type(): String = when (this) {
-        is CredentialsBasedAuthentication -> Types.credentialsBased
-        is FederatedAuthentication -> Types.federated
-        is StatelessAuthentication -> Types.stateless
-    }
 
     private object Types {
-        const val credentialsBased = "credentialsBased"
-        const val federated = "federated"
-        const val stateless = "stateless"
+        const val credentialsBased = "CredentialsBasedAuthentication"
+        const val federated = "FederatedAuthentication"
+        const val stateless = "StatelessAuthentication"
     }
 }

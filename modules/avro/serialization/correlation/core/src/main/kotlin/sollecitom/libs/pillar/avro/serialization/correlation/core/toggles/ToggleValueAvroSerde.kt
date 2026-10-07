@@ -22,25 +22,19 @@ private object ToggleValueAvroSerde : AvroSerde<ToggleValue<*>> {
             is DecimalToggleValue -> DecimalToggleValue.avroSerde.serialize(value)
             is EnumToggleValue -> EnumToggleValue.avroSerde.serialize(value)
         }
-        setRecordInUnion(value.type(), record)
+        setRecordInUnion(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { unionTypeName, unionRecord ->
-        when (unionTypeName) {
+    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+        when (branchName) {
             Types.boolean -> unionRecord.deserializeWith(BooleanToggleValue.avroSerde)
             Types.integer -> unionRecord.deserializeWith(IntegerToggleValue.avroSerde)
             Types.decimal -> unionRecord.deserializeWith(DecimalToggleValue.avroSerde)
             Types.enum -> unionRecord.deserializeWith(EnumToggleValue.avroSerde)
-            else -> error("Unknown toggle value type $unionTypeName")
+            else -> error("Unknown toggle value type $branchName")
         }
     }
 
-    private fun ToggleValue<*>.type(): String = when (this) {
-        is BooleanToggleValue -> Types.boolean
-        is IntegerToggleValue -> Types.integer
-        is DecimalToggleValue -> Types.decimal
-        is EnumToggleValue -> Types.enum
-    }
 
     private object Types {
         const val boolean = "BooleanToggleValue"

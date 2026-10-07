@@ -23,7 +23,7 @@ import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.correlation.core.test.utils.context.authenticated
-import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextFilter
+import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
 
 @TestInstance(PER_CLASS)
 class InvocationContextLoggingFilterTests : CoreDataGenerator by CoreDataGenerator.testProvider {
@@ -33,12 +33,12 @@ class InvocationContextLoggingFilterTests : CoreDataGenerator by CoreDataGenerat
 
         val context = InvocationContext.authenticated()
         var loggingContextInHandler: Map<String, String>? = null
-        val handler = InvocationContextFilter.addInvocationContextToLoggingStack().then(routes("/things" bind GET toAuthenticated {
+        val handler = InvocationContextKeys.addInvocationContextToLoggingStack().then(routes("/things" bind GET toAuthenticated {
             loggingContextInHandler = withContext(Dispatchers.Default) { MDC.getCopyOfContextMap() }
             Response(OK)
         }))
 
-        handler(Request(GET, "/things").with(InvocationContextFilter.key.mandatory of context, InvocationContextFilter.key.optional of context))
+        handler(Request(GET, "/things").with(InvocationContextKeys.key.mandatory of context, InvocationContextKeys.key.optional of context))
 
         assertThat(loggingContextInHandler).isEqualTo(context.toLoggingContext())
     }
@@ -47,9 +47,9 @@ class InvocationContextLoggingFilterTests : CoreDataGenerator by CoreDataGenerat
     fun `the logging context is cleared once the request is handled`() {
 
         val context = InvocationContext.authenticated()
-        val handler = InvocationContextFilter.addInvocationContextToLoggingStack().then { Response(OK) }
+        val handler = InvocationContextKeys.addInvocationContextToLoggingStack().then { Response(OK) }
 
-        handler(Request(GET, "/things").with(InvocationContextFilter.key.mandatory of context, InvocationContextFilter.key.optional of context))
+        handler(Request(GET, "/things").with(InvocationContextKeys.key.mandatory of context, InvocationContextKeys.key.optional of context))
 
         assertThat(MDC.getCopyOfContextMap().orEmpty()).isEmpty()
     }

@@ -9,8 +9,8 @@ val EncryptionMode.Metadata.Companion.avroSerde: AvroSerde<EncryptionMode.Metada
 
 /**
  * Envelope over the concrete encryption-mode metadata, so the mode a value was protected with is part of the
- * wire format rather than an assumption. Only GCM is carried today; adding a mode is a new union branch here
- * and in the schema, which leaves the encoding of the existing branches untouched.
+ * wire format rather than an assumption. Adding a mode is a new union branch here and in the schema, which leaves
+ * the encoding of the existing branches untouched.
  */
 private object EncryptionMetadataAvroSerde : AvroSerde<EncryptionMode.Metadata> {
 
@@ -19,24 +19,22 @@ private object EncryptionMetadataAvroSerde : AvroSerde<EncryptionMode.Metadata> 
     override fun serialize(value: EncryptionMode.Metadata): GenericRecord = buildRecord {
         val record = when (value) {
             is EncryptionMode.GCM.Metadata -> EncryptionMode.GCM.Metadata.avroSerde.serialize(value)
+            is EncryptionMode.XTS.Metadata -> EncryptionMode.XTS.Metadata.avroSerde.serialize(value)
             else -> error("Unsupported encryption metadata type ${value::class.qualifiedName}")
         }
-        setRecordInUnion(value.type(), record)
+        setRecordInUnion(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { unionTypeName, unionRecord ->
-        when (unionTypeName) {
+    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+        when (branchName) {
             Types.gcm -> unionRecord.deserializeWith(EncryptionMode.GCM.Metadata.avroSerde)
-            else -> error("Unknown encryption metadata type $unionTypeName")
+            Types.xts -> unionRecord.deserializeWith(EncryptionMode.XTS.Metadata.avroSerde)
+            else -> error("Unknown encryption metadata type $branchName")
         }
-    }
-
-    private fun EncryptionMode.Metadata.type(): String = when (this) {
-        is EncryptionMode.GCM.Metadata -> Types.gcm
-        else -> error("Unsupported encryption metadata type ${this::class.qualifiedName}")
     }
 
     private object Types {
-        const val gcm = "gcm"
+        const val gcm = "GcmEncryptionMetadata"
+        const val xts = "XtsEncryptionMetadata"
     }
 }

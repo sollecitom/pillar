@@ -21,6 +21,7 @@ private class EncryptionMetadataAvroSerdeTests : AcmeAvroSerdeTestSpecification<
 
     override fun parameterizedArguments(): List<Pair<String, EncryptionMode.Metadata>> = listOf(
         "GCM_without_associated_data" to newAesKey(variant = AES.Variant.AES_256).gcm.encryptWithRandomIV("hello".toByteArray()).metadata,
-        "GCM_with_associated_data" to newAesKey(variant = AES.Variant.AES_256).gcm.encryptWithRandomIV("hello".toByteArray(), associatedData = "a public header".toByteArray()).metadata
+        "GCM_with_associated_data" to newAesKey(variant = AES.Variant.AES_256).gcm.encryptWithRandomIV("hello".toByteArray(), associatedData = "a public header".toByteArray()).metadata,
+        "XTS" to newAesKey(variant = AES.Variant.AES_256_XTS).xts.encrypt("a message longer than one block".toByteArray(), dataUnitNumber = 42).metadata
     )
 }

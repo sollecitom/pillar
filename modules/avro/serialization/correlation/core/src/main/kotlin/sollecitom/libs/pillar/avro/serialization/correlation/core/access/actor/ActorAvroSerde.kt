@@ -23,27 +23,22 @@ private object ActorAvroSerde : AvroSerde<Actor> {
             is ActorOnBehalf -> ActorOnBehalf.avroSerde.serialize(value)
             is ImpersonatingActor -> ImpersonatingActor.avroSerde.serialize(value)
         }
-        setRecordInUnion(value.type(), record)
+        setRecordInUnion(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { unionTypeName, unionRecord ->
-        when (unionTypeName) {
+    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+        when (branchName) {
             Types.direct -> unionRecord.deserializeWith(DirectActor.avroSerde)
             Types.onBehalf -> unionRecord.deserializeWith(ActorOnBehalf.avroSerde)
             Types.impersonating -> unionRecord.deserializeWith(ImpersonatingActor.avroSerde)
-            else -> error("Unknown actor type $unionTypeName")
+            else -> error("Unknown actor type $branchName")
         }
     }
 
-    private fun Actor.type(): String = when (this) {
-        is DirectActor -> Types.direct
-        is ActorOnBehalf -> Types.onBehalf
-        is ImpersonatingActor -> Types.impersonating
-    }
 
     private object Types {
-        const val direct = "direct"
-        const val onBehalf = "onBehalf"
-        const val impersonating = "impersonating"
+        const val direct = "DirectActor"
+        const val onBehalf = "ActorOnBehalf"
+        const val impersonating = "ImpersonatingActor"
     }
 }
