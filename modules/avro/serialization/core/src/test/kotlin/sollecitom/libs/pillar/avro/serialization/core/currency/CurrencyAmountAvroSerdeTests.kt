@@ -33,10 +33,10 @@ class CurrencyAmountAvroSerdeTests : AcmeAvroSerdeTestSpecification<CurrencyAmou
     @Test
     fun `negative units on the wire are rejected`() {
 
-        val record = avroSerde.serialize(0.99.pounds).apply { put("units", Conversions.DecimalConversion().toBytes((-1).toBigDecimal(), schema.getField("units").schema(), schema.getField("units").schema().logicalType)) }
+        val record = avroSerde.serialize(0.99.pounds).apply { put("units", negativeUnits()) }
         val result = runCatching { avroSerde.deserialize(record) }
 
-        assertThat(result).failedThrowing<IllegalArgumentException>()
+        assertThat(result).failedThrowing<IllegalArgumentException>().hasMessage("Units cannot be less than zero")
     }
 
     @Test
@@ -47,4 +47,6 @@ class CurrencyAmountAvroSerdeTests : AcmeAvroSerdeTestSpecification<CurrencyAmou
 
         assertThat(result).failedThrowing<IllegalStateException>().hasMessage("Field 'currency' is 'UNKNOWN': the writer used a symbol this reader doesn't know")
     }
+
+    private fun negativeUnits() = avroSerde.schema.getField("units").schema().let { unitsSchema -> Conversions.DecimalConversion().toBytes((-1).toBigDecimal(), unitsSchema, unitsSchema.logicalType) }
 }

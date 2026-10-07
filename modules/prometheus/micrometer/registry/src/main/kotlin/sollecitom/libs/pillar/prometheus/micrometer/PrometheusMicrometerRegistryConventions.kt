@@ -13,7 +13,6 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusRenameFilter
 import java.io.File
 
-/** Creates a Prometheus registry bound to [meterBinders]. Closing the registry also closes the binders that hold resources (e.g. GC listeners, JFR streams). */
 context(_: MonitoringConventions)
 fun prometheusMeterRegistry(meterBinders: List<MeterBinder> = standardMicrometerMeterBinders()): PrometheusMeterRegistry {
 

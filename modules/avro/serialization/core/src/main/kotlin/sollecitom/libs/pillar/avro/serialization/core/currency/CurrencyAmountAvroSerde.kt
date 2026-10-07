@@ -16,7 +16,7 @@ import sollecitom.libs.swissknife.core.domain.text.Name
 
 /** Avro schema for [CurrencyAmount]. */
 val CurrencyAmount.Companion.avroSchema get() = CurrencyAvroSchemas.currencyAmount
-/** Avro serializer/deserializer for [CurrencyAmount]. Supports GBP, USD, EUR, and JPY. Units are a non-negative big integer, encoded as a bytes decimal. */
+/** Avro serializer/deserializer for [CurrencyAmount]. Supports GBP, USD, EUR, and JPY. */
 val CurrencyAmount.Companion.avroSerde: AvroSerde<CurrencyAmount> get() = CurrencyAmountAvroSerde
 
 private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {

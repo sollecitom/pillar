@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import assertk.assertThat
+import assertk.assertions.hasMessage
 import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
 import sollecitom.libs.swissknife.core.domain.currency.Currency
 import sollecitom.libs.swissknife.core.domain.currency.GenericCurrencyAmount
@@ -32,12 +33,12 @@ class CurrencyAmountJsonSerializationTests : AcmeJsonSerdeTestSpecification<Curr
     )
 
     @ParameterizedTest
-    @ValueSource(strings = ["-1", "+1", "1.5", ""])
-    fun `units that aren't a non-negative integer are rejected`(units: String) {
+    @ValueSource(strings = ["-1", "+1", "1.5", "", "١٢", "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"])
+    fun `units that aren't a non-negative integer of at most 100 digits are rejected`(units: String) {
 
         val json = jsonSerde.serialize(0.99.pounds).put("units", units)
         val result = runCatching { jsonSerde.deserialize(json) }
 
-        assertThat(result).failedThrowing<IllegalArgumentException>()
+        assertThat(result).failedThrowing<IllegalArgumentException>().hasMessage("Currency amount units must be a non-negative integer of at most 100 digits, but were '$units'")
     }
 }

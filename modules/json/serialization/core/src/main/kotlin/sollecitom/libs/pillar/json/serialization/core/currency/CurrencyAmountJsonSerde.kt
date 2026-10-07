@@ -13,7 +13,7 @@ import sollecitom.libs.swissknife.json.utils.getRequiredString
 import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 
-/** JSON serializer/deserializer for [CurrencyAmount], backed by a JSON schema. Supports GBP, USD, EUR, and JPY. Units are a non-negative big integer, written as a digit string so JavaScript clients don't lose precision. */
+/** JSON serializer/deserializer for [CurrencyAmount], backed by a JSON schema. Supports GBP, USD, EUR, and JPY. */
 val CurrencyAmount.Companion.jsonSerde: JsonSerde.SchemaAware<CurrencyAmount> get() = CurrencyAmountJsonSerde
 
 internal object CurrencyAmountJsonSerde : JsonSerde.SchemaAware<CurrencyAmount> {
@@ -28,7 +28,7 @@ internal object CurrencyAmountJsonSerde : JsonSerde.SchemaAware<CurrencyAmount> 
 
     override fun deserialize(value: JSONObject) = with(value) {
 
-        val units = getRequiredString(Fields.UNITS).also { require(it.matches(digits)) { "Currency amount units must be a non-negative integer, but were '$it'" } }.toBigInteger()
+        val units = getRequiredString(Fields.UNITS).also { require(it.matches(digits)) { "Currency amount units must be a non-negative integer of at most 100 digits, but were '$it'" } }.toBigInteger()
         val currency = when (val currencyCode = getRequiredString(Fields.CURRENCY).let(::Name)) {
             Currency.GBP.textualCode -> Currency.GBP
             Currency.USD.textualCode -> Currency.USD
@@ -39,7 +39,7 @@ internal object CurrencyAmountJsonSerde : JsonSerde.SchemaAware<CurrencyAmount> 
         GenericCurrencyAmount(units = units, currency = currency)
     }
 
-    private val digits = Regex("^[0-9]+$")
+    private val digits = Regex("^[0-9]{1,100}$")
 
     private object Fields {
         const val UNITS = "units"
