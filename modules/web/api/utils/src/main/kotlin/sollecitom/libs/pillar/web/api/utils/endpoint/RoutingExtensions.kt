@@ -25,7 +25,7 @@ infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Au
     val context = InvocationContextKeys.key.mandatory(request)
     val authenticated = context.authenticatedOrNull()
     if (authenticated == null) {
-        apiError(error = ApiError(code = ErrorCode.AuthenticatedAccessRequired))
+        apiError(code = ErrorCode.AuthenticatedAccessRequired)
     } else {
         runBlocking(MDCContext()) { with(authenticated) { action(request) } }
     }
@@ -34,7 +34,7 @@ infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Au
 infix fun PathMethod.toCustomerScoped(action: suspend InvocationContext<Access.Authenticated>.(request: Request, customer: Customer) -> Response): RoutingHttpHandler = toAuthenticated { request ->
 
     when (val customer = customerOrNull) {
-        null -> apiError(error = ApiError(code = ErrorCode.CustomerRequired), status = Status.FORBIDDEN)
+        null -> apiError(code = ErrorCode.CustomerRequired, status = Status.FORBIDDEN)
         else -> action(request, customer)
     }
 }
@@ -45,7 +45,7 @@ infix fun PathMethod.toUnauthenticated(action: suspend InvocationContext<Access.
     val context = InvocationContextKeys.key.mandatory(request)
     val unauthenticated = context.unauthenticatedOrNull()
     if (unauthenticated == null) {
-        apiError(error = ApiError(code = ErrorCode.UnauthenticatedAccessRequired))
+        apiError(code = ErrorCode.UnauthenticatedAccessRequired)
     } else {
         runBlocking(MDCContext()) { with(unauthenticated) { action(request) } }
     }
@@ -58,4 +58,4 @@ infix fun PathMethod.toWithInvocationContext(action: suspend InvocationContext<A
     runBlocking(MDCContext()) { with(context) { action(request) } }
 }
 
-private fun apiError(error: ApiError, status: Status = Status.UNPROCESSABLE_ENTITY) = Response(status = status).body(error, ApiError.jsonSerde)
+private fun apiError(code: ErrorCode, status: Status = Status.UNPROCESSABLE_ENTITY) = Response(status = status).body(ApiError(code), ApiError.jsonSerde)

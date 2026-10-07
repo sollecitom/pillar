@@ -49,7 +49,6 @@ import sollecitom.libs.swissknife.lens.core.extensions.identity.id
 import sollecitom.libs.swissknife.lens.correlation.extensions.toggles.toggleValue
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
 import sollecitom.libs.pillar.web.api.utils.filters.correlation.InvocationContextFilters
-import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
 import sollecitom.libs.swissknife.web.api.utils.headers.HttpHeaderNames
 import sollecitom.libs.swissknife.web.client.info.analyzer.ClientInfoAnalyzer
 import sollecitom.libs.swissknife.web.client.info.analyzer.instance
