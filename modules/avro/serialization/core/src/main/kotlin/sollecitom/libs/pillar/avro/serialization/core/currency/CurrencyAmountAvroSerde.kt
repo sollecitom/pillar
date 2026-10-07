@@ -1,11 +1,10 @@
 package sollecitom.libs.pillar.avro.serialization.core.currency
 
-import org.apache.avro.Conversions
-import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
+import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
+import sollecitom.libs.swissknife.avro.serialization.utils.getBigInteger
 import sollecitom.libs.pillar.avro.serialization.core.getKnownEnum
-import java.nio.ByteBuffer
 import sollecitom.libs.swissknife.core.domain.currency.Currency
 import sollecitom.libs.swissknife.core.domain.currency.CurrencyAmount
 import sollecitom.libs.swissknife.core.domain.currency.GenericCurrencyAmount
@@ -24,19 +23,15 @@ private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {
 
     override val schema get() = CurrencyAmount.avroSchema
 
-    private val unitsSchema get() = schema.getField(Fields.UNITS).schema()
-    private val currencySchema get() = schema.getField(Fields.CURRENCY).schema()
-    private val decimalConversion = Conversions.DecimalConversion()
+    override fun serialize(value: CurrencyAmount): GenericRecord = buildRecord {
 
-    override fun serialize(value: CurrencyAmount): GenericRecord = GenericData.Record(schema).apply {
-
-        put(Fields.UNITS, decimalConversion.toBytes(value.units.toBigDecimal(), unitsSchema, unitsSchema.logicalType))
-        put(Fields.CURRENCY, GenericData.EnumSymbol(currencySchema, value.currency.textualCode.value))
+        set(Fields.UNITS, value.units)
+        setEnum(Fields.CURRENCY, value.currency.textualCode.value)
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
 
-        val units = decimalConversion.fromBytes((get(Fields.UNITS) as ByteBuffer).duplicate(), unitsSchema, unitsSchema.logicalType).toBigIntegerExact()
+        val units = getBigInteger(Fields.UNITS)
         val currency = when (val currencyCode = getKnownEnum(Fields.CURRENCY).let(::Name)) {
             Currency.GBP.textualCode -> Currency.GBP
             Currency.USD.textualCode -> Currency.USD
