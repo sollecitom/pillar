@@ -4,7 +4,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart.LAZY
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import sollecitom.libs.pillar.messaging.conventions.AcmeMessagePropertyNames
@@ -19,7 +21,6 @@ import sollecitom.libs.swissknife.messaging.domain.event.utils.eventType
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.domain.message.connector.MessageConnector
 import sollecitom.libs.swissknife.messaging.domain.message.properties.MessagePropertyNames
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -28,7 +29,7 @@ private class MessagingEventProcessor<in EVENT : Event>(
     private val propertyNames: MessagePropertyNames,
     messages: Flow<ReceivedMessage<EVENT>>,
     scope: CoroutineScope,
-    private val onUndecodableMessage: (UndecodableMessageException) -> Unit,
+    private val onFatalFailure: (Throwable) -> Unit,
     private val coreDataGenerator: CoreDataGenerator
 ) : EventProcessor, CoreDataGenerator by coreDataGenerator {
 
@@ -41,8 +42,9 @@ private class MessagingEventProcessor<in EVENT : Event>(
     val processing = scope.launch(start = LAZY) {
         try {
             messages.collect { message -> message.consume() }
-        } catch (error: UndecodableMessageException) {
-            onUndecodableMessage(error)
+        } catch (error: Throwable) {
+            currentCoroutineContext().ensureActive()
+            onFatalFailure(error)
         }
     }
 
@@ -53,16 +55,16 @@ private class MessagingEventProcessor<in EVENT : Event>(
         retryingInPlace { acknowledge() }
     }
 
+    private val ReceivedMessage<EVENT>.rawEventType get() = properties[propertyNames.forEvents.type]
+
     private fun ReceivedMessage<EVENT>.isHandled() = decoding { with(propertyNames) { eventType() }.name in handledNames }
 
     private fun ReceivedMessage<EVENT>.ensureDecodable() = decoding { value }
 
     private fun <RESULT> ReceivedMessage<EVENT>.decoding(action: () -> RESULT): RESULT = try {
         action()
-    } catch (error: CancellationException) {
-        throw error
     } catch (error: Throwable) {
-        throw UndecodableMessageException(messageId = id, key = key, eventType = properties[propertyNames.forEvents.type], cause = error)
+        throw UndecodableMessageException(messageId = id, key = key, eventType = rawEventType, cause = error)
     }
 
     private suspend fun ReceivedMessage<EVENT>.retryingInPlace(action: suspend () -> Unit) {
@@ -71,10 +73,9 @@ private class MessagingEventProcessor<in EVENT : Event>(
         while (true) {
             try {
                 return action()
-            } catch (error: CancellationException) {
-                throw error
             } catch (error: Throwable) {
-                logger.error(error = error) { "Failed to process message with ID ${id.stringRepresentation}, key $key, and event type ${properties[propertyNames.forEvents.type]}. Retrying it in $retryDelay" }
+                currentCoroutineContext().ensureActive()
+                logger.error(error = error) { "Failed to process message with ID ${id.stringRepresentation}, key $key, and event type $rawEventType. Retrying it in $retryDelay" }
                 delay(retryDelay)
                 retryDelay = (retryDelay * 2).coerceAtMost(maximumRetryDelay)
             }
@@ -100,14 +101,16 @@ private class MessagingEventProcessor<in EVENT : Event>(
     }
 }
 
+private val haltingTheProcess: (Throwable) -> Unit = ProcessHalter.system::halt
+
 /** Creates an [EventProcessor] that consumes events from a [MessageConnector], processing each with a forked invocation context. */
 context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
-): EventProcessor = withMessageConnector(CoroutineScope(SupervisorJob()), connector, handler, propertyNames, onUndecodableMessage)
+    onFatalFailure: (Throwable) -> Unit = haltingTheProcess
+): EventProcessor = withMessageConnector(CoroutineScope(SupervisorJob()), connector, handler, propertyNames, onFatalFailure)
 
 /** Creates an [EventProcessor] that consumes events from a [MessageConnector] within the given [scope]. */
 context(generator: CoreDataGenerator)
@@ -116,8 +119,8 @@ fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
-): EventProcessor = MessagingEventProcessor(handler = handler, propertyNames = propertyNames, messages = connector.messages, scope = scope, onUndecodableMessage = onUndecodableMessage, coreDataGenerator = generator)
+    onFatalFailure: (Throwable) -> Unit = haltingTheProcess
+): EventProcessor = withMessages(connector.messages, handler, propertyNames, scope, onFatalFailure)
 
 /** Creates an [EventProcessor] from a raw message [Flow], useful when not using a [MessageConnector]. */
 context(generator: CoreDataGenerator)
@@ -126,8 +129,8 @@ fun <EVENT : Event> EventProcessor.Companion.withMessages(
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
     scope: CoroutineScope = CoroutineScope(SupervisorJob()),
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
-): EventProcessor = MessagingEventProcessor(handler = handler, propertyNames = propertyNames, messages = messages, scope = scope, onUndecodableMessage = onUndecodableMessage, coreDataGenerator = generator)
+    onFatalFailure: (Throwable) -> Unit = haltingTheProcess
+): EventProcessor = MessagingEventProcessor(handler = handler, propertyNames = propertyNames, messages = messages, scope = scope, onFatalFailure = onFatalFailure, coreDataGenerator = generator)
 
 /** Creates an [EventProcessor] from a raw message [Flow], using the [CoroutineScope] from the context receiver. */
 context(generator: CoreDataGenerator, scope: CoroutineScope)
@@ -135,5 +138,5 @@ fun <EVENT : Event> EventProcessor.Companion.withMessages(
     messages: Flow<ReceivedMessage<EVENT>>,
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
-): EventProcessor = MessagingEventProcessor(handler = handler, propertyNames = propertyNames, messages = messages, scope = scope, onUndecodableMessage = onUndecodableMessage, coreDataGenerator = generator)
+    onFatalFailure: (Throwable) -> Unit = haltingTheProcess
+): EventProcessor = withMessages(messages, handler, propertyNames, scope, onFatalFailure)

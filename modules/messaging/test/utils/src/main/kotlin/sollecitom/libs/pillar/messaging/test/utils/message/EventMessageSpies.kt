@@ -1,5 +1,9 @@
 package sollecitom.libs.pillar.messaging.test.utils.message
 
+import assertk.Assert
+import assertk.assertThat
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import sollecitom.libs.pillar.messaging.conventions.AcmeMessagePropertyNames
 import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.core.test.utils.text.random
@@ -16,11 +20,11 @@ import sollecitom.libs.swissknife.messaging.test.utils.topic.create
 import kotlin.time.Instant
 
 context(_: CoreDataGenerator)
-fun <EVENT : Event> EVENT.asReceivedEventSpy(propertyNames: MessagePropertyNames = AcmeMessagePropertyNames) = ReceivedMessage.inMemorySpy(this, properties = mapOf(propertyNames.forEvents.type to type.stringValue))
+fun <EVENT : Event> EVENT.asReceivedEventSpy(propertyNames: MessagePropertyNames = AcmeMessagePropertyNames, acknowledge: suspend (ReceivedMessage<EVENT>) -> Unit = {}) = ReceivedMessage.inMemorySpy(this, properties = mapOf(propertyNames.forEvents.type to type.stringValue), acknowledge = acknowledge)
 
 class UndecodableMessageSpy<EVENT : Event>(override val id: Message.Id, override val properties: Map<String, String>, override val producerName: Name, override val publishedAt: Instant) : ReceivedMessage<EVENT> {
 
-    var wasAcknowledged = false
+    var wasAcknowledgedSuccessfully = false
         private set
     override val key: String? = null
     override val value: EVENT get() = error("This payload cannot be decoded")
@@ -28,7 +32,7 @@ class UndecodableMessageSpy<EVENT : Event>(override val id: Message.Id, override
     override val context = Message.Context()
 
     override suspend fun acknowledge() {
-        wasAcknowledged = true
+        wasAcknowledgedSuccessfully = true
     }
 
     companion object
@@ -42,3 +46,13 @@ fun <EVENT : Event> UndecodableMessageSpy.Companion.withoutType() = undecodableM
 
 context(generator: CoreDataGenerator)
 private fun <EVENT : Event> undecodableMessageSpy(properties: Map<String, String>) = UndecodableMessageSpy<EVENT>(id = Message.Id.ulid(topic = Topic.create()), properties = properties, producerName = Name.random(), publishedAt = generator.clock.now())
+
+fun Assert<UndecodableMessageSpy<*>>.wasAcknowledgedSuccessfully() = given { message ->
+
+    assertThat(message.wasAcknowledgedSuccessfully).isTrue()
+}
+
+fun Assert<UndecodableMessageSpy<*>>.wasNotAcknowledgedSuccessfully() = given { message ->
+
+    assertThat(message.wasAcknowledgedSuccessfully).isFalse()
+}

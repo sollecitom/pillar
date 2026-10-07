@@ -20,5 +20,7 @@ private class TypeDispatchingEventHandler<in EVENT : Event>(private val handlers
     override val handledTypes = handlers.keys
 
     context(_: InvocationContext<*>)
-    override suspend fun invoke(event: ReceivedMessage<EVENT>) = handlers.getValue(event.value.type)(event)
+    override suspend fun invoke(event: ReceivedMessage<EVENT>) = event.value.type.let(::handlerFor)(event)
+
+    private fun handlerFor(type: Happening.Type) = handlers[type] ?: error("No handler for event type ${type.stringValue}; handled types are ${handledTypes.joinToString { it.stringValue }}")
 }

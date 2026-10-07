@@ -1,26 +1,31 @@
 package sollecitom.libs.pillar.messaging.domain.event.processing
 
 import assertk.assertThat
+import assertk.all
 import assertk.assertions.containsExactly
 import assertk.assertions.each
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
-import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
+import sollecitom.libs.pillar.messaging.conventions.AcmeMessagePropertyNames
 import sollecitom.libs.pillar.messaging.test.utils.event.processing.processAndWaitUntilAllAcked
 import sollecitom.libs.pillar.messaging.test.utils.message.UndecodableMessageSpy
 import sollecitom.libs.pillar.messaging.test.utils.message.asReceivedEventSpy
+import sollecitom.libs.pillar.messaging.test.utils.message.wasAcknowledgedSuccessfully
+import sollecitom.libs.pillar.messaging.test.utils.message.wasNotAcknowledgedSuccessfully
 import sollecitom.libs.pillar.messaging.test.utils.message.withType
 import sollecitom.libs.pillar.messaging.test.utils.message.withoutType
 import sollecitom.libs.swissknife.core.domain.identity.Id
@@ -29,6 +34,7 @@ import sollecitom.libs.swissknife.core.domain.text.Name
 import sollecitom.libs.swissknife.core.domain.versioning.IntVersion
 import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
+import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.correlation.core.test.utils.testWithInvocationContext
 import sollecitom.libs.swissknife.ddd.domain.Event
 import sollecitom.libs.swissknife.ddd.domain.EventProcessor
@@ -39,6 +45,7 @@ import sollecitom.libs.swissknife.messaging.domain.event.processing.ProcessEvent
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.test.utils.message.*
 import sollecitom.libs.swissknife.test.utils.assertions.failedThrowing
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -97,7 +104,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
             attempts += message.value
             if (message.value == failing && attempts.size <= 2) error("A temporary error occurred")
             EventProcessingResult.Success
-        }, scope = backgroundScope)
+        }, scope = backgroundScope, onFatalFailure = failingTheTest)
 
         processor.start()
         messages.waitUntilAllAcked()
@@ -115,7 +122,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         val processor = EventProcessor.withMessages(flowOf(message), handlingBothTypes {
             if (++attempts <= 8) error("A temporary error occurred")
             EventProcessingResult.Success
-        }, scope = backgroundScope)
+        }, scope = backgroundScope, onFatalFailure = failingTheTest)
 
         processor.start()
         message.awaitSuccessfulAck()
@@ -131,7 +138,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         val processor = EventProcessor.withMessages(flowOf(message), handlingBothTypes {
             attempts++
             error("A bug")
-        }, scope = backgroundScope)
+        }, scope = backgroundScope, onFatalFailure = failingTheTest)
         processor.start()
         delay(10.seconds)
         val attemptsBeforeStopping = attempts
@@ -152,12 +159,12 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         val processor = EventProcessor.withMessages(flowOf(undecodable, handled), handling(TestEvent1.TYPE) { message ->
             processed += message.value
             EventProcessingResult.Success
-        }, scope = backgroundScope)
+        }, scope = backgroundScope, onFatalFailure = failingTheTest)
 
         processor.start()
         handled.awaitSuccessfulAck()
 
-        assertThat(undecodable.wasAcknowledged).isTrue()
+        assertThat(undecodable).wasAcknowledgedSuccessfully()
         assertThat(processed).containsExactly(handled.value)
     }
 
@@ -167,19 +174,21 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         val undecodable = UndecodableMessageSpy.withType<Event>(TestEvent1.TYPE)
         val following = testEvent1().asReceivedEventSpy()
         val processed = mutableListOf<Event>()
-        val halted = CompletableDeferred<UndecodableMessageException>()
+        val halted = CompletableDeferred<Throwable>()
         val processor = EventProcessor.withMessages(flowOf(undecodable, following), handling(TestEvent1.TYPE) { message ->
             processed += message.value
             EventProcessingResult.Success
-        }, scope = backgroundScope, onUndecodableMessage = halted::complete)
+        }, scope = backgroundScope, onFatalFailure = halted::complete)
 
         processor.start()
         val failure = halted.await()
 
-        assertThat(failure).prop(UndecodableMessageException::messageId).isEqualTo(undecodable.id)
-        assertThat(failure).prop(UndecodableMessageException::eventType).isEqualTo(TestEvent1.TYPE.stringValue)
-        assertThat(undecodable.wasAcknowledged).isFalse()
-        assertThat(following.wasAcknowledgedSuccessfully).isFalse()
+        assertThat(failure).isInstanceOf<UndecodableMessageException>().all {
+            prop(UndecodableMessageException::messageId).isEqualTo(undecodable.id)
+            prop(UndecodableMessageException::eventType).isEqualTo(TestEvent1.TYPE.stringValue)
+        }
+        assertThat(undecodable).wasNotAcknowledgedSuccessfully()
+        assertThat(following).wasNotAcknowledgedSuccessfully()
         assertThat(processed).isEmpty()
     }
 
@@ -197,28 +206,104 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
     fun `a message without an event type halts the processor without acknowledging it`() = runTest {
 
         val untyped = UndecodableMessageSpy.withoutType<Event>()
-        val halted = CompletableDeferred<UndecodableMessageException>()
-        val processor = EventProcessor.withMessages(flowOf(untyped), handling(TestEvent1.TYPE) { EventProcessingResult.Success }, scope = backgroundScope, onUndecodableMessage = halted::complete)
+        val halted = CompletableDeferred<Throwable>()
+        val processor = EventProcessor.withMessages(flowOf(untyped), handling(TestEvent1.TYPE) { EventProcessingResult.Success }, scope = backgroundScope, onFatalFailure = halted::complete)
 
         processor.start()
         val failure = halted.await()
 
-        assertThat(failure).prop(UndecodableMessageException::messageId).isEqualTo(untyped.id)
-        assertThat(failure).prop(UndecodableMessageException::eventType).isNull()
-        assertThat(untyped.wasAcknowledged).isFalse()
+        assertThat(failure).isInstanceOf<UndecodableMessageException>().all {
+            prop(UndecodableMessageException::messageId).isEqualTo(untyped.id)
+            prop(UndecodableMessageException::eventType).isNull()
+        }
+        assertThat(untyped).wasNotAcknowledgedSuccessfully()
+    }
+
+    @Test
+    fun `a message with an unparseable event type halts the processor without acknowledging it`() = runTest {
+
+        val malformed = ReceivedMessage.inMemorySpy<Event>(testEvent1(), properties = mapOf(AcmeMessagePropertyNames.forEvents.type to "not an event type"))
+        val halted = CompletableDeferred<Throwable>()
+        val processor = EventProcessor.withMessages(flowOf(malformed), handling(TestEvent1.TYPE) { EventProcessingResult.Success }, scope = backgroundScope, onFatalFailure = halted::complete)
+
+        processor.start()
+        val failure = halted.await()
+
+        assertThat(failure).isInstanceOf<UndecodableMessageException>().prop(UndecodableMessageException::eventType).isEqualTo("not an event type")
+        assertThat(malformed).wasNotAcknowledgedSuccessfully()
+    }
+
+    @Test
+    fun `a failure of the message source halts the processor`() = runTest {
+
+        val sourceFailure = IllegalStateException("The connection to the broker was lost")
+        val halted = CompletableDeferred<Throwable>()
+        val processor = EventProcessor.withMessages(flow<ReceivedMessage<Event>> { throw sourceFailure }, handling(TestEvent1.TYPE) { EventProcessingResult.Success }, scope = backgroundScope, onFatalFailure = halted::complete)
+
+        processor.start()
+        val failure = halted.await()
+
+        assertThat(failure).isEqualTo(sourceFailure)
+    }
+
+    @Test
+    fun `a cancellation raised by the handler is retried in place like any other failure`() = runTest {
+
+        val message = testEvent1().asReceivedEventSpy()
+        var attempts = 0
+        val processor = EventProcessor.withMessages(flowOf(message), handling(TestEvent1.TYPE) {
+            if (++attempts == 1) throw CancellationException("A timeout inside the handler")
+            EventProcessingResult.Success
+        }, scope = backgroundScope, onFatalFailure = failingTheTest)
+
+        processor.start()
+        message.awaitSuccessfulAck()
+
+        assertThat(attempts).isEqualTo(2)
+    }
+
+    @Test
+    fun `a failure to acknowledge a handled message retries processing it`() = runTest {
+
+        var acknowledgementAttempts = 0
+        val message = testEvent1().asReceivedEventSpy { if (++acknowledgementAttempts == 1) error("The broker rejected the acknowledgement") }
+        var processingAttempts = 0
+        val processor = EventProcessor.withMessages(flowOf(message), handling(TestEvent1.TYPE) {
+            processingAttempts++
+            EventProcessingResult.Success
+        }, scope = backgroundScope, onFatalFailure = failingTheTest)
+
+        processor.start()
+        message.awaitSuccessfulAck()
+
+        assertThat(processingAttempts).isEqualTo(2)
+    }
+
+    @Test
+    fun `a failure to acknowledge an unhandled message is retried`() = runTest {
+
+        var acknowledgementAttempts = 0
+        val message = testEvent2().asReceivedEventSpy { if (++acknowledgementAttempts == 1) error("The broker rejected the acknowledgement") }
+        val processor = EventProcessor.withMessages(flowOf(message), handling(TestEvent1.TYPE) { EventProcessingResult.Success }, scope = backgroundScope, onFatalFailure = failingTheTest)
+
+        processor.start()
+        message.awaitSuccessfulAck()
+
+        assertThat(acknowledgementAttempts).isEqualTo(2)
     }
 
     @Test
     fun `an unknown version of a handled event type is not acknowledged`() = runTest {
 
         val newerVersion = testEvent1(type = TestEvent1.TYPE.copy(version = 2.let(::IntVersion))).asReceivedEventSpy()
-        val handler = EventHandler.byType<Event>(mapOf(TestEvent1.TYPE to ProcessEvent { EventProcessingResult.Success }))
-        val processor = EventProcessor.withMessages(flowOf(newerVersion), handler, scope = backgroundScope)
+        val handler = CountingEventHandler(EventHandler.byType<Event>(mapOf(TestEvent1.TYPE to ProcessEvent { EventProcessingResult.Success })))
+        val processor = EventProcessor.withMessages(flowOf(newerVersion), handler, scope = backgroundScope, onFatalFailure = failingTheTest)
 
         processor.start()
         delay(10.minutes)
 
-        assertThat(newerVersion.wasAcknowledgedSuccessfully).isFalse()
+        assertThat(handler.invocations).isEqualTo(15)
+        assertThat(newerVersion).wasNotAcknowledgedSuccessfully()
     }
 
     @Test
@@ -227,6 +312,20 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         val result = runCatching { EventProcessor.withMessages(flowOf(), handling { EventProcessingResult.Success }) }
 
         assertThat(result).failedThrowing<IllegalArgumentException>()
+    }
+
+    private val failingTheTest: (Throwable) -> Unit = { error -> throw AssertionError("The processor halted unexpectedly", error) }
+
+    private class CountingEventHandler<EVENT : Event>(private val delegate: EventHandler<EVENT>) : EventHandler<EVENT> by delegate {
+
+        var invocations = 0
+            private set
+
+        context(_: InvocationContext<*>)
+        override suspend fun invoke(event: ReceivedMessage<EVENT>): EventProcessingResult {
+            invocations++
+            return delegate(event)
+        }
     }
 
     private fun handlingBothTypes(process: suspend (ReceivedMessage<Event>) -> EventProcessingResult) = handling(TestEvent1.TYPE, TestEvent2.TYPE, process = process)
