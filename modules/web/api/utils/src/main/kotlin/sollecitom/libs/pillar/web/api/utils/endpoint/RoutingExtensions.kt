@@ -2,6 +2,7 @@ package sollecitom.libs.pillar.web.api.utils.endpoint
 
 import sollecitom.libs.pillar.json.serialization.web.api.jsonSerde
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access
+import sollecitom.libs.swissknife.correlation.core.domain.access.customer.Customer
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.correlation.core.domain.context.authenticatedOrNull
 import sollecitom.libs.swissknife.correlation.core.domain.context.customerOrNull
@@ -24,16 +25,18 @@ infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Au
     val context = InvocationContextKeys.key.mandatory(request)
     val authenticated = context.authenticatedOrNull()
     if (authenticated == null) {
-        apiError(code = ErrorCode.AuthenticatedAccessRequired)
+        apiError(error = ApiError(code = ErrorCode.AuthenticatedAccessRequired))
     } else {
         runBlocking(MDCContext()) { with(authenticated) { action(request) } }
     }
 }
 
-/** Routes to an action that requires an authenticated invocation context with a customer to scope it to. Returns 403 if there is no customer. */
-infix fun PathMethod.toCustomerScoped(action: suspend InvocationContext<Access.Authenticated>.(request: Request) -> Response): RoutingHttpHandler = toAuthenticated { request ->
+infix fun PathMethod.toCustomerScoped(action: suspend InvocationContext<Access.Authenticated>.(request: Request, customer: Customer) -> Response): RoutingHttpHandler = toAuthenticated { request ->
 
-    if (customerOrNull == null) Response(Status.FORBIDDEN) else action(request)
+    when (val customer = customerOrNull) {
+        null -> apiError(error = customerRequired, status = Status.FORBIDDEN)
+        else -> action(request, customer)
+    }
 }
 
 /** Routes to an action that requires an unauthenticated invocation context. Returns 422 if the context is authenticated. */
@@ -42,7 +45,7 @@ infix fun PathMethod.toUnauthenticated(action: suspend InvocationContext<Access.
     val context = InvocationContextKeys.key.mandatory(request)
     val unauthenticated = context.unauthenticatedOrNull()
     if (unauthenticated == null) {
-        apiError(code = ErrorCode.UnauthenticatedAccessRequired)
+        apiError(error = ApiError(code = ErrorCode.UnauthenticatedAccessRequired))
     } else {
         runBlocking(MDCContext()) { with(unauthenticated) { action(request) } }
     }
@@ -55,8 +58,6 @@ infix fun PathMethod.toWithInvocationContext(action: suspend InvocationContext<A
     runBlocking(MDCContext()) { with(context) { action(request) } }
 }
 
-private fun apiError(code: ErrorCode): Response {
+private val customerRequired = ApiError(message = "The invocation requires a customer to scope it to", code = "01K70Q5Z3S9V2XG8M4T6HJ1RNC")
 
-    val error = ApiError(code = code)
-    return Response(status = Status.UNPROCESSABLE_ENTITY).body(error, ApiError.jsonSerde)
-}
+private fun apiError(error: ApiError, status: Status = Status.UNPROCESSABLE_ENTITY) = Response(status = status).body(error, ApiError.jsonSerde)

@@ -1,6 +1,7 @@
 package sollecitom.libs.pillar.web.api.utils.endpoint
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -17,9 +18,12 @@ import sollecitom.libs.swissknife.core.test.utils.testProvider
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.Actor
+import sollecitom.libs.swissknife.correlation.core.domain.access.customer.Customer
+import sollecitom.libs.swissknife.correlation.core.test.utils.customer.create
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.correlation.core.test.utils.access.actor.direct
 import sollecitom.libs.swissknife.correlation.core.test.utils.access.actor.internalService
+import sollecitom.libs.swissknife.correlation.core.test.utils.access.actor.user
 import sollecitom.libs.swissknife.correlation.core.test.utils.access.authenticated
 import sollecitom.libs.swissknife.correlation.core.test.utils.context.authenticated
 import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
@@ -27,16 +31,30 @@ import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationCo
 @TestInstance(PER_CLASS)
 class CustomerScopedRoutingTests : CoreDataGenerator by CoreDataGenerator.testProvider {
 
-    private val handler = routes("/things" bind GET toCustomerScoped { Response(OK) })
+    private val handler = routes("/things" bind GET toCustomerScoped { _, customer -> Response(OK).body(customer.id.stringValue) })
 
     @Test
-    fun `an invocation with a customer reaches the action`() {
+    fun `an invocation with a customer reaches the action with that customer`() {
 
-        val context = InvocationContext.authenticated()
+        val customer = Customer.create()
+        val context = InvocationContext.authenticated(access = { Access.authenticated(actor = Actor.direct(account = Actor.Account.user(customer = customer))) })
 
         val response = handler(context.asRequest())
 
         assertThat(response.status).isEqualTo(OK)
+        assertThat(response.bodyString()).isEqualTo(customer.id.stringValue)
+    }
+
+    @Test
+    fun `an invocation without an actor customer but with a specified target customer reaches the action with the target customer`() {
+
+        val targetCustomer = Customer.create()
+        val context = InvocationContext.authenticated(access = { Access.authenticated(actor = Actor.direct(account = Actor.Account.internalService())) }, specifiedTargetCustomer = { targetCustomer })
+
+        val response = handler(context.asRequest())
+
+        assertThat(response.status).isEqualTo(OK)
+        assertThat(response.bodyString()).isEqualTo(targetCustomer.id.stringValue)
     }
 
     @Test
@@ -47,6 +65,7 @@ class CustomerScopedRoutingTests : CoreDataGenerator by CoreDataGenerator.testPr
         val response = handler(context.asRequest())
 
         assertThat(response.status).isEqualTo(Status.FORBIDDEN)
+        assertThat(response.bodyString()).contains("01K70Q5Z3S9V2XG8M4T6HJ1RNC")
     }
 
     private fun InvocationContext<*>.asRequest() = Request(GET, "/things").with(InvocationContextKeys.key.mandatory of this, InvocationContextKeys.key.optional of this)
