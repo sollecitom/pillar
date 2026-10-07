@@ -4,6 +4,7 @@ import sollecitom.libs.pillar.json.serialization.web.api.jsonSerde
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.correlation.core.domain.context.authenticatedOrNull
+import sollecitom.libs.swissknife.correlation.core.domain.context.customerOrNull
 import sollecitom.libs.swissknife.correlation.core.domain.context.unauthenticatedOrNull
 import sollecitom.libs.swissknife.http4k.utils.body
 import sollecitom.libs.swissknife.web.api.domain.error.ApiError
@@ -27,6 +28,12 @@ infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Au
     } else {
         runBlocking(MDCContext()) { with(authenticated) { action(request) } }
     }
+}
+
+/** Routes to an action that requires an authenticated invocation context with a customer to scope it to. Returns 403 if there is no customer. */
+infix fun PathMethod.toCustomerScoped(action: suspend InvocationContext<Access.Authenticated>.(request: Request) -> Response): RoutingHttpHandler = toAuthenticated { request ->
+
+    if (customerOrNull == null) Response(Status.FORBIDDEN) else action(request)
 }
 
 /** Routes to an action that requires an unauthenticated invocation context. Returns 422 if the context is authenticated. */
