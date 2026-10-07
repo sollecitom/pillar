@@ -48,6 +48,7 @@ import sollecitom.libs.swissknife.jwt.jose4j.processor.newJwtProcessorConfigurat
 import sollecitom.libs.swissknife.lens.core.extensions.identity.id
 import sollecitom.libs.swissknife.lens.correlation.extensions.toggles.toggleValue
 import sollecitom.libs.swissknife.web.api.utils.api.HttpApiDefinition
+import sollecitom.libs.pillar.web.api.utils.filters.correlation.InvocationContextFilters
 import sollecitom.libs.swissknife.web.api.utils.filters.correlation.InvocationContextKeys
 import sollecitom.libs.swissknife.web.api.utils.headers.HttpHeaderNames
 import sollecitom.libs.swissknife.web.client.info.analyzer.ClientInfoAnalyzer
@@ -63,13 +64,13 @@ import kotlin.time.toJavaDuration
  * trace headers, toggles, and locale. Verified JWTs are cached to avoid repeated verification.
  */
 context(api: HttpApiDefinition, random: RandomGenerator, time: TimeGenerator, ids: UniqueIdGenerator)
-fun InvocationContextKeys.parseInvocationContextFromRequest(jwtProcessorConfiguration: JwtProcessor.Configuration = newJwtProcessorConfiguration(), cacheExpiry: Duration = GatewayInvocationContextFilter.defaultCacheExpiry, cacheMaximumSize: Long = GatewayInvocationContextFilter.defaultCacheMaximumSize, issuerForDomain: (String) -> JwtParty): Filter = parseInvocationContextFromRequest(headerNames = api.headerNames, cacheExpiry = cacheExpiry, cacheMaximumSize = cacheMaximumSize, issuerForDomain = issuerForDomain, jwtProcessorConfiguration = jwtProcessorConfiguration, randomGenerator = random, timeGenerator = time, uniqueIdGenerator = ids)
+fun InvocationContextFilters.parseInvocationContextFromRequest(jwtProcessorConfiguration: JwtProcessor.Configuration = newJwtProcessorConfiguration(), cacheExpiry: Duration = GatewayInvocationContextFilter.defaultCacheExpiry, cacheMaximumSize: Long = GatewayInvocationContextFilter.defaultCacheMaximumSize, issuerForDomain: (String) -> JwtParty): Filter = parseInvocationContextFromRequest(headerNames = api.headerNames, cacheExpiry = cacheExpiry, cacheMaximumSize = cacheMaximumSize, issuerForDomain = issuerForDomain, jwtProcessorConfiguration = jwtProcessorConfiguration, randomGenerator = random, timeGenerator = time, uniqueIdGenerator = ids)
 
 /**
  * Creates a filter that builds an [InvocationContext] directly from the HTTP request with explicit dependencies.
  * Parses JWT bearer tokens, trace headers, toggles, and locale. Verified JWTs are cached.
  */
-fun InvocationContextKeys.parseInvocationContextFromRequest(headerNames: HttpHeaderNames, cacheExpiry: Duration = GatewayInvocationContextFilter.defaultCacheExpiry, cacheMaximumSize: Long = GatewayInvocationContextFilter.defaultCacheMaximumSize, issuerForDomain: (String) -> JwtParty, jwtProcessorConfiguration: JwtProcessor.Configuration, randomGenerator: RandomGenerator, timeGenerator: TimeGenerator, uniqueIdGenerator: UniqueIdGenerator): Filter = GatewayInvocationContextFilter(headerNames, cacheExpiry, cacheMaximumSize, jwtProcessorConfiguration, issuerForDomain, randomGenerator, timeGenerator, uniqueIdGenerator)
+fun InvocationContextFilters.parseInvocationContextFromRequest(headerNames: HttpHeaderNames, cacheExpiry: Duration = GatewayInvocationContextFilter.defaultCacheExpiry, cacheMaximumSize: Long = GatewayInvocationContextFilter.defaultCacheMaximumSize, issuerForDomain: (String) -> JwtParty, jwtProcessorConfiguration: JwtProcessor.Configuration, randomGenerator: RandomGenerator, timeGenerator: TimeGenerator, uniqueIdGenerator: UniqueIdGenerator): Filter = GatewayInvocationContextFilter(headerNames, cacheExpiry, cacheMaximumSize, jwtProcessorConfiguration, issuerForDomain, randomGenerator, timeGenerator, uniqueIdGenerator)
 
 internal class GatewayInvocationContextFilter(override val headerNames: HttpHeaderNames, private val cacheExpiry: Duration, private val cacheMaximumSize: Long, private val jwtProcessorConfiguration: JwtProcessor.Configuration, private val issuerForDomain: (String) -> JwtParty, randomGenerator: RandomGenerator, timeGenerator: TimeGenerator, uniqueIdGenerator: UniqueIdGenerator) : Filter, HttpApiDefinition, RandomGenerator by randomGenerator, TimeGenerator by timeGenerator, UniqueIdGenerator by uniqueIdGenerator {
 

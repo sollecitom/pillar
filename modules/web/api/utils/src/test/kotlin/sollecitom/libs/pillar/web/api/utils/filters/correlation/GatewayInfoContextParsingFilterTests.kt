@@ -111,5 +111,5 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
         assertThat(response.status.description).contains("The invocation context doesn't match its schema")
     }
 
-    private fun parsingFilter() = InvocationContextKeys.parseInvocationContextFromGatewayHeader(headerNames.correlation)
+    private fun parsingFilter() = InvocationContextFilters.parseInvocationContextFromGatewayHeader(headerNames.correlation)
 }

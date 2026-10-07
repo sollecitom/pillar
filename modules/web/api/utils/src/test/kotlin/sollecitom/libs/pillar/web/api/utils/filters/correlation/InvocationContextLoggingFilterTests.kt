@@ -33,7 +33,7 @@ class InvocationContextLoggingFilterTests : CoreDataGenerator by CoreDataGenerat
 
         val context = InvocationContext.authenticated()
         var loggingContextInHandler: Map<String, String>? = null
-        val handler = InvocationContextKeys.addInvocationContextToLoggingStack().then(routes("/things" bind GET toAuthenticated {
+        val handler = InvocationContextFilters.addInvocationContextToLoggingStack().then(routes("/things" bind GET toAuthenticated {
             loggingContextInHandler = withContext(Dispatchers.Default) { MDC.getCopyOfContextMap() }
             Response(OK)
         }))
@@ -47,7 +47,7 @@ class InvocationContextLoggingFilterTests : CoreDataGenerator by CoreDataGenerat
     fun `the logging context is cleared once the request is handled`() {
 
         val context = InvocationContext.authenticated()
-        val handler = InvocationContextKeys.addInvocationContextToLoggingStack().then { Response(OK) }
+        val handler = InvocationContextFilters.addInvocationContextToLoggingStack().then { Response(OK) }
 
         handler(Request(GET, "/things").with(InvocationContextKeys.key.mandatory of context, InvocationContextKeys.key.optional of context))
 
