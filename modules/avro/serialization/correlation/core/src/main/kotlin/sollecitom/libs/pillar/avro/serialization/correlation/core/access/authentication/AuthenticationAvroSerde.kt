@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.correlation.core.access.authen
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.deserializeWith
-import sollecitom.libs.swissknife.avro.serialization.utils.getRecordFromUnion
+import sollecitom.libs.swissknife.avro.serialization.utils.getEnvelope
 import sollecitom.libs.swissknife.correlation.core.domain.access.authentication.Authentication
 import sollecitom.libs.swissknife.correlation.core.domain.access.authentication.CredentialsBasedAuthentication
 import sollecitom.libs.swissknife.correlation.core.domain.access.authentication.FederatedAuthentication
@@ -23,22 +23,15 @@ private object AuthenticationAvroSerde : AvroSerde<Authentication> {
             is FederatedAuthentication -> FederatedAuthentication.avroSerde.serialize(value)
             is StatelessAuthentication -> StatelessAuthentication.avroSerde.serialize(value)
         }
-        setRecordInUnion(record)
+        setEnvelope(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+    override fun deserialize(value: GenericRecord) = value.getEnvelope { branchName, envelope ->
         when (branchName) {
-            Types.credentialsBased -> unionRecord.deserializeWith(CredentialsBasedAuthentication.avroSerde)
-            Types.federated -> unionRecord.deserializeWith(FederatedAuthentication.avroSerde)
-            Types.stateless -> unionRecord.deserializeWith(StatelessAuthentication.avroSerde)
+            CredentialsBasedAuthentication.avroSerde.schema.name -> envelope.deserializeWith(CredentialsBasedAuthentication.avroSerde)
+            FederatedAuthentication.avroSerde.schema.name -> envelope.deserializeWith(FederatedAuthentication.avroSerde)
+            StatelessAuthentication.avroSerde.schema.name -> envelope.deserializeWith(StatelessAuthentication.avroSerde)
             else -> error("Unknown authentication type $branchName")
         }
-    }
-
-
-    private object Types {
-        const val credentialsBased = "CredentialsBasedAuthentication"
-        const val federated = "FederatedAuthentication"
-        const val stateless = "StatelessAuthentication"
     }
 }

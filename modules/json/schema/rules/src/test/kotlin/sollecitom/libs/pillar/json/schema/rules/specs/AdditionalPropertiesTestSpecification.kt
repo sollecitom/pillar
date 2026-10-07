@@ -86,7 +86,7 @@ internal interface AdditionalPropertiesTestSpecification {
 
         val result = schema.checkAgainstRules(rules)
 
-        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.Violation)
+        assertThat(result).isNotCompliantWithOnlyViolation(MandatoryAdditionalPropertiesRule.Violation(path = emptyList()))
     }
 
     @Test

@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.correlation.core.toggles
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.deserializeWith
-import sollecitom.libs.swissknife.avro.serialization.utils.getRecordFromUnion
+import sollecitom.libs.swissknife.avro.serialization.utils.getEnvelope
 import sollecitom.libs.swissknife.correlation.core.domain.toggles.*
 import org.apache.avro.generic.GenericRecord
 
@@ -22,24 +22,16 @@ private object ToggleValueAvroSerde : AvroSerde<ToggleValue<*>> {
             is DecimalToggleValue -> DecimalToggleValue.avroSerde.serialize(value)
             is EnumToggleValue -> EnumToggleValue.avroSerde.serialize(value)
         }
-        setRecordInUnion(record)
+        setEnvelope(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+    override fun deserialize(value: GenericRecord) = value.getEnvelope { branchName, envelope ->
         when (branchName) {
-            Types.boolean -> unionRecord.deserializeWith(BooleanToggleValue.avroSerde)
-            Types.integer -> unionRecord.deserializeWith(IntegerToggleValue.avroSerde)
-            Types.decimal -> unionRecord.deserializeWith(DecimalToggleValue.avroSerde)
-            Types.enum -> unionRecord.deserializeWith(EnumToggleValue.avroSerde)
+            BooleanToggleValue.avroSerde.schema.name -> envelope.deserializeWith(BooleanToggleValue.avroSerde)
+            IntegerToggleValue.avroSerde.schema.name -> envelope.deserializeWith(IntegerToggleValue.avroSerde)
+            DecimalToggleValue.avroSerde.schema.name -> envelope.deserializeWith(DecimalToggleValue.avroSerde)
+            EnumToggleValue.avroSerde.schema.name -> envelope.deserializeWith(EnumToggleValue.avroSerde)
             else -> error("Unknown toggle value type $branchName")
         }
-    }
-
-
-    private object Types {
-        const val boolean = "BooleanToggleValue"
-        const val integer = "IntegerToggleValue"
-        const val decimal = "DecimalToggleValue"
-        const val enum = "EnumToggleValue"
     }
 }

@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.correlation.core.access.actor
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.deserializeWith
-import sollecitom.libs.swissknife.avro.serialization.utils.getRecordFromUnion
+import sollecitom.libs.swissknife.avro.serialization.utils.getEnvelope
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.Actor.*
 import org.apache.avro.generic.GenericRecord
 
@@ -19,20 +19,14 @@ private object AccountAvroSerde : AvroSerde<Account> {
             is UserAccount -> UserAccount.avroSerde.serialize(value)
             is ServiceAccount -> ServiceAccount.avroSerde.serialize(value)
         }
-        setRecordInUnion(record)
+        setEnvelope(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+    override fun deserialize(value: GenericRecord) = value.getEnvelope { branchName, envelope ->
         when (branchName) {
-            Types.user -> unionRecord.deserializeWith(UserAccount.avroSerde)
-            Types.service -> unionRecord.deserializeWith(ServiceAccount.avroSerde)
+            UserAccount.avroSerde.schema.name -> envelope.deserializeWith(UserAccount.avroSerde)
+            ServiceAccount.avroSerde.schema.name -> envelope.deserializeWith(ServiceAccount.avroSerde)
             else -> error("Unknown account type $branchName")
         }
-    }
-
-
-    private object Types {
-        const val user = "UserAccount"
-        const val service = "ServiceAccount"
     }
 }

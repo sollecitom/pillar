@@ -1,7 +1,7 @@
 package sollecitom.libs.pillar.json.schema.rules.specs
 
 import assertk.assertThat
-import assertk.assertions.containsOnly
+import assertk.assertions.isEqualTo
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRuleSet
 import sollecitom.libs.swissknife.compliance.checker.domain.checkAgainstRules
 import sollecitom.libs.swissknife.compliance.checker.test.utils.isNotCompliantWithOnlyViolation
@@ -43,7 +43,7 @@ internal interface RequiredPropertiesTestSpecification {
 
         assertThat(result).isNotCompliantWithOnlyViolation<DisallowRequiringUndeclaredPropertiesRule.Violation, JsonSchema> { violation ->
 
-            assertThat(violation.offendingProperties).containsOnly(requiredUndeclaredProperty)
+            assertThat(violation.path).isEqualTo(listOf(requiredUndeclaredProperty))
         }
     }
 }

@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.correlation.core.access.actor
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.deserializeWith
-import sollecitom.libs.swissknife.avro.serialization.utils.getRecordFromUnion
+import sollecitom.libs.swissknife.avro.serialization.utils.getEnvelope
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.Actor.ServiceAccount
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.Actor.ServiceAccount.External
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.Actor.ServiceAccount.Internal
@@ -21,20 +21,14 @@ private object ServiceAccountAvroSerde : AvroSerde<ServiceAccount> {
             is Internal -> Internal.avroSerde.serialize(value)
             is External -> External.avroSerde.serialize(value)
         }
-        setRecordInUnion(record)
+        setEnvelope(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+    override fun deserialize(value: GenericRecord) = value.getEnvelope { branchName, envelope ->
         when (branchName) {
-            Types.internal -> unionRecord.deserializeWith(Internal.avroSerde)
-            Types.external -> unionRecord.deserializeWith(External.avroSerde)
+            Internal.avroSerde.schema.name -> envelope.deserializeWith(Internal.avroSerde)
+            External.avroSerde.schema.name -> envelope.deserializeWith(External.avroSerde)
             else -> error("Unknown service account type $branchName")
         }
-    }
-
-
-    private object Types {
-        const val internal = "InternalServiceAccount"
-        const val external = "ExternalServiceAccount"
     }
 }

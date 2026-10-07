@@ -1,7 +1,7 @@
 package sollecitom.libs.pillar.json.schema.rules.specs
 
 import assertk.assertThat
-import assertk.assertions.containsOnly
+import assertk.assertions.isEqualTo
 import sollecitom.libs.swissknife.compliance.checker.domain.ComplianceRuleSet
 import sollecitom.libs.swissknife.compliance.checker.domain.checkAgainstRules
 import sollecitom.libs.swissknife.compliance.checker.test.utils.isNotCompliantWithOnlyViolation
@@ -39,7 +39,7 @@ internal interface DisallowedConstKeywordTestSpecification {
 
         assertThat(result).isNotCompliantWithOnlyViolation<DisallowConstKeywordRule.Violation, JsonSchema> { violation ->
 
-            assertThat(violation.offendingProperties).containsOnly(illegalPropertyName)
+            assertThat(violation.path).isEqualTo(listOf(illegalPropertyName))
         }
     }
 }

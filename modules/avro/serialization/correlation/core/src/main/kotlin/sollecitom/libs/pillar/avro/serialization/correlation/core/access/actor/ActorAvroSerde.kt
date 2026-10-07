@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.correlation.core.access.actor
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.deserializeWith
-import sollecitom.libs.swissknife.avro.serialization.utils.getRecordFromUnion
+import sollecitom.libs.swissknife.avro.serialization.utils.getEnvelope
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.Actor
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.ActorOnBehalf
 import sollecitom.libs.swissknife.correlation.core.domain.access.actor.DirectActor
@@ -23,22 +23,15 @@ private object ActorAvroSerde : AvroSerde<Actor> {
             is ActorOnBehalf -> ActorOnBehalf.avroSerde.serialize(value)
             is ImpersonatingActor -> ImpersonatingActor.avroSerde.serialize(value)
         }
-        setRecordInUnion(record)
+        setEnvelope(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+    override fun deserialize(value: GenericRecord) = value.getEnvelope { branchName, envelope ->
         when (branchName) {
-            Types.direct -> unionRecord.deserializeWith(DirectActor.avroSerde)
-            Types.onBehalf -> unionRecord.deserializeWith(ActorOnBehalf.avroSerde)
-            Types.impersonating -> unionRecord.deserializeWith(ImpersonatingActor.avroSerde)
+            DirectActor.avroSerde.schema.name -> envelope.deserializeWith(DirectActor.avroSerde)
+            ActorOnBehalf.avroSerde.schema.name -> envelope.deserializeWith(ActorOnBehalf.avroSerde)
+            ImpersonatingActor.avroSerde.schema.name -> envelope.deserializeWith(ImpersonatingActor.avroSerde)
             else -> error("Unknown actor type $branchName")
         }
-    }
-
-
-    private object Types {
-        const val direct = "DirectActor"
-        const val onBehalf = "ActorOnBehalf"
-        const val impersonating = "ImpersonatingActor"
     }
 }

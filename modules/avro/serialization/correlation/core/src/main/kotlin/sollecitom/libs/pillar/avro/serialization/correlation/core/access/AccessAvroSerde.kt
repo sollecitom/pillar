@@ -3,7 +3,7 @@ package sollecitom.libs.pillar.avro.serialization.correlation.core.access
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.deserializeWith
-import sollecitom.libs.swissknife.avro.serialization.utils.getRecordFromUnion
+import sollecitom.libs.swissknife.avro.serialization.utils.getEnvelope
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access.Authenticated
 import sollecitom.libs.swissknife.correlation.core.domain.access.Access.Unauthenticated
@@ -21,20 +21,14 @@ private object AccessAvroSerde : AvroSerde<Access> {
             is Authenticated -> Authenticated.avroSerde.serialize(value)
             is Unauthenticated -> Unauthenticated.avroSerde.serialize(value)
         }
-        setRecordInUnion(record)
+        setEnvelope(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+    override fun deserialize(value: GenericRecord) = value.getEnvelope { branchName, envelope ->
         when (branchName) {
-            Types.authenticated -> unionRecord.deserializeWith(Authenticated.avroSerde)
-            Types.unauthenticated -> unionRecord.deserializeWith(Unauthenticated.avroSerde)
+            Authenticated.avroSerde.schema.name -> envelope.deserializeWith(Authenticated.avroSerde)
+            Unauthenticated.avroSerde.schema.name -> envelope.deserializeWith(Unauthenticated.avroSerde)
             else -> error("Unknown access type $branchName")
         }
-    }
-
-
-    private object Types {
-        const val authenticated = "AuthenticatedAccess"
-        const val unauthenticated = "UnauthenticatedAccess"
     }
 }

@@ -22,19 +22,14 @@ private object EncryptionMetadataAvroSerde : AvroSerde<EncryptionMode.Metadata> 
             is EncryptionMode.XTS.Metadata -> EncryptionMode.XTS.Metadata.avroSerde.serialize(value)
             else -> error("Unsupported encryption metadata type ${value::class.qualifiedName}")
         }
-        setRecordInUnion(record)
+        setEnvelope(record)
     }
 
-    override fun deserialize(value: GenericRecord) = value.getRecordFromUnion { branchName, unionRecord ->
+    override fun deserialize(value: GenericRecord) = value.getEnvelope { branchName, envelope ->
         when (branchName) {
-            Types.gcm -> unionRecord.deserializeWith(EncryptionMode.GCM.Metadata.avroSerde)
-            Types.xts -> unionRecord.deserializeWith(EncryptionMode.XTS.Metadata.avroSerde)
+            EncryptionMode.GCM.Metadata.avroSerde.schema.name -> envelope.deserializeWith(EncryptionMode.GCM.Metadata.avroSerde)
+            EncryptionMode.XTS.Metadata.avroSerde.schema.name -> envelope.deserializeWith(EncryptionMode.XTS.Metadata.avroSerde)
             else -> error("Unknown encryption metadata type $branchName")
         }
-    }
-
-    private object Types {
-        const val gcm = "GcmEncryptionMetadata"
-        const val xts = "XtsEncryptionMetadata"
     }
 }
