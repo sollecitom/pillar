@@ -19,7 +19,7 @@ class IdAvroSerdeTests : AcmeAvroSerdeTestSpecification<Id>, CoreDataGenerator b
     override val avroSerde = Id.avroSerde
 
     override fun parameterizedArguments() = listOf(
-        "STRING" to StringId(newId.external().stringValue),
+        "STRING" to newId.external().stringValue.let(::StringId),
         "ULID" to newId.ulid.monotonic(),
         "UUID" to newId.uuid.random(),
         "UUIDV7" to newId.uuid.v7(),

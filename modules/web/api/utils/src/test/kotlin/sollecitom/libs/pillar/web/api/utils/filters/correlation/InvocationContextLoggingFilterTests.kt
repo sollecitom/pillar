@@ -38,7 +38,7 @@ class InvocationContextLoggingFilterTests : CoreDataGenerator by CoreDataGenerat
             Response(OK)
         }))
 
-        handler(Request(GET, "/things").with(InvocationContextKeys.key.mandatory of context, InvocationContextKeys.key.optional of context))
+        Request(GET, "/things").with(InvocationContextKeys.key.mandatory of context, InvocationContextKeys.key.optional of context).let(handler)
 
         assertThat(loggingContextInHandler).isEqualTo(context.toLoggingContext())
     }
@@ -49,7 +49,7 @@ class InvocationContextLoggingFilterTests : CoreDataGenerator by CoreDataGenerat
         val context = InvocationContext.authenticated()
         val handler = InvocationContextFilters.addInvocationContextToLoggingStack().then { Response(OK) }
 
-        handler(Request(GET, "/things").with(InvocationContextKeys.key.mandatory of context, InvocationContextKeys.key.optional of context))
+        Request(GET, "/things").with(InvocationContextKeys.key.mandatory of context, InvocationContextKeys.key.optional of context).let(handler)
 
         assertThat(MDC.getCopyOfContextMap().orEmpty()).isEmpty()
     }

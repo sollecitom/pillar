@@ -39,7 +39,7 @@ class CustomerScopedRoutingTests : CoreDataGenerator by CoreDataGenerator.testPr
         val customer = Customer.create()
         val context = InvocationContext.authenticated(access = { Access.authenticated(actor = Actor.direct(account = Actor.Account.user(customer = customer))) })
 
-        val response = handler(context.asRequest())
+        val response = context.asRequest().let(handler)
 
         assertThat(response.status).isEqualTo(OK)
         assertThat(response.bodyString()).isEqualTo(customer.id.stringValue)
@@ -51,7 +51,7 @@ class CustomerScopedRoutingTests : CoreDataGenerator by CoreDataGenerator.testPr
         val targetCustomer = Customer.create()
         val context = InvocationContext.authenticated(access = { Access.authenticated(actor = Actor.direct(account = Actor.Account.internalService())) }, specifiedTargetCustomer = { targetCustomer })
 
-        val response = handler(context.asRequest())
+        val response = context.asRequest().let(handler)
 
         assertThat(response.status).isEqualTo(OK)
         assertThat(response.bodyString()).isEqualTo(targetCustomer.id.stringValue)
@@ -62,7 +62,7 @@ class CustomerScopedRoutingTests : CoreDataGenerator by CoreDataGenerator.testPr
 
         val context = InvocationContext.authenticated(access = { Access.authenticated(actor = Actor.direct(account = Actor.Account.internalService())) })
 
-        val response = handler(context.asRequest())
+        val response = context.asRequest().let(handler)
 
         assertThat(response.status).isEqualTo(Status.FORBIDDEN)
         assertThat(response.bodyString()).contains("01K70Q5Z3S9V2XG8M4T6HJ1RNC")

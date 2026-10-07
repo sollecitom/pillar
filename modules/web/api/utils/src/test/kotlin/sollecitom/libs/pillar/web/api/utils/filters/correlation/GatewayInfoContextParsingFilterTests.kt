@@ -41,7 +41,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
             Response(OK)
         }
 
-        val response = handler(Request(GET, "/").withInvocationContext(headerName, context))
+        val response = Request(GET, "/").withInvocationContext(headerName, context).let(handler)
 
         assertThat(response.status).isEqualTo(OK)
         assertThat(parsedContext!!.access).isEqualTo(context.access)
@@ -56,7 +56,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
             parsedContext = InvocationContextKeys.key.mandatory(request)
             Response(OK)
         }
-        val response = handler(Request(GET, "/").header("X-Acme-Invocation-Context", InvocationContext.authenticated().toHeaderValue()))
+        val response = Request(GET, "/").header("X-Acme-Invocation-Context", InvocationContext.authenticated().toHeaderValue()).let(handler)
 
         assertThat(response.status).isEqualTo(OK)
         assertThat(parsedContext).isNotNull()
@@ -71,7 +71,7 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
             Response(OK)
         }
 
-        val response = handler(Request(GET, "/"))
+        val response = Request(GET, "/").let(handler)
 
         assertThat(response.status).isEqualTo(OK)
         assertThat(parsedContext).isNull()
@@ -92,7 +92,8 @@ class GatewayInfoContextParsingFilterTests : CoreDataGenerator by CoreDataGenera
     fun `a raw JSON invocation context header is rejected`() {
 
         val handler = parsingFilter().then { Response(OK) }
-        val request = Request(GET, "/").header(headerName, InvocationContext.jsonSerde.serialize(InvocationContext.authenticated()).toString())
+        val rawJson = InvocationContext.authenticated().let(InvocationContext.jsonSerde::serialize).toString()
+        val request = Request(GET, "/").header(headerName, rawJson)
 
         val response = handler(request)
 

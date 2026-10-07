@@ -78,7 +78,8 @@ interface ErrorsEndpointHttpTestSpecification : EndpointTestSpecification {
         val api = apiWithValidResponse()
         val json = validRequestPayload()
         val invocationContext = validInvocationContext()
-        val request = Request.Companion(Method.POST, path(pathWithVersion(invalidVersion))).body(json).withInvocationContext(invocationContext)
+        val pathWithInvalidVersion = invalidVersion.let(::pathWithVersion).let(::path)
+        val request = Request.Companion(Method.POST, pathWithInvalidVersion).body(json).withInvocationContext(invocationContext)
         request.ensureNonCompliantWithOpenApi(error = ValidationReportError.Request.UnknownPath)
 
         val response = api(request)

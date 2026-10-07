@@ -32,7 +32,7 @@ class EventCompositeAvroSerdeTests : CoreDataGenerator by CoreDataGenerator.test
         val metadata = Event.Metadata(id = newId.external(), timestamp = Instant.fromEpochMilliseconds(1700000000000), context = Event.Context.create())
         val event = Event.Composite(data = data, metadata = metadata)
 
-        val deserialized = serde.deserialize(serde.serialize(event))
+        val deserialized = event.let(serde::serialize).let(serde::deserialize)
 
         assertThat(deserialized.data).isEqualTo(TestData(text = "some text"))
         assertThat(deserialized.metadata).isEqualTo(metadata)
@@ -40,7 +40,7 @@ class EventCompositeAvroSerdeTests : CoreDataGenerator by CoreDataGenerator.test
 
     private fun serializeTestData(data: TestData): GenericRecord = GenericData.Record(testDataSchema).apply { put("text", data.text) }
 
-    private fun deserializeTestData(record: GenericRecord) = TestData(text = record.get("text").toString())
+    private fun deserializeTestData(record: GenericRecord) = record.get("text").toString().let(::TestData)
 
     private data class TestData(val text: String) : Event.Data {
 
