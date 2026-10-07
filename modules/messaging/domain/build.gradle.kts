@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     api(libs.swissknife.messaging.domain)
+    api(projects.messagingConventions)
 
     implementation(projects.correlationLoggingUtils)
 

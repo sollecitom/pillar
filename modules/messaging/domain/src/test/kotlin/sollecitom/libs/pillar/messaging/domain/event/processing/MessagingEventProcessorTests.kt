@@ -5,6 +5,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.each
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
@@ -27,7 +28,12 @@ import sollecitom.libs.swissknife.ddd.domain.EventProcessor
 import sollecitom.libs.swissknife.ddd.domain.Happening
 import sollecitom.libs.swissknife.ddd.test.utils.create
 import sollecitom.libs.swissknife.messaging.domain.event.processing.EventProcessingResult
+import sollecitom.libs.pillar.messaging.conventions.AcmeMessagePropertyNames
+import sollecitom.libs.swissknife.messaging.domain.message.Message
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
+import sollecitom.libs.swissknife.messaging.domain.topic.Topic
+import sollecitom.libs.swissknife.messaging.test.utils.topic.create
+import sollecitom.libs.swissknife.core.test.utils.text.random
 import sollecitom.libs.swissknife.messaging.test.utils.message.*
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -63,7 +69,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         val following = testEvent2()
         val messages = listOf<ReceivedMessageSpy<Event>>(failing.asMessage(), following.asMessage())
         val attempts = mutableListOf<Event>()
-        val processor = EventProcessor.withMessages(messages.asFlow(), scope = backgroundScope, processEvent = { message ->
+        val processor = EventProcessor.withMessages(messages.asFlow(), handledTypes = handledTypes, scope = backgroundScope, processEvent = { message ->
             attempts += message.value
             if (message.value == failing && attempts.size <= 2) error("A temporary error occurred")
             EventProcessingResult.Success
@@ -82,7 +88,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
 
         val message = testEvent1().asMessage()
         var attempts = 0
-        val processor = EventProcessor.withMessages(flowOf(message), scope = backgroundScope, processEvent = {
+        val processor = EventProcessor.withMessages(flowOf(message), handledTypes = handledTypes, scope = backgroundScope, processEvent = {
             if (++attempts <= 8) error("A temporary error occurred")
             EventProcessingResult.Success
         })
@@ -98,7 +104,7 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
 
         val message = testEvent1().asMessage()
         var attempts = 0
-        val processor = EventProcessor.withMessages(flowOf(message), scope = backgroundScope, processEvent = {
+        val processor = EventProcessor.withMessages(flowOf(message), handledTypes = handledTypes, scope = backgroundScope, processEvent = {
             attempts++
             error("A bug")
         })
@@ -113,7 +119,45 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
         assertThat(message.wasAcknowledgedSuccessfully).isFalse()
     }
 
-    private fun <EVENT : Event> EVENT.asMessage() = ReceivedMessage.Companion.inMemorySpy(this)
+    @Test
+    fun `a message of an unhandled type is acknowledged without decoding it`() = testWithInvocationContext {
+
+        val undecodable = UndecodableMessage<Event>(type = TestEvent2.TYPE)
+        val handled = testEvent1().asMessage()
+        val processed = mutableListOf<Event>()
+        val processor = EventProcessor.withMessages(flowOf(undecodable, handled), handledTypes = setOf(TestEvent1.TYPE), processEvent = { message ->
+            processed += message.value
+            EventProcessingResult.Success
+        })
+
+        processor.start()
+        handled.awaitSuccessfulAck()
+        processor.stop()
+
+        assertThat(undecodable.wasAcknowledged).isTrue()
+        assertThat(processed).containsExactly(handled.value)
+    }
+
+    private val handledTypes = setOf(TestEvent1.TYPE, TestEvent2.TYPE)
+
+    private fun <EVENT : Event> EVENT.asMessage() = ReceivedMessage.Companion.inMemorySpy(this, properties = mapOf(AcmeMessagePropertyNames.forEvents.type to type.stringValue))
+
+    private inner class UndecodableMessage<EVENT : Event>(type: Happening.Type) : ReceivedMessage<EVENT> {
+
+        var wasAcknowledged = false
+        override val id = Message.Id.ulid(topic = Topic.create())
+        override val key: String? = null
+        override val value: EVENT get() = error("This payload cannot be decoded")
+        override val rawData = byteArrayOf(0x00)
+        override val properties = mapOf(AcmeMessagePropertyNames.forEvents.type to type.stringValue)
+        override val context = Message.Context()
+        override val producerName = Name.random()
+        override val publishedAt = clock.now()
+
+        override suspend fun acknowledge() {
+            wasAcknowledged = true
+        }
+    }
 
     private fun testEvent1(id: Id = newId(), timestamp: Instant = clock.now(), context: Event.Context = Event.Context.create()) = TestEvent1(id, timestamp, context)
 
