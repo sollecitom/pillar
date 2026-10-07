@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import sollecitom.libs.pillar.messaging.conventions.AcmeMessagePropertyNames
 import sollecitom.libs.pillar.messaging.domain.message.processWithForkedContext
+import sollecitom.libs.swissknife.core.domain.lifecycle.ProcessHalter
 import sollecitom.libs.swissknife.core.utils.CoreDataGenerator
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import sollecitom.libs.swissknife.ddd.domain.Event
@@ -18,9 +19,7 @@ import sollecitom.libs.swissknife.messaging.domain.event.utils.eventType
 import sollecitom.libs.swissknife.messaging.domain.message.ReceivedMessage
 import sollecitom.libs.swissknife.messaging.domain.message.connector.MessageConnector
 import sollecitom.libs.swissknife.messaging.domain.message.properties.MessagePropertyNames
-import kotlin.concurrent.thread
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -43,7 +42,6 @@ private class MessagingEventProcessor<in EVENT : Event>(
         try {
             messages.collect { message -> message.consume() }
         } catch (error: UndecodableMessageException) {
-            logger.error(error = error) { "Halting the event processor: ${error.message}" }
             onUndecodableMessage(error)
         }
     }
@@ -102,15 +100,13 @@ private class MessagingEventProcessor<in EVENT : Event>(
     }
 }
 
-val exitingTheProcess: (UndecodableMessageException) -> Unit = { thread(name = "undecodable-message-exit") { exitProcess(1) } }
-
 /** Creates an [EventProcessor] that consumes events from a [MessageConnector], processing each with a forked invocation context. */
 context(generator: CoreDataGenerator)
 fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = exitingTheProcess
+    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
 ): EventProcessor = withMessageConnector(CoroutineScope(SupervisorJob()), connector, handler, propertyNames, onUndecodableMessage)
 
 /** Creates an [EventProcessor] that consumes events from a [MessageConnector] within the given [scope]. */
@@ -120,7 +116,7 @@ fun <EVENT : Event> EventProcessor.Companion.withMessageConnector(
     connector: MessageConnector<EVENT>,
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = exitingTheProcess
+    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
 ): EventProcessor = MessagingEventProcessor(handler = handler, propertyNames = propertyNames, messages = connector.messages, scope = scope, onUndecodableMessage = onUndecodableMessage, coreDataGenerator = generator)
 
 /** Creates an [EventProcessor] from a raw message [Flow], useful when not using a [MessageConnector]. */
@@ -130,7 +126,7 @@ fun <EVENT : Event> EventProcessor.Companion.withMessages(
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
     scope: CoroutineScope = CoroutineScope(SupervisorJob()),
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = exitingTheProcess
+    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
 ): EventProcessor = MessagingEventProcessor(handler = handler, propertyNames = propertyNames, messages = messages, scope = scope, onUndecodableMessage = onUndecodableMessage, coreDataGenerator = generator)
 
 /** Creates an [EventProcessor] from a raw message [Flow], using the [CoroutineScope] from the context receiver. */
@@ -139,5 +135,5 @@ fun <EVENT : Event> EventProcessor.Companion.withMessages(
     messages: Flow<ReceivedMessage<EVENT>>,
     handler: EventHandler<EVENT>,
     propertyNames: MessagePropertyNames = AcmeMessagePropertyNames,
-    onUndecodableMessage: (UndecodableMessageException) -> Unit = exitingTheProcess
+    onUndecodableMessage: (UndecodableMessageException) -> Unit = ProcessHalter.system::halt
 ): EventProcessor = MessagingEventProcessor(handler = handler, propertyNames = propertyNames, messages = messages, scope = scope, onUndecodableMessage = onUndecodableMessage, coreDataGenerator = generator)
