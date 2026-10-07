@@ -1,7 +1,7 @@
 package sollecitom.libs.pillar.json.serialization.correlation.core.context
 
-import sollecitom.libs.pillar.json.serialization.correlation.core.toAcmeLanguageTag
-import sollecitom.libs.pillar.json.serialization.correlation.core.toAcmeLocale
+import sollecitom.libs.pillar.acme.conventions.toAcmeLanguageTag
+import sollecitom.libs.pillar.acme.conventions.toAcmeLocale
 import sollecitom.libs.pillar.json.serialization.correlation.core.access.jsonSerde
 import sollecitom.libs.pillar.json.serialization.correlation.core.customer.jsonSerde
 import sollecitom.libs.pillar.json.serialization.correlation.core.tenant.jsonSerde

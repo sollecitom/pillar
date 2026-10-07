@@ -26,6 +26,7 @@ class InvocationContextJsonSerializationTests : AcmeJsonSerdeTestSpecification<I
         "unauthenticated-with-specified-tenant" to InvocationContext.unauthenticated(specifiedTargetTenant = { Tenant.create() }),
         "authenticated-with-specified-locale" to InvocationContext.authenticated(specifiedLocale = { Locale.US }),
         "unauthenticated-with-specified-locale" to InvocationContext.unauthenticated(specifiedLocale = { Locale.GERMANY }),
+        "authenticated-with-the-norwegian-nynorsk-specified-locale" to InvocationContext.authenticated(specifiedLocale = { Locale.of("no", "NO", "NY") }),
         "authenticated-with-specified-target-customer" to InvocationContext.authenticated(specifiedTargetCustomer = { Customer.create() }),
         "unauthenticated-with-specified-target-customer" to InvocationContext.unauthenticated(specifiedTargetCustomer = { Customer.create(isTest = true) })
     )

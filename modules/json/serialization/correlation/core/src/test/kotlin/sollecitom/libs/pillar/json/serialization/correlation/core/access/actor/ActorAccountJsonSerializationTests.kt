@@ -20,7 +20,7 @@ class ActorAccountJsonSerializationTests : AcmeJsonSerdeTestSpecification<Actor.
         "user" to Actor.Account.user(),
         "user-with-explicit-locale" to Actor.Account.user(locale = Locale.ITALY),
         "user-without-locale" to Actor.Account.user().copy(locale = null),
-        @Suppress("DEPRECATION") "user-with-the-norwegian-nynorsk-locale" to Actor.Account.user(locale = Locale("no", "NO", "NY")),
+        "user-with-the-norwegian-nynorsk-locale" to Actor.Account.user(locale = Locale.of("no", "NO", "NY")),
         "external-service" to Actor.Account.externalService(),
         "internal-service" to Actor.Account.internalService()
     )
