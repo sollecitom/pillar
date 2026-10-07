@@ -1,5 +1,7 @@
 package sollecitom.libs.pillar.json.serialization.correlation.core.context
 
+import sollecitom.libs.pillar.json.serialization.correlation.core.toAcmeLanguageTag
+import sollecitom.libs.pillar.json.serialization.correlation.core.toAcmeLocale
 import sollecitom.libs.pillar.json.serialization.correlation.core.access.jsonSerde
 import sollecitom.libs.pillar.json.serialization.correlation.core.customer.jsonSerde
 import sollecitom.libs.pillar.json.serialization.correlation.core.tenant.jsonSerde
@@ -26,7 +28,7 @@ private object InvocationContextJsonSerde : JsonSerde.SchemaAware<InvocationCont
         setValue(Fields.ACCESS, value.access, Access.jsonSerde)
         setValue(Fields.TRACE, value.trace, Trace.jsonSerde)
         setValue(Fields.TOGGLES, value.toggles, Toggles.jsonSerde)
-        put(Fields.SPECIFIED_LOCALE, value.specifiedLocale?.toLanguageTag())
+        put(Fields.SPECIFIED_LOCALE, value.specifiedLocale?.toAcmeLanguageTag())
         setValueOrNull(Fields.SPECIFIED_TARGET_CUSTOMER, value.specifiedTargetCustomer, Customer.jsonSerde)
         setValueOrNull(Fields.SPECIFIED_TARGET_TENANT, value.specifiedTargetTenant, Tenant.jsonSerde)
     }
@@ -36,7 +38,7 @@ private object InvocationContextJsonSerde : JsonSerde.SchemaAware<InvocationCont
         val access = getValue(Fields.ACCESS, Access.jsonSerde)
         val trace = getValue(Fields.TRACE, Trace.jsonSerde)
         val toggles = getValue(Fields.TOGGLES, Toggles.jsonSerde)
-        val specifiedLocale = getStringOrNull(Fields.SPECIFIED_LOCALE)?.let(Locale::forLanguageTag)
+        val specifiedLocale = getStringOrNull(Fields.SPECIFIED_LOCALE)?.toAcmeLocale()
         val specifiedTargetCustomer = getValueOrNull(Fields.SPECIFIED_TARGET_CUSTOMER, Customer.jsonSerde)
         val specifiedTargetTenant = getValueOrNull(Fields.SPECIFIED_TARGET_TENANT, Tenant.jsonSerde)
         InvocationContext(access = access, trace = trace, toggles = toggles, specifiedLocale = specifiedLocale, specifiedTargetCustomer = specifiedTargetCustomer, specifiedTargetTenant = specifiedTargetTenant)

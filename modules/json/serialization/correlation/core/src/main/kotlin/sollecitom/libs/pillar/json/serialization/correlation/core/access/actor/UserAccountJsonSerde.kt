@@ -1,5 +1,7 @@
 package sollecitom.libs.pillar.json.serialization.correlation.core.access.actor
 
+import sollecitom.libs.pillar.json.serialization.correlation.core.toAcmeLanguageTag
+import sollecitom.libs.pillar.json.serialization.correlation.core.toAcmeLocale
 import sollecitom.libs.pillar.json.serialization.core.identity.jsonSerde
 import sollecitom.libs.pillar.json.serialization.correlation.core.customer.jsonSerde
 import sollecitom.libs.pillar.json.serialization.correlation.core.tenant.jsonSerde
@@ -25,7 +27,7 @@ internal object UserAccountJsonSerde : JsonSerde.SchemaAware<Actor.UserAccount> 
     override fun serialize(value: Actor.UserAccount) = JSONObject().apply {
         put(Fields.TYPE, TYPE_VALUE)
         setValue(Fields.ID, value.id, Id.jsonSerde)
-        put(Fields.LOCALE, value.locale?.toLanguageTag())
+        put(Fields.LOCALE, value.locale?.toAcmeLanguageTag())
         setValue(Fields.CUSTOMER, value.customer, Customer.jsonSerde)
         setValue(Fields.TENANT, value.tenant, Tenant.jsonSerde)
     }
@@ -35,7 +37,7 @@ internal object UserAccountJsonSerde : JsonSerde.SchemaAware<Actor.UserAccount> 
         val type = getRequiredString(Fields.TYPE)
         check(type == TYPE_VALUE) { "Invalid type '$type'. Must be '$TYPE_VALUE'" }
         val id = getValue(Fields.ID, Id.jsonSerde)
-        val locale = getStringOrNull(Fields.LOCALE)?.let(Locale::forLanguageTag)
+        val locale = getStringOrNull(Fields.LOCALE)?.toAcmeLocale()
         val customer = getValue(Fields.CUSTOMER, Customer.jsonSerde)
         val tenant = getValue(Fields.TENANT, Tenant.jsonSerde)
         Actor.UserAccount(id = id, locale = locale, customer = customer, tenant = tenant)
