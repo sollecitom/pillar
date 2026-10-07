@@ -9,12 +9,11 @@ import sollecitom.libs.swissknife.core.domain.currency.known.GBP
 import sollecitom.libs.swissknife.core.domain.currency.known.JPY
 import sollecitom.libs.swissknife.core.domain.currency.known.USD
 import sollecitom.libs.swissknife.core.domain.text.Name
-import sollecitom.libs.swissknife.json.utils.getRequiredBigInteger
 import sollecitom.libs.swissknife.json.utils.getRequiredString
 import sollecitom.libs.swissknife.json.utils.jsonSchemaAt
 import sollecitom.libs.swissknife.json.utils.serde.JsonSerde
 
-/** JSON serializer/deserializer for [CurrencyAmount], backed by a JSON schema. Supports GBP, USD, EUR, and JPY. */
+/** JSON serializer/deserializer for [CurrencyAmount], backed by a JSON schema. Supports GBP, USD, EUR, and JPY. Units are a non-negative big integer, written as a digit string so JavaScript clients don't lose precision. */
 val CurrencyAmount.Companion.jsonSerde: JsonSerde.SchemaAware<CurrencyAmount> get() = CurrencyAmountJsonSerde
 
 internal object CurrencyAmountJsonSerde : JsonSerde.SchemaAware<CurrencyAmount> {
@@ -23,13 +22,13 @@ internal object CurrencyAmountJsonSerde : JsonSerde.SchemaAware<CurrencyAmount> 
     override val schema by lazy { jsonSchemaAt(SCHEMA_LOCATION) }
 
     override fun serialize(value: CurrencyAmount) = JSONObject().apply {
-        put(Fields.UNITS, value.units)
+        put(Fields.UNITS, value.units.toString())
         put(Fields.CURRENCY, value.currency.textualCode.value)
     }
 
     override fun deserialize(value: JSONObject) = with(value) {
 
-        val units = getRequiredBigInteger(Fields.UNITS)
+        val units = getRequiredString(Fields.UNITS).also { require(it.matches(digits)) { "Currency amount units must be a non-negative integer, but were '$it'" } }.toBigInteger()
         val currency = when (val currencyCode = getRequiredString(Fields.CURRENCY).let(::Name)) {
             Currency.GBP.textualCode -> Currency.GBP
             Currency.USD.textualCode -> Currency.USD
@@ -39,6 +38,8 @@ internal object CurrencyAmountJsonSerde : JsonSerde.SchemaAware<CurrencyAmount> 
         }
         GenericCurrencyAmount(units = units, currency = currency)
     }
+
+    private val digits = Regex("^[0-9]+$")
 
     private object Fields {
         const val UNITS = "units"

@@ -28,6 +28,7 @@ private object AuthenticatedAccessAvroSerde : AvroSerde<Access.Authenticated> {
         setValue(Fields.origin, value.origin, Origin.avroSerde)
         setValue(Fields.authorization, value.authorization, AuthorizationPrincipal.avroSerde)
         setValue(Fields.scope, value.scope, AccessScope.avroSerde)
+        set(Fields.is_test, value.isTest)
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
@@ -44,5 +45,6 @@ private object AuthenticatedAccessAvroSerde : AvroSerde<Access.Authenticated> {
         const val origin = "origin"
         const val authorization = "authorization"
         const val scope = "scope"
+        const val is_test = "is_test"
     }
 }

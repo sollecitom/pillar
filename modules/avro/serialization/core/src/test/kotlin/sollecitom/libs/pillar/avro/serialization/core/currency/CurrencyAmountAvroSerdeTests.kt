@@ -2,6 +2,7 @@ package sollecitom.libs.pillar.avro.serialization.core.currency
 
 import assertk.assertThat
 import assertk.assertions.hasMessage
+import org.apache.avro.Conversions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS
@@ -25,8 +26,18 @@ class CurrencyAmountAvroSerdeTests : AcmeAvroSerdeTestSpecification<CurrencyAmou
         "pounds" to 0.99.pounds,
         "euros" to 13.01.euros,
         "yens" to 185_203.yen,
-        "generic" to GenericCurrencyAmount(units = 99.toBigInteger(), currency = Currency.GBP)
+        "generic" to GenericCurrencyAmount(units = 99.toBigInteger(), currency = Currency.GBP),
+        "beyond-64-bits" to GenericCurrencyAmount(units = "123456789012345678901234567890".toBigInteger(), currency = Currency.USD)
     )
+
+    @Test
+    fun `negative units on the wire are rejected`() {
+
+        val record = avroSerde.serialize(0.99.pounds).apply { put("units", Conversions.DecimalConversion().toBytes((-1).toBigDecimal(), schema.getField("units").schema(), schema.getField("units").schema().logicalType)) }
+        val result = runCatching { avroSerde.deserialize(record) }
+
+        assertThat(result).failedThrowing<IllegalArgumentException>()
+    }
 
     @Test
     fun `an unknown currency fails with a clear error`() {

@@ -1,10 +1,11 @@
 package sollecitom.libs.pillar.avro.serialization.core.currency
 
+import org.apache.avro.Conversions
+import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
-import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.pillar.avro.serialization.core.getKnownEnum
-import sollecitom.libs.swissknife.avro.serialization.utils.getString
+import java.nio.ByteBuffer
 import sollecitom.libs.swissknife.core.domain.currency.Currency
 import sollecitom.libs.swissknife.core.domain.currency.CurrencyAmount
 import sollecitom.libs.swissknife.core.domain.currency.GenericCurrencyAmount
@@ -16,22 +17,26 @@ import sollecitom.libs.swissknife.core.domain.text.Name
 
 /** Avro schema for [CurrencyAmount]. */
 val CurrencyAmount.Companion.avroSchema get() = CurrencyAvroSchemas.currencyAmount
-/** Avro serializer/deserializer for [CurrencyAmount]. Supports GBP, USD, EUR, and JPY. */
+/** Avro serializer/deserializer for [CurrencyAmount]. Supports GBP, USD, EUR, and JPY. Units are a non-negative big integer, encoded as a bytes decimal. */
 val CurrencyAmount.Companion.avroSerde: AvroSerde<CurrencyAmount> get() = CurrencyAmountAvroSerde
 
 private object CurrencyAmountAvroSerde : AvroSerde<CurrencyAmount> {
 
     override val schema get() = CurrencyAmount.avroSchema
 
-    override fun serialize(value: CurrencyAmount): GenericRecord = buildRecord {
+    private val unitsSchema get() = schema.getField(Fields.UNITS).schema()
+    private val currencySchema get() = schema.getField(Fields.CURRENCY).schema()
+    private val decimalConversion = Conversions.DecimalConversion()
 
-        setEnum(Fields.CURRENCY, value.currency.textualCode.value)
-        set(Fields.UNITS, value.units.toString())
+    override fun serialize(value: CurrencyAmount): GenericRecord = GenericData.Record(schema).apply {
+
+        put(Fields.UNITS, decimalConversion.toBytes(value.units.toBigDecimal(), unitsSchema, unitsSchema.logicalType))
+        put(Fields.CURRENCY, GenericData.EnumSymbol(currencySchema, value.currency.textualCode.value))
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
 
-        val units = getString(Fields.UNITS).toBigInteger()
+        val units = decimalConversion.fromBytes((get(Fields.UNITS) as ByteBuffer).duplicate(), unitsSchema, unitsSchema.logicalType).toBigIntegerExact()
         val currency = when (val currencyCode = getKnownEnum(Fields.CURRENCY).let(::Name)) {
             Currency.GBP.textualCode -> Currency.GBP
             Currency.USD.textualCode -> Currency.USD
