@@ -43,7 +43,7 @@ object AcmeJwtScheme {
         issuer: Issuer,
         openIdConnectParams: OpenIdConnectParams,
         authorizationHeaderType: String
-    ) = claimsFor(Parameters(user, access, isUserEmailAddressVerified, authentication, token, session, targetApplication, issuer, openIdConnectParams, authorizationHeaderType))
+    ) = Parameters(user, access, isUserEmailAddressVerified, authentication, token, session, targetApplication, issuer, openIdConnectParams, authorizationHeaderType).let(::claimsFor)
 
     /** Extracts all Acme JWT parameters from a Keycloak-format claims JSON object. */
     fun parseParametersFromClaims(claims: JSONObject): Parameters {
@@ -76,7 +76,7 @@ object AcmeJwtScheme {
 
         val id = getRequiredString(Fields.SUBJECT)
         val orgId = getRequiredString(Fields.ORGANIZATION_ID)
-        val emailAddress = EmailAddress(getRequiredString(Fields.EMAIL_ADDRESS))
+        val emailAddress = getRequiredString(Fields.EMAIL_ADDRESS).let(::EmailAddress)
         val organizationName = emailAddress.value.substringAfter("@").substringBeforeLast(".")
         val organization = Organization(id = orgId, name = organizationName)
         val userName = getRequiredString(Fields.USERNAME)

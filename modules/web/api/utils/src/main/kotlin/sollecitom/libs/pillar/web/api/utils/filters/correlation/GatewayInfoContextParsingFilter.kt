@@ -24,7 +24,7 @@ internal class GatewayInfoContextParsingFilter(private val key: InvocationContex
 
         val attempt = runCatching { invocationContext(request, headerNames)?.forked() }
         when {
-            attempt.isSuccess -> next(request.with(attempt.getOrThrow()))
+            attempt.isSuccess -> request.with(attempt.getOrThrow()).let(next)
             else -> attempt.exceptionOrNull()!!.asResponse()
         }
     }

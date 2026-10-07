@@ -7,12 +7,12 @@ import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationCont
 import java.util.Base64
 
 /** Encodes this context as an HTTP header value: the base64url encoding (without padding) of its UTF-8 JSON. */
-fun InvocationContext<*>.toHeaderValue(): String = Base64.getUrlEncoder().withoutPadding().encodeToString(InvocationContext.jsonSerde.serialize(this).toString().toByteArray())
+fun InvocationContext<*>.toHeaderValue(): String = InvocationContext.jsonSerde.serialize(this).toString().toByteArray().let(Base64.getUrlEncoder().withoutPadding()::encodeToString)
 
 /** Decodes a context from an HTTP header value produced by [toHeaderValue], rejecting JSON that doesn't match the context's schema. */
 fun InvocationContext.Companion.fromHeaderValue(value: String): InvocationContext<Access> {
 
-    val json = JSONObject(Base64.getUrlDecoder().decode(value).decodeToString())
+    val json = Base64.getUrlDecoder().decode(value).decodeToString().let(::JSONObject)
     InvocationContext.jsonSerde.schema.validate(json)?.let { failure -> throw IllegalArgumentException("The invocation context doesn't match its schema: ${failure.message}") }
     return InvocationContext.jsonSerde.deserialize(json)
 }

@@ -18,7 +18,7 @@ private object InstantAvroSerde : AvroSerde<Instant> {
 
     override fun serialize(value: Instant): GenericRecord = buildRecord {
 
-        set(Fields.value, Math.addExact(Math.multiplyExact(value.epochSeconds, NANOS_PER_SECOND), value.nanosecondsOfSecond.toLong()))
+        set(Fields.value, value.epochNanoseconds)
     }
 
     override fun deserialize(value: GenericRecord) = with(value) {
@@ -26,6 +26,8 @@ private object InstantAvroSerde : AvroSerde<Instant> {
         val epochNanoseconds = getLong(Fields.value)
         Instant.fromEpochSeconds(Math.floorDiv(epochNanoseconds, NANOS_PER_SECOND), Math.floorMod(epochNanoseconds, NANOS_PER_SECOND))
     }
+
+    private val Instant.epochNanoseconds: Long get() = Math.multiplyExact(epochSeconds, NANOS_PER_SECOND).let { Math.addExact(it, nanosecondsOfSecond.toLong()) }
 
     private object Fields {
         const val value = "value"
