@@ -44,6 +44,7 @@ private class MessagingEventProcessor<in EVENT : Event>(
             messages.collect { message -> message.consume() }
         } catch (error: Throwable) {
             currentCoroutineContext().ensureActive()
+            logger.error(error = error) { "Halting the event processor: ${error.message}" }
             onFatalFailure(error)
         }
     }
