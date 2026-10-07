@@ -4,7 +4,6 @@ import sollecitom.libs.pillar.avro.serialization.core.identity.avroSchema
 import sollecitom.libs.pillar.avro.serialization.core.time.avroSchema
 import sollecitom.libs.pillar.avro.serialization.correlation.core.avroSchema
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalogueTemplate
-import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.correlation.core.domain.context.InvocationContext
 import kotlin.time.Instant
@@ -18,7 +17,5 @@ object EventAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.event") {
     val eventContext by lazy { getSchema(name = "EventContext", dependencies = setOf(eventReference, InvocationContext.avroSchema)) }
     val eventMetadata by lazy { getSchema(name = "EventMetadata", dependencies = setOf(Id.avroSchema, Instant.avroSchema, eventContext)) }
 
-    override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
-
-    override val all: Sequence<Schema> = sequenceOf(happeningType, eventReference, eventContext, eventMetadata)
+    override val all: Sequence<Schema> get() = sequenceOf(happeningType, eventReference, eventContext, eventMetadata)
 }

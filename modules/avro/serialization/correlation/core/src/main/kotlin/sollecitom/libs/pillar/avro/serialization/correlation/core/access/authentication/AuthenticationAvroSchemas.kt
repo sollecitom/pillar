@@ -4,7 +4,6 @@ import sollecitom.libs.pillar.avro.serialization.core.identity.avroSchema
 import sollecitom.libs.pillar.avro.serialization.core.time.avroSchema
 import sollecitom.libs.pillar.avro.serialization.correlation.core.access.session.avroSchema
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalogueTemplate
-import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.correlation.core.domain.access.session.FederatedSession
 import sollecitom.libs.swissknife.correlation.core.domain.access.session.SimpleSession
@@ -19,7 +18,5 @@ object AuthenticationAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.corr
     val federatedAuthentication by lazy { getSchema(name = "FederatedAuthentication", dependencies = setOf(authenticationToken, FederatedSession.avroSchema)) }
     val authentication by lazy { getSchema(name = "Authentication", dependencies = setOf(statelessAuthentication, credentialsBasedAuthentication, federatedAuthentication)) }
 
-    override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
-
-    override val all: Sequence<Schema> = sequenceOf(authenticationToken, statelessAuthentication, credentialsBasedAuthentication, federatedAuthentication, authentication)
+    override val all: Sequence<Schema> get() = sequenceOf(authenticationToken, statelessAuthentication, credentialsBasedAuthentication, federatedAuthentication, authentication)
 }

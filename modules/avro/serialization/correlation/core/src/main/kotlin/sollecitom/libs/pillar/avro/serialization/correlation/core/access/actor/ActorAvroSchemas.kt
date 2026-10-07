@@ -6,7 +6,6 @@ import sollecitom.libs.pillar.avro.serialization.correlation.core.access.authent
 import sollecitom.libs.pillar.avro.serialization.correlation.core.customer.avroSchema
 import sollecitom.libs.pillar.avro.serialization.correlation.core.tenant.avroSchema
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalogueTemplate
-import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import sollecitom.libs.swissknife.core.domain.identity.Id
 import sollecitom.libs.swissknife.correlation.core.domain.access.authentication.Authentication
 import sollecitom.libs.swissknife.correlation.core.domain.access.customer.Customer
@@ -26,7 +25,5 @@ object ActorAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.correlation.a
     val impersonatingActor by lazy { getSchema(name = "ImpersonatingActor", dependencies = setOf(account, Authentication.avroSchema)) }
     val actor by lazy { getSchema(name = "Actor", dependencies = setOf(directActor, actorOnBehalf, impersonatingActor)) }
 
-    override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
-
-    override val all: Sequence<Schema> = sequenceOf(userAccount, internalServiceAccount, externalServiceAccount, serviceAccount, account, directActor, actorOnBehalf, impersonatingActor, actor)
+    override val all: Sequence<Schema> get() = sequenceOf(userAccount, internalServiceAccount, externalServiceAccount, serviceAccount, account, directActor, actorOnBehalf, impersonatingActor, actor)
 }

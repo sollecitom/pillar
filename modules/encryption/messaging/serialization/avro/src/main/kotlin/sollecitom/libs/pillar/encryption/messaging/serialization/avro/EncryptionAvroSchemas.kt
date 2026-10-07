@@ -1,7 +1,6 @@
 package sollecitom.libs.pillar.encryption.messaging.serialization.avro
 
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalogueTemplate
-import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import org.apache.avro.Schema
 
 object EncryptionAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.encryption") {
@@ -11,7 +10,5 @@ object EncryptionAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.encrypti
     val gcmEncryptionMetadata: Schema by lazy { getSchema(name = "GcmEncryptionMetadata", dependencies = setOf(cryptographicKeyMetadata)) }
     val xtsEncryptionMetadata: Schema by lazy { getSchema(name = "XtsEncryptionMetadata", dependencies = setOf(cryptographicKeyMetadata)) }
 
-    override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
-
-    override val all: Sequence<Schema> = sequenceOf(cryptographicKeyMetadata, gcmEncryptionMetadata, xtsEncryptionMetadata, encryptionMetadata)
+    override val all: Sequence<Schema> get() = sequenceOf(cryptographicKeyMetadata, gcmEncryptionMetadata, xtsEncryptionMetadata, encryptionMetadata)
 }

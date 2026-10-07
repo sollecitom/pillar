@@ -2,7 +2,6 @@ package sollecitom.libs.pillar.avro.serialization.correlation.core.toggles
 
 import sollecitom.libs.pillar.avro.serialization.core.identity.IdentityAvroSchemas
 import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaCatalogueTemplate
-import sollecitom.libs.swissknife.avro.schema.catalogue.domain.AvroSchemaContainer
 import org.apache.avro.Schema
 
 object TogglesAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.correlation.toggles") {
@@ -14,7 +13,5 @@ object TogglesAvroSchemas : AvroSchemaCatalogueTemplate("acme.common.correlation
     val toggleValue by lazy { getSchema(name = "ToggleValue", dependencies = setOf(booleanToggleValue, integerToggleValue, decimalToggleValue, enumToggleValue)) }
     val toggles by lazy { getSchema(name = "Toggles", dependencies = setOf(toggleValue)) }
 
-    override val nestedContainers: Set<AvroSchemaContainer> = emptySet()
-
-    override val all: Sequence<Schema> = sequenceOf(booleanToggleValue, integerToggleValue, decimalToggleValue, enumToggleValue, toggleValue, toggles)
+    override val all: Sequence<Schema> get() = sequenceOf(booleanToggleValue, integerToggleValue, decimalToggleValue, enumToggleValue, toggleValue, toggles)
 }
