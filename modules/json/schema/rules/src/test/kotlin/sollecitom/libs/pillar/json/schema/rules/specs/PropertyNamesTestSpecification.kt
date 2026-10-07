@@ -61,7 +61,7 @@ internal interface PropertyNamesTestSpecification {
 
         assertThat(result).isNotCompliantWithOnlyViolation<WhitelistedAlphabetFieldNameRule.Violation, JsonSchema> { violation ->
 
-            assertThat(violation.property.name).isEqualTo(illegalFieldName)
+            assertThat(violation.path).isEqualTo(listOf(illegalFieldName))
         }
     }
 }
