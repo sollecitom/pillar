@@ -7,4 +7,6 @@ dependencies {
     api(projects.acmeConventions)
     api(libs.micrometer.registry.prometheus)
     api(libs.micrometer.java21)
+
+    testImplementation(libs.swissknife.test.utils)
 }
