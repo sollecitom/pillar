@@ -34,7 +34,7 @@ infix fun PathMethod.toAuthenticated(action: suspend InvocationContext<Access.Au
 infix fun PathMethod.toCustomerScoped(action: suspend InvocationContext<Access.Authenticated>.(request: Request, customer: Customer) -> Response): RoutingHttpHandler = toAuthenticated { request ->
 
     when (val customer = customerOrNull) {
-        null -> apiError(error = customerRequired, status = Status.FORBIDDEN)
+        null -> apiError(error = ApiError(code = ErrorCode.CustomerRequired), status = Status.FORBIDDEN)
         else -> action(request, customer)
     }
 }
@@ -57,7 +57,5 @@ infix fun PathMethod.toWithInvocationContext(action: suspend InvocationContext<A
     val context = InvocationContextKeys.key.mandatory(request)
     runBlocking(MDCContext()) { with(context) { action(request) } }
 }
-
-private val customerRequired = ApiError(message = "The invocation requires a customer to scope it to", code = "01K70Q5Z3S9V2XG8M4T6HJ1RNC")
 
 private fun apiError(error: ApiError, status: Status = Status.UNPROCESSABLE_ENTITY) = Response(status = status).body(error, ApiError.jsonSerde)

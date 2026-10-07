@@ -184,6 +184,16 @@ class MessagingEventProcessorTests : CoreDataGenerator by CoreDataGenerator.Comp
     }
 
     @Test
+    fun `waiting for all messages to be acknowledged fails when one of them has no event type`() = runTest {
+
+        val untyped = ReceivedMessage.inMemorySpy<Event>(testEvent1())
+
+        val result = runCatching { listOf(untyped).processAndWaitUntilAllAcked(handling(TestEvent1.TYPE) { EventProcessingResult.Success }) }
+
+        assertThat(result).failedThrowing<UndecodableMessageException>()
+    }
+
+    @Test
     fun `a message without an event type halts the processor without acknowledging it`() = runTest {
 
         val untyped = UndecodableMessageSpy.withoutType<Event>()
