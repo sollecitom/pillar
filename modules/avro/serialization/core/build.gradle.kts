@@ -11,7 +11,7 @@ dependencies {
     api(libs.acme.schema.catalogue.avro.common)
 
     implementation(libs.swissknife.kotlin.extensions)
-    implementation(projects.acmeConventions)
+    implementation(projects.acmeLocale)
 
     testImplementation(projects.avroSerializationTestUtils)
     testImplementation(libs.swissknife.avro.schema.catalogue.test.utils)

@@ -1,11 +1,11 @@
 package sollecitom.libs.pillar.avro.serialization.core.locale
 
+import org.apache.avro.generic.GenericRecord
+import sollecitom.libs.pillar.acme.locale.toAcmeLanguageTag
+import sollecitom.libs.pillar.acme.locale.toAcmeLocale
 import sollecitom.libs.swissknife.avro.serialization.utils.AvroSerde
 import sollecitom.libs.swissknife.avro.serialization.utils.buildRecord
 import sollecitom.libs.swissknife.avro.serialization.utils.getString
-import org.apache.avro.generic.GenericRecord
-import sollecitom.libs.pillar.acme.conventions.toAcmeLanguageTag
-import sollecitom.libs.pillar.acme.conventions.toAcmeLocale
 import java.util.*
 
 /** Avro serializer/deserializer for [Locale], using language tags. Handles the problematic Norwegian locale (`no_NO_NY`) as a special case. */

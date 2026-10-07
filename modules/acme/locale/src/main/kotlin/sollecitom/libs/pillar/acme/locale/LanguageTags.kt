@@ -1,4 +1,4 @@
-package sollecitom.libs.pillar.acme.conventions
+package sollecitom.libs.pillar.acme.locale
 
 import java.util.Locale
 

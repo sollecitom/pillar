@@ -44,6 +44,7 @@ fun includeProject(name: String) {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 module("acme", "conventions")
+module("acme", "locale")
 module("correlation", "logging", "utils")
 module("correlation", "logging", "test", "utils")
 module("prometheus", "micrometer", "registry")

@@ -9,7 +9,7 @@ dependencies {
     api(projects.jsonSerializationCore)
 
     implementation(libs.swissknife.kotlin.extensions)
-    implementation(projects.acmeConventions)
+    implementation(projects.acmeLocale)
     implementation(libs.acme.schema.catalogue.json.common)
 
     testImplementation(projects.jsonSerializationTestUtils)
